@@ -69,7 +69,7 @@ private:
 public:
     template<int ndim, typename Index, class Tree>
     struct Status {
-        Status(int ndim, size_t N) : dY(N * ndim), uY(N * ndim), gains(N * ndim, 1.0), pos_f(N * ndim), neg_f(N * nsim) {
+        Status(size_t N) : dY(N * ndim), uY(N * ndim), gains(N * ndim, 1.0), pos_f(N * ndim), neg_f(N * ndim), tree(N) {
             neighbors.reserve(N);
             probabilities.reserve(N);
             return;
@@ -84,25 +84,25 @@ public:
         std::vector<double> omp_buffer;
 #endif
 
-        Tree<ndim> tree;
+        Tree tree;
         int iteration = 0;
     };
 
 public:
-    template<typename Index = int, typename Dist = double>
-    std::vector<double> run(const std::vector<Index*>& nn_index, const std::vector<Dist*>& nn_dist, int K, double* Y) {
+    template<class Tree = SPTree<ndim, 7>, typename Index = int, typename Dist = double>
+    Status<ndim, Index, Tree> run(const std::vector<Index*>& nn_index, const std::vector<Dist*>& nn_dist, int K, double* Y) {
         if (nn_index.size() != nn_dist.size()) {
             throw std::runtime_error("indices and distances should be of the same length");
         }
 
-        std::unique_ptr<Status<Index> > status(new Status<Index>(ndim, nn_index.size()));
-        compute_gaussian_perplexity(nn_dist, K, status->probabilities);
-        symmetrize_matrix(nn_index, K, status->neighbors, status->probabilities);
-        train_iterations(status->neighbors, status->probabilities, 
+        Status<ndim, Index, Tree> status(nn_index.size());
+        compute_gaussian_perplexity(nn_dist, K, status.probabilities);
+        symmetrize_matrix(nn_index, K, status.neighbors, status.probabilities);
+        train_iterations(status.neighbors, status.probabilities, 
                 Y,
-                status->dY, status->dU, status->gains, status->iteration 
+                status.dY, status.dU, status.gains, status.iteration 
 #ifdef _OPENMP
-                , status->omp_buffer
+                , status.omp_buffer
 #endif
                 );
         return status;
@@ -266,7 +266,7 @@ private:
                 momentum = final_momentum;
             }
 
-            iterate(col_P, val_P, Y, dY, uY, gains, pos_f, neg_f, multiplier
+            iterate(col_P, val_P, Y, dY, uY, gains, pos_f, neg_f, multiplier, momentum
 #ifdef _OPENMP
                 , omp_buffer        
 #endif        
@@ -278,13 +278,14 @@ private:
     void iterate(const std::vector<std::vector<Index> >& col_P, const std::vector<std::vector<double> >& val_P, 
         double* Y,
         std::vector<double>& dY, std::vector<double>& uY, std::vector<double>& gains, 
-        std::vector<double>& pos_f, std::vector<double>& neg_f, double multiplier,
+        std::vector<double>& pos_f, std::vector<double>& neg_f, 
+        double multiplier, double momentum
 #ifdef _OPENMP
         , std::vector<double>& omp_buffer
 #endif        
         )
     {
-        computeGradient<ndim>(col_P, val_P, Y, dY, uY, gains, pos_f, neg_f, multiplier
+        compute_gradient<ndim>(col_P, val_P, Y, dY, uY, gains, pos_f, neg_f, multiplier
 #ifdef _OPENMP
             , omp_buffer
 #endif
@@ -322,32 +323,31 @@ private:
         return;
     }
 
+private:
     template<typename Index, class Tree>
-    void computeGradient(const std::vector<std::vector<Index> >& col_P, const std::vector<std::vector<double> >& val_P, 
-        double* Y, std::vector<double>& dC, Tree& tree, std::vector<double>& pos_f, std::vector<double>& neg_f, double multiplier
+    static void compute_gradient(const std::vector<std::vector<Index> >& col_P, const std::vector<std::vector<double> >& val_P, 
+        double* Y, std::vector<double>& dC, Tree& tree, std::vector<double>& pos_f, std::vector<double>& neg_f, 
+        double multiplier
 #ifdef _OPENMP
         , std::vector<double>& omp_buffer
 #endif        
     {
         tree.set(Y);
 
-        // Compute all terms required for t-SNE gradient
-        tree->computeEdgeForces(col_P, val_P, pos_f, multiplier);
+        compute_edge_forces(col_P, val_P, Y, pos_f, multiplier);
 
-        // Storing the output to sum in single-threaded mode; avoid randomness in rounding errors.
         size_t N = col_P.size();
-
 #ifdef _OPENMP
         std::vector<double> output(N);
         #pragma omp parallel for
         for (size_t n = 0; n < N; ++n) {
-            output[n] = tree->computeNonEdgeForces(n, theta, neg_f + n * D);
+            output[n] = tree->compute_non_edge_forces(n, theta, neg_f + n * ndim);
         }
         double sum_Q = std::accumulate(output.begin(), output.end(), 0.0);
 #else
         double sum_Q = 0;
         for (size_t n = 0; n < N; ++n) {
-            sum_Q += tree->computeNonEdgeForces(n, theta, neg_f + n * D);
+            sum_Q += tree->compute_non_edge_forces(n, theta, neg_f + n * ndim);
         }
 #endif
 
@@ -356,7 +356,38 @@ private:
             dC[i] = pos_f[i] - (neg_f[i] / sum_Q);
         }
     }
+
+    template<typename Index>
+    static void compute_edge_forces(const std::vector<std::vector<Index> >& col_P, const std::vector<std::vector<double> >& val_P, 
+        const double* Y, std::vector<double>& pos_f, double multiplier) const 
+    {
+        std::fill(pos_f.begin(), pos_f.end(), 0);                
+
+        #pragma omp parallel for 
+        for (size_t n = 0; n < col_P.size(); ++n) {
+            const auto& cur_prob = val_P[n];
+            const auto& cur_col = col_P[n];
+            const double* self = point + n * ndim;
+            double* pos_out = pos_f.data() + n * ndim;
+
+            for (size_t i = 0; i < cur_col.size(); ++i) {
+                double sqdist = 0; 
+                const double* neighbor = point + cur_col[i] * ndim;
+                for (int d = 0; d < ndim; ++d) {
+                    sqdist += (self[d] - neighbor[d]) * (self[d] - neighbor[d]):
+                }
+
+                const double mult = multiplier * cur_prob[i] / (1 + sqdist);
+                for (int d = 0; d < ndim; ++d) {
+                    pos_out[d] += mult * (self[d] - neighbor[d]);
+                }
+            }
+        }
+
+        return;
+    }
 };
+
 
 }
 

@@ -64,31 +64,39 @@ struct SPTreeNode {
     std::array<double, ndim> midpoint, halfwidth;
     std::array<double, ndim> center_of_mass;
     std::array<size_t, nchildren> children;
+
     int number = 1;
     int depth = 0;
     bool is_leaf = true;
+    size_t self = 0; // only used for building, not for search. 
 };
 
-template<int ndim, int maxdepth>
+template<int ndim>
 class SPTree {
 public:
-    SPTree(size_t n) : N(n) {
+    SPTree(size_t n, int max) : N(n), maxdepth(max), locations(N) {
         store.reserve(std::min(static_cast<double>(n), std::pow(4.0, static_cast<double>(maxdepth))) * 2);
         return;
     }
 
 private:
+    const double * data = NULL;
     size_t N;
+    int maxdepth;
     std::vector<SPTreeNode<ndim> > store;
+    std::vector<size_t> locations;
 
 public:
     void set(const double* Y) {
+        data = Y;
+
         store.resize(1);
         store[0].is_leaf = false;
+        store[0].number = N;
         {
             std::array<double, ndim> min_Y{}, max_Y{};
-            std::fill_n(min_Y.begin(), ndim, std::numeric_limits<double>::lowest());
-            std::fill_n(max_Y.begin(), ndim, std::numeric_limits<double>::max());
+            std::fill_n(min_Y.begin(), ndim, std::numeric_limits<double>::max());
+            std::fill_n(max_Y.begin(), ndim, std::numeric_limits<double>::lowest());
 
             auto& mean_Y = store[0].midpoint;
             auto copy = Y;
@@ -114,10 +122,12 @@ public:
         for (size_t i = 0; i < N; ++i, point += ndim) {
             std::array<bool, ndim> side;
             size_t parent = 0;
+            int final_position = 0;
+            size_t child_loc = 0;
 
             for (int depth = 1; depth <= maxdepth; ++depth) {
                 size_t child_idx = find_child(parent, point, side.data());
-                size_t child_loc = store[parent].children[child_idx];
+                child_loc = store[parent].children[child_idx];
 
                 // Be careful with persistent references to store's contents,
                 // as the vector may be reallocated when a push_back() occurs.
@@ -126,6 +136,8 @@ public:
                     store[parent].children[child_idx] = child_loc;
                     store.push_back(SPTreeNode<ndim>(point, depth));
                     set_child_boundaries(parent, child_loc, side.data());
+
+                    store[child_loc].self = i;
                     break;
                 } 
 
@@ -137,6 +149,9 @@ public:
                     std::array<bool, ndim> side2; 
                     size_t grandchild_idx = find_child(child_loc, store[grandchild_loc].center_of_mass.data(), side2.data());
                     set_child_boundaries(child_loc, grandchild_loc, side2.data());
+
+                    store[grandchild_loc].self = store[child_loc].self;
+                    locations[store[grandchild_loc].self] = grandchild_loc;
 
                     store[child_loc].children[grandchild_idx] = grandchild_loc;
                     store[child_loc].is_leaf = false;
@@ -155,6 +170,8 @@ public:
 
                 parent = child_loc;
             }
+
+            locations[i] = child_loc;
         }
 
         return;
@@ -187,39 +204,79 @@ private:
     }
 
 public:
-    double compute_non_edge_forces(const double* point, double theta, double* neg_f, size_t position = 0) const {
+    double compute_non_edge_forces(size_t index, double theta, double* neg_f) const {
+        double result_sum = 0;
+        const double * point = data + index * ndim;
+        const auto& cur_children = store[0].children;
+        std::fill_n(neg_f, ndim, 0);
+
+        for (int i = 0; i < cur_children.size(); ++i) {
+            if (cur_children[i]) {
+                result_sum += compute_non_edge_forces(index, point, theta, neg_f, cur_children[i]);
+            }
+        }
+
+        return result_sum;
+    }
+
+private:
+    double compute_non_edge_forces(size_t index, const double* point, double theta, double* neg_f, size_t position) const {
+        const auto& node = store[position];
+        std::array<double, ndim> temp;
+        const double * center = node.center_of_mass.data();
+
+        if (position == locations[index]) {
+            if (node.number == 1) {
+                return 0; // skipping self.
+            } else if (node.is_leaf) {
+                for (int d = 0; d < ndim; ++d) { // subtracting self from the box for the force calculations.
+                    temp[d] = (node.center_of_mass[d] * node.number - point[d]) / (node.number - 1);
+                }
+                center = temp.data();
+            }
+        }
+
         // Compute squared distance between point and center-of-mass
         double sqdist = 0;
-        const auto& node = store[position];
         for (int d = 0; d < ndim; ++d) {
-            sqdist += (point[d] - node.center_of_mass[d]) * (point[d] - node.center_of_mass[d]);
+            sqdist += (point[d] - center[d]) * (point[d] - center[d]);
         }
-      
+
         // Check whether we can use this node as a "summary"
         bool skip_children = node.is_leaf;
         if (!skip_children) {
-            double max_halfwidth = *std::max_element(node.width.begin(), node.width.end());
+            double max_halfwidth = *std::max_element(node.halfwidth.begin(), node.halfwidth.end());
             skip_children = (max_halfwidth < theta * std::sqrt(sqdist));
         }
 
         double result_sum = 0;
         if (skip_children) {
-            // Compute and add t-SNE force between point and current node
-            sqdist = 1.0 / (1.0 + sqdist);
-            double mult = node.number * sqdist;
+            // Compute and add t-SNE force between point and current node.
+            const double div = 1.0 / (1.0 + sqdist);
+            double mult = node.number * div;
             result_sum += mult;
-            mult *= sqdist;
-            for (int d = 0; d < ndim; d++) {
-                neg_f[d] += mult * (point[d] - node.center_of_mass[d]);
+            mult *= div;
+
+            for (int d = 0; d < ndim; ++d) {
+                neg_f[d] += mult * (point[d] - center[d]);
             }
         } else {
             // Recursively apply Barnes-Hut to children
-            for (int i = 0; i < SPTreeNode<ndim>::nchildren; ++i) {
-                result_sum += compute_non_edge_forces(point, theta, neg_f, node.children[i]);
+            const auto& cur_children = node.children;
+            for (int i = 0; i < cur_children.size(); ++i) {
+                if (cur_children[i]) {
+                    result_sum += compute_non_edge_forces(index, point, theta, neg_f, cur_children[i]);
+                }
             }
         }
 
         return result_sum;
+    }
+
+public:
+    // For testing purposes only.
+    const auto& get_store() {
+        return store;
     }
 };
 

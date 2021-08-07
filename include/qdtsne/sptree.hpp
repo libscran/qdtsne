@@ -44,12 +44,21 @@ struct SPTreeNode {
     static constexpr int nchildren = (1 << ndim); 
 
     SPTreeNode(const double* point, int d) : depth(d) {
-        std::fill_n(point, ndim, center_of_mass.data());
+        std::copy_n(point, ndim, center_of_mass.data());
+        fill();
+        return;
+    }
+
+    SPTreeNode() {
+        std::fill_n(center_of_mass.data(), ndim, 0);
+        fill();
+        return;
+    }
+
+    void fill() {
         std::fill_n(midpoint.begin(), ndim, 0);
         std::fill_n(halfwidth.begin(), ndim, 0);
-        std::fill_n(center_of_mass.begin(), ndim, 0);
-        std::fill_n(children.begin(), ndim, 0);
-        return;
+        std::fill_n(children.begin(), nchildren, 0);
     }
 
     std::array<double, ndim> midpoint, halfwidth;
@@ -72,7 +81,7 @@ private:
     size_t N;
     std::vector<SPTreeNode<ndim> > store;
 
-private:
+public:
     void set(const double* Y) {
         store.resize(1);
         store[0].is_leaf = false;
@@ -115,7 +124,7 @@ private:
                 if (child_loc == 0) { 
                     child_loc = store.size();
                     store[parent].children[child_idx] = child_loc;
-                    store.push_back(SPTreeNode(point, depth));
+                    store.push_back(SPTreeNode<ndim>(point, depth));
                     set_child_boundaries(parent, child_loc, side.data());
                     break;
                 } 
@@ -123,7 +132,7 @@ private:
                 if (store[child_loc].is_leaf && depth < maxdepth) {
                     // Shifting the current child to become a child of itself.
                     size_t grandchild_loc = store.size();
-                    store.push_back(SPTreeNode(store[child_loc].center_of_mass.data(), depth + 1)); 
+                    store.push_back(SPTreeNode<ndim>(store[child_loc].center_of_mass.data(), depth + 1)); 
 
                     std::array<bool, ndim> side2; 
                     size_t grandchild_idx = find_child(child_loc, store[grandchild_loc].center_of_mass.data(), side2.data());
@@ -151,7 +160,8 @@ private:
         return;
     }
 
-    size_t find_child (size_t parent, const double* point, bool * side) {
+private:
+    size_t find_child (size_t parent, const double* point, bool * side) const {
         int multiplier = 1;
         size_t child = 0;
         for (int c = 0; c < ndim; ++c) {
@@ -162,7 +172,7 @@ private:
         return child;
     }
 
-    void set_child_boundaries(size_t parent, size_t child, const bool* keep) const {
+    void set_child_boundaries(size_t parent, size_t child, const bool* keep) {
         auto& current = store[child];
         auto& parental = store[parent];
         for (int c = 0; c < ndim; ++c) {
@@ -186,10 +196,14 @@ public:
         }
       
         // Check whether we can use this node as a "summary"
-        double max_halfwidth = *std::max_element(node.width.begin(), node.width.end());
-        double result_sum = 0;
+        bool skip_children = node.is_leaf;
+        if (!skip_children) {
+            double max_halfwidth = *std::max_element(node.width.begin(), node.width.end());
+            skip_children = (max_halfwidth < theta * std::sqrt(sqdist));
+        }
 
-        if (is_leaf || max_halfwidth / std::sqrt(sqdist) < theta) {
+        double result_sum = 0;
+        if (skip_children) {
             // Compute and add t-SNE force between point and current node
             sqdist = 1.0 / (1.0 + sqdist);
             double mult = node.number * sqdist;

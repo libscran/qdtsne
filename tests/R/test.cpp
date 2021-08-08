@@ -1,6 +1,8 @@
 #include "Rcpp.h"
-#include "qdtsne/tsne.hpp"
 #include <algorithm>
+
+#define QDTSNE_CUSTOM_NEIGHBORS
+#include "qdtsne/tsne.hpp"
 
 // [[Rcpp::plugins(cpp17)]]
 

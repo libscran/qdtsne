@@ -34,7 +34,10 @@
 #define QDTSNE_TSNE_HPP
 
 #include "sptree.hpp"
+
+#ifndef QDTSNE_CUSTOM_NEIGHBORS
 #include "knncolle/knncolle.hpp"
+#endif
 
 #include <vector>
 #include <cmath>
@@ -402,6 +405,7 @@ private:
     }
 
 public:
+#ifndef QDTSNE_CUSTOM_NEIGHBORS
     template<class Algorithm = knncolle::VpTreeEuclidean<>, typename Input = double>
     auto initialize(const Input* input, size_t D, size_t N) {
         Algorithm searcher(D, N, input); 
@@ -434,6 +438,7 @@ public:
         run(status, Y);
         return status;
     }
+#endif
 };
 
 }

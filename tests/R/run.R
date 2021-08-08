@@ -10,7 +10,7 @@ set.seed(10)
 mat <- matrix(rnorm(5000), ncol=10)
 
 library(FNN)
-res <- FNN::get.knn(mat, k=50)
+res <- FNN::get.knn(mat, k=90) # this needs to be the default perplexity * 3.
 
 library(Rtsne)
 library(testthat)

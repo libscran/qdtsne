@@ -278,6 +278,10 @@ public:
     const auto& get_store() {
         return store;
     }
+
+    const auto& get_locations() {
+        return locations;
+    }
 };
 
 //// Print out tree

@@ -20,8 +20,8 @@ protected:
     std::vector<double> Y;
 
 protected:
-    template<class V>
-    void validate_store(const V& store, const double* data, size_t N, int maxdepth) {
+    template<class V, class W>
+    void validate_tree(const V& store, const W& locations, const double* data, size_t N, int maxdepth) {
         std::vector<int> covered(store.size());
         int leaf_count = 0, depth = 0;
 
@@ -32,17 +32,36 @@ protected:
 
         EXPECT_EQ(N, leaf_count); // checking that the counts match up.
 
-        for (size_t n = 0; n < N; ++n, data += ndim) { 
+        for (size_t n = 0; n < N; ++n) {
             // Checking all points are within range of the global thing.
             for (int d = 0; d < ndim; ++d) {
-                EXPECT_TRUE(data[d] < store[0].midpoint[d] + store[0].halfwidth[d]);
-                EXPECT_TRUE(data[d] > store[0].midpoint[d] - store[0].halfwidth[d]);
+                double pos = data[n * ndim + d];
+                EXPECT_TRUE(pos < store[0].midpoint[d] + store[0].halfwidth[d]);
+                EXPECT_TRUE(pos > store[0].midpoint[d] - store[0].halfwidth[d]);
             }
         }
 
         // Checking the max depth is not exceeded.
         for (const auto& s : store) {
             EXPECT_TRUE(s.depth <= maxdepth);
+        }
+
+        // Checking that the locations are correct.
+        for (size_t n = 0; n < N; ++n) {
+            const auto& locale = store[locations[n]];
+            EXPECT_TRUE(locale.is_leaf);
+
+            if (locale.number == 1) {
+                for (int d = 0; d < ndim; ++d) {
+                    EXPECT_EQ(data[n * ndim + d], locale.center_of_mass[d]);
+                }
+            } else {
+                for (int d = 0; d < ndim; ++d) {
+                    double pos = data[n * ndim + d];
+                    EXPECT_TRUE(pos < locale.midpoint[d] + locale.halfwidth[d]);
+                    EXPECT_TRUE(pos > locale.midpoint[d] - locale.halfwidth[d]);
+                }
+            }
         }
 
         return;
@@ -107,6 +126,8 @@ protected:
 protected:
     double reference_non_edge_forces(const double* point, const double* data, size_t N, double* neg_f) const {
         double resultSum = 0;
+        std::fill_n(neg_f, ndim, 0);
+
         for (size_t n = 0; n < N; ++n, data += ndim) {
             if (point == data) {
                 continue;
@@ -140,26 +161,44 @@ TEST_P(SPTreeTester, CheckTree2) {
     tree.set(Y.data());
 
     // Validating the tree.
-    validate_store(tree.get_store(), Y.data(), N, maxd);
+    validate_tree(tree.get_store(), tree.get_locations(), Y.data(), N, maxd);
 
-    std::vector<double> neg_f(2);
-    auto output = tree.compute_non_edge_forces(0, 0.5, neg_f.data());
+    // Cursory initial check for the edge forces 
+    for (int i = 0; i < std::min((int)N, 10); ++i) {
+        std::vector<double> neg_f(2);
+        auto output = tree.compute_non_edge_forces(i, 0.5, neg_f.data());
 
-    EXPECT_TRUE(output > 0);
-    for (int d = 0; d < neg_f.size(); ++d) {
-        EXPECT_TRUE(neg_f[d] != 0);
+        EXPECT_TRUE(output > 0);
+        for (int d = 0; d < neg_f.size(); ++d) {
+            EXPECT_TRUE(neg_f[d] != 0);
+        }
     }
 
     // Checking against a reference, if the tree is exact.
-    if (std::pow(2.0, maxd) > N) {
-        double no_theta = tree.compute_non_edge_forces(0, 0, neg_f.data());
-
+    bool exact = true;
+    for (const auto& s : tree.get_store()) {
+        if (s.is_leaf && s.number > 1) {
+            exact = false;
+            break;
+        }
+    }
+    
+    if (maxd == 20) {
+        EXPECT_TRUE(exact);
+    }
+    
+    if (exact){ 
+        std::vector<double> neg_f(2);
         std::vector<double> neg_f_ref(2);
-        double ref = reference_non_edge_forces(Y.data(), Y.data(), N, neg_f_ref.data());
 
-        EXPECT_FLOAT_EQ(neg_f_ref[0], neg_f[0]);
-        EXPECT_FLOAT_EQ(neg_f_ref[1], neg_f[1]);
-        EXPECT_FLOAT_EQ(no_theta, ref);
+        for (int i = 0; i < std::min((int)N, 10); ++i) {
+            double no_theta = tree.compute_non_edge_forces(i, 0, neg_f.data());
+            double ref = reference_non_edge_forces(Y.data() + i * ndim, Y.data(), N, neg_f_ref.data());
+
+            EXPECT_FLOAT_EQ(neg_f_ref[0], neg_f[0]);
+            EXPECT_FLOAT_EQ(neg_f_ref[1], neg_f[1]);
+            EXPECT_FLOAT_EQ(no_theta, ref);
+        }
     }
 }
 
@@ -167,7 +206,7 @@ INSTANTIATE_TEST_CASE_P(
     SPTree,
     SPTreeTester,
     ::testing::Combine(
-        ::testing::Values(10, 500, 1000), // number of observations
-        ::testing::Values(3, 7, 100) // max depth
+        ::testing::Values(10, 100, 1000), // number of observations
+        ::testing::Values(3, 7, 20) // max depth
     )
 );

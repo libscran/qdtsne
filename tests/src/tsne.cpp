@@ -145,9 +145,9 @@ TEST_P(TsneTester, StopStart) {
     thing.set_max_iter(500).run(status, copy.data());
     thing.set_max_iter(1000).run(status, copy.data());
 
-    for (size_t i =0 ; i < N; ++i) {
-        std::cout << Y[i*2] << "\t" << Y[i*2+1] << std::endl;
-    }
+//    for (size_t i =0 ; i < N; ++i) {
+//        std::cout << Y[i*2] << "\t" << Y[i*2+1] << std::endl;
+//    }
 
     EXPECT_EQ(copy, Y);
 }

@@ -285,33 +285,6 @@ public:
     }
 };
 
-//// Print out tree
-//template<int NDims>
-//void SPTree<NDims>::print()
-//{
-//  if(cum_size == 0) {
-//    Rprintf("Empty node\n");
-//    return;
-//  }
-//
-//  if(is_leaf) {
-//    Rprintf("Leaf node; data = [");
-//    for(unsigned int i = 0; i < size; i++) {
-//      double* point = data + index[i] * NDims;
-//      for(int d = 0; d < NDims; d++) Rprintf("%f, ", point[d]);
-//      Rprintf(" (index = %d)", index[i]);
-//      if(i < size - 1) Rprintf("\n");
-//      else Rprintf("]\n");
-//    }
-//  }
-//  else {
-//    Rprintf("Intersection node with center-of-mass = [");
-//    for(int d = 0; d < NDims; d++) Rprintf("%f, ", center_of_mass[d]);
-//    Rprintf("]; children are:\n");
-//    for(int i = 0; i < no_children; i++) children[i]->print();
-//  }
-//}
-
 }
 
 #endif

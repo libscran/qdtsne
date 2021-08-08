@@ -90,6 +90,7 @@ public:
     void set(const double* Y) {
         data = Y;
 
+        store.clear();
         store.resize(1);
         store[0].is_leaf = false;
         store[0].number = N;

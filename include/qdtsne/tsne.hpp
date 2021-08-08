@@ -132,7 +132,6 @@ private:
         }
 
         const size_t N = nn_dist.size();
-        constexpr double min_value = std::numeric_limits<double>::lowest(); // it's not min! surprise!
         constexpr double max_value = std::numeric_limits<double>::max();
         constexpr double tol = 1e-5;
         const double log_perplexity = std::log(perplexity);
@@ -152,7 +151,7 @@ private:
 #ifdef _OPENMP
             auto& output = val_P[n];
 #else
-            val_P.push_back(std::vector<double>(K));
+            val_P.emplace_back(K);
             auto& output = val_P.back();
 #endif
 
@@ -163,7 +162,7 @@ private:
                 }
 
                 // Compute entropy of current row
-                sum_P = std::accumulate(output.begin(), output.end(), min_value);
+                sum_P = std::accumulate(output.begin(), output.end(), std::numeric_limits<double>::min());
                 double H = .0;
                 for(int m = 0; m < K; ++m) {
                     H += beta * distances[m] * distances[m] * output[m];
@@ -306,7 +305,7 @@ private:
         // Update gains
         for (size_t i = 0; i < gains.size(); ++i) {
             double& g = gains[i];
-            g = std::max(0.01, (sign(dY[i]) != sign(uY[i])) ? (g + 0.2) : (g * 0.8));
+            g = std::max(0.01, sign(dY[i]) != sign(uY[i]) ? (g + 0.2) : (g * 0.8));
         }
 
         // Perform gradient update (with momentum and gains)
@@ -329,7 +328,7 @@ private:
 
             start = Y + d;
             for (size_t i = 0; i < N; ++i, start += ndim) {
-                *start /= sum;
+                *start -= sum;
             }
         }
 
@@ -338,7 +337,7 @@ private:
 
 private:
     template<typename Index>
-    void compute_gradient(Status<Index>& status, double* Y, double multiplier) {
+    void compute_gradient(Status<Index>& status, const double* Y, double multiplier) {
         auto& tree = status.tree;
         tree.set(Y);
 
@@ -346,6 +345,7 @@ private:
 
         size_t N = status.neighbors.size();
         auto& neg_f = status.neg_f;
+        std::fill(neg_f.begin(), neg_f.end(), 0);
 
 #ifdef _OPENMP
         // Don't use reduction methods to ensure that we sum in a consistent order.
@@ -362,10 +362,8 @@ private:
 #endif
 
         // Compute final t-SNE gradient
-        auto& pos_f = status.pos_f;
-        auto& dY = status.dY;
         for (size_t i = 0; i < N * ndim; ++i) {
-            dY[i] = pos_f[i] - (neg_f[i] / sum_Q);
+            status.dY[i] = status.pos_f[i] - (neg_f[i] / sum_Q);
         }
     }
 
@@ -374,7 +372,7 @@ private:
         const auto& col_P = status.neighbors;
         const auto& val_P = status.probabilities;
         auto& pos_f = status.pos_f;
-        std::fill(pos_f.begin(), pos_f.end(), 0);                
+        std::fill(pos_f.begin(), pos_f.end(), 0);
 
         #pragma omp parallel for 
         for (size_t n = 0; n < col_P.size(); ++n) {

@@ -33,10 +33,11 @@
 #ifndef QDTSNE_TSNE_HPP
 #define QDTSNE_TSNE_HPP
 
-#include "sptree.h"
+#include "sptree.hpp"
 #include <vector>
 #include <cmath>
 #include <algorithm>
+#include <type_traits>
 
 namespace qdtsne {
 
@@ -60,22 +61,21 @@ private:
     double theta = Defaults::theta;
     int max_iter = Defaults::max_iter;
     int stop_lying_iter = Defaults::stop_lying_iter;
-    int mom_swith_iter = Defaults::mom_switch_iter;
+    int mom_switch_iter = Defaults::mom_switch_iter;
     double start_momentum = Defaults::start_momentum;
     double final_momentum = Defaults::final_momentum;
     double eta = Defaults::eta;
     double exaggeration_factor = Defaults::exaggeration_factor;
 
 public:
-    template<int ndim, typename Index, class Tree>
+    template<typename Index> 
     struct Status {
-        Status(size_t N) : dY(N * ndim), uY(N * ndim), gains(N * ndim, 1.0), pos_f(N * ndim), neg_f(N * ndim), tree(N) {
+        Status(size_t N, int maxdepth) : dY(N * ndim), uY(N * ndim), gains(N * ndim, 1.0), pos_f(N * ndim), neg_f(N * ndim), tree(N, maxdepth) {
             neighbors.reserve(N);
             probabilities.reserve(N);
             return;
         }
 
-    private:
         std::vector<std::vector<Index> > neighbors;
         std::vector<std::vector<double> > probabilities;
         std::vector<double> dY, uY, gains, pos_f, neg_f;
@@ -84,54 +84,57 @@ public:
         std::vector<double> omp_buffer;
 #endif
 
-        Tree tree;
+        SPTree<ndim> tree;
         int iteration = 0;
     };
 
 public:
-    template<class Tree = SPTree<ndim, 7>, typename Index = int, typename Dist = double>
-    Status<ndim, Index, Tree> run(const std::vector<Index*>& nn_index, const std::vector<Dist*>& nn_dist, int K, double* Y) {
+    template<typename Index = int, typename Dist = double>
+    auto initialize(const std::vector<Index*>& nn_index, const std::vector<Dist*>& nn_dist, int K, int maxdepth = 7) {
         if (nn_index.size() != nn_dist.size()) {
             throw std::runtime_error("indices and distances should be of the same length");
         }
 
-        Status<ndim, Index, Tree> status(nn_index.size());
-        compute_gaussian_perplexity(nn_dist, K, status.probabilities);
-        symmetrize_matrix(nn_index, K, status.neighbors, status.probabilities);
-        train_iterations(status.neighbors, status.probabilities, 
-                Y,
-                status.dY, status.dU, status.gains, status.iteration 
-#ifdef _OPENMP
-                , status.omp_buffer
-#endif
-                );
+        Status<typename std::remove_const<Index>::type> status(nn_index.size(), maxdepth);
+        compute_gaussian_perplexity(nn_dist, K, status);
+        symmetrize_matrix(nn_index, K, status);
         return status;
     }
 
 private:
-    template<int ndims, typename Index, typename Dist>
-    void compute_gaussian_perplexity(const std::vector<Dist*>& nn_dist, int K, std::vector<std::vector<double> >& val_P) {
+    template<typename Index, typename Dist>
+    void compute_gaussian_perplexity(const std::vector<Dist*>& nn_dist, int K, Status<Index>& status) {
         if (perplexity > K) {
             throw std::runtime_error("Perplexity should be lower than K!\n");
         }
 
         const size_t N = nn_dist.size();
-        constexpr double min_value = std::numeric_limits<double>::lowest(); // not min()! surprise!
+        constexpr double min_value = std::numeric_limits<double>::lowest(); // it's not min! surprise!
         constexpr double max_value = std::numeric_limits<double>::max();
         constexpr double tol = 1e-5;
         const double log_perplexity = std::log(perplexity);
 
+        std::vector<std::vector<double> >& val_P = status.probabilities;
+#ifdef _OPENMP
+        val_P.resize(N, std::vector<double>(K));
+#endif
+
         #pragma omp parallel for 
         for (size_t n = 0; n < N; ++n){
-            bool found = false;
             double beta = 1.0;
-            double min_beta = min_value, max_beta = max_value;
+            double min_beta = 0, max_beta = max_value;
             double sum_P = 0;
-            const double* distances = nn_dist + n * K;
-            std::vector<double> output(K);
+            const double* distances = nn_dist[n];
+
+#ifdef _OPENMP
+            auto& output = val_P[n];
+#else
+            val_P.push_back(std::vector<double>(K));
+            auto& output = val_P.back();
+#endif
 
             // Iterate until we found a good perplexity
-            for (int iter = 0; iter < 200 && !found; ++iter) {
+            for (int iter = 0; iter < 200; ++iter) {
                 for (int m = 0; m < K; ++m) {
                     output[m] = std::exp(-beta * distances[m] * distances[m]); // apply gaussian kernel
                 }
@@ -147,22 +150,18 @@ private:
                 // Evaluate whether the entropy is within the tolerance level
                 double Hdiff = H - log_perplexity;
                 if (Hdiff < tol && -Hdiff < tol) {
-                    found = true;
+                    break;
                 } else {
                     if (Hdiff > 0) {
                         min_beta = beta;
-                        if (max_beta == max_value || max_beta == min_value) {
+                        if (max_beta == max_value) {
                             beta *= 2.0;
                         } else {
                             beta = (beta + max_beta) / 2.0;
                         }
                     } else {
                         max_beta = beta;
-                        if (min_beta == max_value || min_beta == min_value) {
-                            beta /= 2.0;
-                        } else {
-                            beta = (beta + min_beta) / 2.0;
-                        }
+                        beta = (beta + min_beta) / 2.0;
                     }
                 }
             }
@@ -171,15 +170,16 @@ private:
             for (auto& o : output) {
                 o /= sum_P;
             }
-
-            val_P.push_back(std::move(output));
         }
-        return val_P; 
+
+        return;
     }
 
 private:
-    template <typename Index>
-    void symmetrize_matrix(const std::vector<Index*>& nn_index, int K, std::vector<std::vector<Index> >& col_P, std::vector<double>& probabilities) {
+    template<typename Index>
+    void symmetrize_matrix(const std::vector<Index*>& nn_index, int K, Status<typename std::remove_const<Index>::type>& status) {
+        auto& col_P = status.neighbors;
+        auto& probabilities = status.probabilities;
         const size_t N = nn_index.size();
 
         // Initializing the output neighbor list.
@@ -196,9 +196,15 @@ private:
 
                 // Check whether the current point is present in its neighbor's set.
                 bool present = false;
-                int k2 = 0;
-                for (; k2 < K; ++k) {
+                for (int k2 = 0; k2 < K; ++k2) {
                     if (neighbors_neighbors[k2] == n) {
+                        if (n < curneighbor) {
+                            // Adding the probabilities - but if n >= curneighbor, then this would have
+                            // already been done at n = curneighbor, so we skip this to avoid adding it twice.
+                            double sum = probabilities[n][k1] + probabilities[curneighbor][k2];
+                            probabilities[n][k1] = sum;
+                            probabilities[curneighbor][k2] = sum;
+                        }
                         present = true;
                         break;
                     }
@@ -208,12 +214,6 @@ private:
                     // If not present, no addition of probabilities is involved.
                     col_P[curneighbor].push_back(n);
                     probabilities[curneighbor].push_back(probabilities[n][k1]);
-                } else if (n < curneighbor) {
-                    // Adding the probabilities - but if n >= curneighbor, then this would have
-                    // already been done at n = curneighbor, so we skip this to avoid adding it twice.
-                    double sum = probabilities[n][k1] + probabilities[curneighbor][k2];
-                    probabilities[n][k1] = sum;
-                    probabilities[curneighbor][k2] = sum;
                 }
             }
         }
@@ -234,28 +234,16 @@ private:
             }
         }
 
-        return col_P;
+        return;
     }
 
-private:
-    static double sign(double x) { 
-        return (x == .0 ? .0 : (x < .0 ? -1.0 : 1.0));
-    }
-
-    template<int ndim, typename Index>
-    void train_iterations(const std::vector<std::vector<Index> >& col_P, const std::vector<std::vector<double> >& val_P, 
-        double* Y, int& iter,
-        std::vector<double>& dY, std::vector<double>& uY, std::vector<double>& gains, 
-        std::vector<double>& pos_f, std::vector<double>& neg_f
-#ifdef _OPENMP
-        , std::vector<double>& omp_buffer        
-#endif        
-        )
-    {
-        const size_t N = col_P.size();
+public:
+    template<typename Index = int, typename Dist = double>
+    auto run(const std::vector<Index*>& nn_index, const std::vector<Dist*>& nn_dist, int K, double* Y) {
+        auto status = initialize(nn_index, nn_dist, K);
+        int& iter = status.iteration;
         double multiplier = exaggeration_factor; // Lie about the P-values
         double momentum = start_momentum;
-        Tree tree(ndim, N);
 
         for(; iter < max_iter; ++iter) {
             // Stop lying about the P-values after a while, and switch momentum
@@ -266,33 +254,28 @@ private:
                 momentum = final_momentum;
             }
 
-            iterate(col_P, val_P, Y, dY, uY, gains, pos_f, neg_f, multiplier, momentum
-#ifdef _OPENMP
-                , omp_buffer        
-#endif        
-            );
+            iterate(status, Y, multiplier, momentum);
         }
+
+        return status;
     }
 
-    template<int ndim, typename Index>
-    void iterate(const std::vector<std::vector<Index> >& col_P, const std::vector<std::vector<double> >& val_P, 
-        double* Y,
-        std::vector<double>& dY, std::vector<double>& uY, std::vector<double>& gains, 
-        std::vector<double>& pos_f, std::vector<double>& neg_f, 
-        double multiplier, double momentum
-#ifdef _OPENMP
-        , std::vector<double>& omp_buffer
-#endif        
-        )
-    {
-        compute_gradient<ndim>(col_P, val_P, Y, dY, uY, gains, pos_f, neg_f, multiplier
-#ifdef _OPENMP
-            , omp_buffer
-#endif
-        );
+private:
+    static double sign(double x) { 
+        return (x == .0 ? .0 : (x < .0 ? -1.0 : 1.0));
+    }
+
+    template<typename Index>
+    void iterate(Status<Index>& status,  double* Y, double multiplier, double momentum) {
+        compute_gradient(status, Y, multiplier);
+
+        auto& gains = status.gains;
+        auto& dY = status.dY;
+        auto& uY = status.uY;
+        auto& col_P = status.neighbors;
 
         // Update gains
-        for (size_t i = 0; i < gains.size(); i++) {
+        for (size_t i = 0; i < gains.size(); ++i) {
             double& g = gains[i];
             g = std::max(0.01, (sign(dY[i]) != sign(uY[i])) ? (g + 0.2) : (g * 0.8));
         }
@@ -305,7 +288,8 @@ private:
 
         // Make solution zero-mean
         for (int d = 0; d < ndim; ++d) {
-            auto start = Y + d * N;
+            auto start = Y + d;
+            size_t N = col_P.size();
 
             // Compute means from column-major coordinates.
             double sum = 0;
@@ -314,7 +298,7 @@ private:
             }
             sum /= N;
 
-            start = Y + d * N;
+            start = Y + d;
             for (size_t i = 0; i < N; ++i, start += ndim) {
                 *start /= sum;
             }
@@ -324,57 +308,57 @@ private:
     }
 
 private:
-    template<typename Index, class Tree>
-    static void compute_gradient(const std::vector<std::vector<Index> >& col_P, const std::vector<std::vector<double> >& val_P, 
-        double* Y, std::vector<double>& dC, Tree& tree, std::vector<double>& pos_f, std::vector<double>& neg_f, 
-        double multiplier
-#ifdef _OPENMP
-        , std::vector<double>& omp_buffer
-#endif        
-    {
+    template<typename Index>
+    void compute_gradient(Status<Index>& status, double* Y, double multiplier) {
+        auto& tree = status.tree;
         tree.set(Y);
 
-        compute_edge_forces(col_P, val_P, Y, pos_f, multiplier);
+        compute_edge_forces(status, Y, multiplier);
 
-        size_t N = col_P.size();
+        size_t N = status.neighbors.size();
+        auto& neg_f = status.neg_f;
+
 #ifdef _OPENMP
-        std::vector<double> output(N);
+        // Don't use reduction methods to ensure that we sum in a consistent order.
         #pragma omp parallel for
         for (size_t n = 0; n < N; ++n) {
-            output[n] = tree->compute_non_edge_forces(n, theta, neg_f + n * ndim);
+            status.omp_buffer[n] = status.tree.compute_non_edge_forces(n, theta, neg_f.data() + n * ndim);
         }
-        double sum_Q = std::accumulate(output.begin(), output.end(), 0.0);
+        double sum_Q = std::accumulate(status.omp_buffer.begin(), status.omp_buffer.end(), 0.0);
 #else
         double sum_Q = 0;
         for (size_t n = 0; n < N; ++n) {
-            sum_Q += tree->compute_non_edge_forces(n, theta, neg_f + n * ndim);
+            sum_Q += status.tree.compute_non_edge_forces(n, theta, neg_f.data() + n * ndim);
         }
 #endif
 
         // Compute final t-SNE gradient
-        for (size_t n = 0; n < N; ++n) {
-            dC[i] = pos_f[i] - (neg_f[i] / sum_Q);
+        auto& pos_f = status.pos_f;
+        auto& dY = status.dY;
+        for (size_t i = 0; i < N * ndim; ++i) {
+            dY[i] = pos_f[i] - (neg_f[i] / sum_Q);
         }
     }
 
     template<typename Index>
-    static void compute_edge_forces(const std::vector<std::vector<Index> >& col_P, const std::vector<std::vector<double> >& val_P, 
-        const double* Y, std::vector<double>& pos_f, double multiplier) const 
-    {
+    void compute_edge_forces(Status<Index>& status, const double* Y, double multiplier) {
+        const auto& col_P = status.neighbors;
+        const auto& val_P = status.probabilities;
+        auto& pos_f = status.pos_f;
         std::fill(pos_f.begin(), pos_f.end(), 0);                
 
         #pragma omp parallel for 
         for (size_t n = 0; n < col_P.size(); ++n) {
             const auto& cur_prob = val_P[n];
             const auto& cur_col = col_P[n];
-            const double* self = point + n * ndim;
+            const double* self = Y + n * ndim;
             double* pos_out = pos_f.data() + n * ndim;
 
             for (size_t i = 0; i < cur_col.size(); ++i) {
                 double sqdist = 0; 
-                const double* neighbor = point + cur_col[i] * ndim;
+                const double* neighbor = Y + cur_col[i] * ndim;
                 for (int d = 0; d < ndim; ++d) {
-                    sqdist += (self[d] - neighbor[d]) * (self[d] - neighbor[d]):
+                    sqdist += (self[d] - neighbor[d]) * (self[d] - neighbor[d]);
                 }
 
                 const double mult = multiplier * cur_prob[i] / (1 + sqdist);
@@ -387,7 +371,6 @@ private:
         return;
     }
 };
-
 
 }
 

@@ -109,11 +109,10 @@ TEST_P(TsneTester, Runner) {
     assemble(N, D, K);
 
     qdtsne::Tsne thing;
-    std::vector<double> Y(N * 2);
-    qdtsne::fill_initial_values(Y.data(), N);
+    auto Y = qdtsne::initialize_random<>(N);
     auto old = Y;
-    auto status = thing.run(nn_index, nn_dist, K, Y.data());
 
+    auto status = thing.run(nn_index, nn_dist, K, Y.data());
     EXPECT_NE(old, Y); // there was some effect...
     EXPECT_EQ(status.iteration, 1000); // actually ran through the specified iterations
 
@@ -134,8 +133,7 @@ TEST_P(TsneTester, StopStart) {
     size_t K = std::get<2>(PARAM);
     assemble(N, D, K);
 
-    std::vector<double> Y(N * 2);
-    qdtsne::fill_initial_values(Y.data(), N);
+    auto Y = qdtsne::initialize_random<>(N);
     auto copy = Y;
 
     qdtsne::Tsne thing;
@@ -145,11 +143,30 @@ TEST_P(TsneTester, StopStart) {
     thing.set_max_iter(500).run(status, copy.data());
     thing.set_max_iter(1000).run(status, copy.data());
 
-//    for (size_t i =0 ; i < N; ++i) {
-//        std::cout << Y[i*2] << "\t" << Y[i*2+1] << std::endl;
-//    }
-
     EXPECT_EQ(copy, Y);
+}
+
+TEST_P(TsneTester, EasyStart) {
+    auto PARAM = GetParam();
+    size_t N = std::get<0>(PARAM);
+    size_t D = std::get<1>(PARAM);
+    size_t K = std::get<2>(PARAM);
+    assemble(N, D, K);
+
+    auto original = qdtsne::initialize_random<>(N);
+    qdtsne::Tsne thing;
+    thing.set_max_iter(10); // don't need that many iterations for this...
+
+    auto Y = original;
+    auto ref = thing.run(nn_index, nn_dist, K, Y.data());
+
+    auto copy = original;
+    auto easy = thing.set_perplexity(K/3).run(X.data(), D, N, copy.data());
+    EXPECT_EQ(copy, Y);
+
+    EXPECT_EQ(ref.neighbors[0], easy.neighbors[0]);
+    EXPECT_EQ(ref.probabilities[0], easy.probabilities[0]);
+    EXPECT_EQ(ref.probabilities[10], easy.probabilities[10]);
 }
 
 INSTANTIATE_TEST_CASE_P(

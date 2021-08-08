@@ -8,15 +8,6 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-# Mostly just need knncolle for testing; users can get their own damn kNN's.
-FetchContent_Declare(
-  knncolle 
-  GIT_REPOSITORY https://github.com/LTLA/knncolle
-  GIT_TAG master
-)
-
-FetchContent_MakeAvailable(knncolle)
-
 enable_testing()
 
 add_executable(

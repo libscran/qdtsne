@@ -11,6 +11,10 @@ add_library(qdtsne INTERFACE)
 
 target_include_directories(qdtsne INTERFACE include/)
 
+add_subdirectory(extern)
+
+target_link_libraries(knncolle INTERFACE qdtsne)
+
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     include(CTest)
     if(BUILD_TESTING)

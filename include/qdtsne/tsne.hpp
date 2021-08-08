@@ -34,6 +34,8 @@
 #define QDTSNE_TSNE_HPP
 
 #include "sptree.hpp"
+#include "knncolle/knncolle.hpp"
+
 #include <vector>
 #include <cmath>
 #include <algorithm>
@@ -90,6 +92,11 @@ public:
         return *this;
     }
 
+    Tsne& set_perplexity(int p = Defaults::perplexity) {
+        perplexity = p;
+        return *this;
+    }
+
 public:
     template<typename Index> 
     struct Status {
@@ -127,14 +134,10 @@ public:
 private:
     template<typename Index, typename Dist>
     void compute_gaussian_perplexity(const std::vector<Dist*>& nn_dist, int K, Status<Index>& status) {
-        if (perplexity > K) {
-            throw std::runtime_error("Perplexity should be lower than K!\n");
-        }
-
         const size_t N = nn_dist.size();
         constexpr double max_value = std::numeric_limits<double>::max();
         constexpr double tol = 1e-5;
-        const double log_perplexity = std::log(perplexity);
+        const double log_perplexity = std::log(static_cast<double>(K)/3.0); // implicitly taken from choice of 'k'.
 
         std::vector<std::vector<double> >& val_P = status.probabilities;
 #ifdef _OPENMP
@@ -267,7 +270,7 @@ public:
         return status;
     }
 
-    template<typename Index = int, typename Dist = double>
+    template<typename Index = int>
     void run(Status<Index>& status, double* Y) {
         int& iter = status.iteration;
         double multiplier = (iter < stop_lying_iter ? exaggeration_factor : 1);
@@ -396,6 +399,40 @@ private:
         }
 
         return;
+    }
+
+public:
+    template<class Algorithm = knncolle::VpTreeEuclidean<>, typename Input = double>
+    auto initialize(const Input* input, size_t D, size_t N) {
+        Algorithm searcher(D, N, input); 
+        const int K = std::ceil(perplexity * 3);
+        if (K >= N) {
+            throw std::runtime_error("number of observations should be greater than 3 * perplexity");
+        }
+
+        std::vector<int> indices(N * K);
+        std::vector<double> distances(N * K);
+        std::vector<const int*> nn_index(N);
+        std::vector<const double*> nn_dist(N);
+
+        for (size_t i = 0; i < N; ++i) {
+            auto out = searcher.find_nearest_neighbors(i, K);
+            for (size_t k = 0; k < out.size(); ++k) {
+                indices[k + i *K] = out[k].first;
+                distances[k + i *K] = out[k].second;
+            }
+            nn_index[i] = indices.data() + i * K;
+            nn_dist[i] = distances.data() + i * K;
+        }
+
+        return initialize(nn_index, nn_dist, K);
+    }
+
+    template<class Algorithm = knncolle::VpTreeEuclidean<>, typename Input = double>
+    auto run(const Input* input, size_t D, size_t N, double* Y) {
+        auto status = initialize<Algorithm>(input, D, N);
+        run(status, Y);
+        return status;
     }
 };
 

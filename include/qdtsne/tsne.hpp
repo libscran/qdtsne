@@ -54,6 +54,7 @@ public:
         static constexpr double final_momentum = 0.8;
         static constexpr double eta = 200;
         static constexpr double exaggeration_factor = 12;
+        static constexpr int max_depth = 7;
     };
 
 private:
@@ -66,6 +67,28 @@ private:
     double final_momentum = Defaults::final_momentum;
     double eta = Defaults::eta;
     double exaggeration_factor = Defaults::exaggeration_factor;
+    int max_depth = Defaults::max_depth;
+
+public:
+    Tsne& set_max_iter(int m = Defaults::max_iter) {
+        max_iter = m;
+        return *this;
+    }
+
+    Tsne& set_max_depth(int m = Defaults::max_depth) {
+        max_depth = m;
+        return *this;
+    }
+
+    Tsne& set_mom_switch_iter(int m = Defaults::mom_switch_iter) {
+        mom_switch_iter = m;
+        return *this;
+    }
+
+    Tsne& set_stop_lying_iter(int s = Defaults::stop_lying_iter) {
+        stop_lying_iter = s;
+        return *this;
+    }
 
 public:
     template<typename Index> 
@@ -90,12 +113,12 @@ public:
 
 public:
     template<typename Index = int, typename Dist = double>
-    auto initialize(const std::vector<Index*>& nn_index, const std::vector<Dist*>& nn_dist, int K, int maxdepth = 7) {
+    auto initialize(const std::vector<Index*>& nn_index, const std::vector<Dist*>& nn_dist, int K) {
         if (nn_index.size() != nn_dist.size()) {
             throw std::runtime_error("indices and distances should be of the same length");
         }
 
-        Status<typename std::remove_const<Index>::type> status(nn_index.size(), maxdepth);
+        Status<typename std::remove_const<Index>::type> status(nn_index.size(), max_depth);
         compute_gaussian_perplexity(nn_dist, K, status);
         symmetrize_matrix(nn_index, K, status);
         return status;
@@ -241,9 +264,15 @@ public:
     template<typename Index = int, typename Dist = double>
     auto run(const std::vector<Index*>& nn_index, const std::vector<Dist*>& nn_dist, int K, double* Y) {
         auto status = initialize(nn_index, nn_dist, K);
+        run(status, Y);
+        return status;
+    }
+
+    template<typename Index = int, typename Dist = double>
+    void run(Status<Index>& status, double* Y) {
         int& iter = status.iteration;
-        double multiplier = exaggeration_factor; // Lie about the P-values
-        double momentum = start_momentum;
+        double multiplier = (iter < stop_lying_iter ? exaggeration_factor : 1);
+        double momentum = (iter < mom_switch_iter ? start_momentum : final_momentum);
 
         for(; iter < max_iter; ++iter) {
             // Stop lying about the P-values after a while, and switch momentum
@@ -257,7 +286,7 @@ public:
             iterate(status, Y, multiplier, momentum);
         }
 
-        return status;
+        return;
     }
 
 private:

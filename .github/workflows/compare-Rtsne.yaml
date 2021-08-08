@@ -1,0 +1,23 @@
+on: [push, pull_request]
+
+name: Rtsne comparison
+
+jobs:
+  build:
+    name: Compare to Rtsne reference
+    runs-on: ubuntu-latest
+    container: bioconductor/bioconductor_docker:devel
+    steps:
+    - uses: actions/checkout@v1
+
+    - name: Install packages
+      shell: Rscript {0}
+      run: |
+        BiocManager::install(c("Rtsne", "FNN", "Rcpp", "testthat"))
+
+    - name: Run the comparisons
+      shell: Rscript {0}
+      run: |
+        setwd("tests/R")
+        output <- testthat::test_file("run.R")
+        q(status=any(as.data.frame(output)$failed), save="no")

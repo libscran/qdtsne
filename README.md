@@ -1,7 +1,9 @@
 # C++ library for t-SNE
 
 ![Unit tests](https://github.com/LTLA/qdtsne/actions/workflows/run-tests.yaml/badge.svg)
+![Documentation](https://github.com/LTLA/qdtsne/actions/workflows/doxygenate.yaml/badge.svg)
 ![Rtsne comparison](https://github.com/LTLA/qdtsne/actions/workflows/compare-Rtsne.yaml/badge.svg)
+[![Codecov](https://codecov.io/gh/LTLA/qdtsne/branch/master/graph/badge.svg?token=CX6G39BM7B)](https://codecov.io/gh/LTLA/qdtsne)
 
 ## Overview
 
@@ -24,7 +26,7 @@ Using this library is as simple as including the header file in your source code
 
 /** ... boilerplate here... **/
 
-auto Y = qdtsne::fill_initial_values(N); // initial coordinates
+auto Y = qdtsne::initialize_random(N); // initial coordinates
 
 /* Assuming `data` contains high-dimensional data in column-major format,
  * i.e., each column is a observation and each row is a dimension.
@@ -50,6 +52,8 @@ auto ref = thing.initialize(data.data(), D, N);
 thing.run(ref, Y.data());
 thing.set_max_iter(1100).run(ref, Y.data()); // run for more iterations
 ```
+
+See the [reference documentation](https://ltla.github.io/qdtsne/) for more details.
 
 ## Building projects
 

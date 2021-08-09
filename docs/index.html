@@ -67,7 +67,7 @@ $(function() {
 <div class="title">C++ library for t-SNE </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="md__github_workspace_README"></a> <img src="https://github.com/LTLA/qdtsne/actions/workflows/run-tests.yaml/badge.svg" alt="Unit tests" style="pointer-events: none;" class="inline"/> <img src="https://github.com/LTLA/qdtsne/actions/workflows/compare-Rtsne.yaml/badge.svg" alt="Rtsne comparison" style="pointer-events: none;" class="inline"/></p>
+<div class="textblock"><p><a class="anchor" id="md__github_workspace_README"></a> <img src="https://github.com/LTLA/qdtsne/actions/workflows/run-tests.yaml/badge.svg" alt="Unit tests" style="pointer-events: none;" class="inline"/> <img src="https://github.com/LTLA/qdtsne/actions/workflows/doxygenate.yaml/badge.svg" alt="Documentation" style="pointer-events: none;" class="inline"/> <img src="https://github.com/LTLA/qdtsne/actions/workflows/compare-Rtsne.yaml/badge.svg" alt="Rtsne comparison" style="pointer-events: none;" class="inline"/> <a href="https://codecov.io/gh/LTLA/qdtsne"><img src="https://codecov.io/gh/LTLA/qdtsne/branch/master/graph/badge.svg?token=CX6G39BM7B" alt="Codecov" style="pointer-events: none;" class="inline"/></a></p>
 <h1>Overview</h1>
 <p>This repository contains a header-only C++ library implementing the Barnes-Hut t-distributed stochastic neighbor embedding (t-SNE) algorithm (van der Maaten and Hinton, 2008; van der Maaten, 2014). t-SNE is a non-linear dimensionality reduction technique that enables visualization of complex datasets by placing each observation on a low-dimensional (usually 2D) map based on its neighbors. The general idea is that neighboring observations are placed next to each other, thus preserving the local structure of the dataset from its original high-dimensional form. The non-linear nature of the algorithm gives it the flexibility to accommodate complicated structure that is not possible in linear techniques like PCA.</p>
 <p>The code here is derived from the C++ code in the <a href="https://github.com/jkrijthe/Rtsne/"><b>Rtsne</b> R package</a>, updated for more modern C++. The only modification is that we have introduced an extra <code>max_depth</code> parameter that bounds the depth of the quad trees used for the Barnes-Hut force calculations. All nodes at the maximum depth are designated as leaf nodes; if multiple observations are present, they are aggregated into the center of mass for that node. This provides an upper bound on the runtime of the force calculation for each observation, improving performance for large datasets at the cost of some approximation.</p>
@@ -75,7 +75,7 @@ $(function() {
 <p>Using this library is as simple as including the header file in your source code:</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="qdtsne_8hpp.html">qdtsne/qdtsne.hpp</a>&quot;</span></div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">auto</span> Y = qdtsne::fill_initial_values(N); <span class="comment">// initial coordinates</span></div>
+<div class="line"><span class="keyword">auto</span> Y = qdtsne::initialize_random(N); <span class="comment">// initial coordinates</span></div>
 <div class="line"> </div>
 <div class="line"><span class="comment">/* Assuming `data` contains high-dimensional data in column-major format,</span></div>
 <div class="line"><span class="comment"> * i.e., each column is a observation and each row is a dimension.</span></div>
@@ -99,7 +99,8 @@ $(function() {
 <div class="line">thing.<a class="code" href="classqdtsne_1_1Tsne.html#a72f193ba522fa610878fa3113b7326ec">set_max_iter</a>(1100).<a class="code" href="classqdtsne_1_1Tsne.html#a3683e5b8dd12cc9fdd744388be6f1444">run</a>(ref, Y.data()); <span class="comment">// run for more iterations</span></div>
 <div class="ttc" id="aclassqdtsne_1_1Tsne_html_a72f193ba522fa610878fa3113b7326ec"><div class="ttname"><a href="classqdtsne_1_1Tsne.html#a72f193ba522fa610878fa3113b7326ec">qdtsne::Tsne::set_max_iter</a></div><div class="ttdeci">Tsne &amp; set_max_iter(int m=Defaults::max_iter)</div><div class="ttdef"><b>Definition:</b> tsne.hpp:154</div></div>
 <div class="ttc" id="aclassqdtsne_1_1Tsne_html_aefec582eef4168c34acb8e3eae47f7b0"><div class="ttname"><a href="classqdtsne_1_1Tsne.html#aefec582eef4168c34acb8e3eae47f7b0">qdtsne::Tsne::initialize</a></div><div class="ttdeci">auto initialize(const std::vector&lt; Index * &gt; &amp;nn_index, const std::vector&lt; Dist * &gt; &amp;nn_dist, int K)</div><div class="ttdef"><b>Definition:</b> tsne.hpp:323</div></div>
-</div><!-- fragment --><h1>Building projects</h1>
+</div><!-- fragment --><p>See the <a href="https://ltla.github.io/qdtsne/">reference documentation</a> for more details.</p>
+<h1>Building projects</h1>
 <p>If you're already using CMake, you can add something like this to your <code>CMakeLists.txt</code>:</p>
 <div class="fragment"><div class="line">include(FetchContent)</div>
 <div class="line"> </div>

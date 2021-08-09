@@ -100,8 +100,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a40164e72e679c9db9d9a61934232def0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a73beb0431cd9306fe2d379e4e3bcebfd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classqdtsne_1_1Tsne.html">Tsne</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqdtsne_1_1Tsne.html#a73beb0431cd9306fe2d379e4e3bcebfd">set_start_momentum</a> (double s=<a class="el" href="structqdtsne_1_1Tsne_1_1Defaults.html#ac2441b93126db8fb2fc89c50a8d385f5">Defaults::start_momentum</a>)</td></tr>
 <tr class="separator:a73beb0431cd9306fe2d379e4e3bcebfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a311b0f15fd59fc89d9e9937c315abe05"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classqdtsne_1_1Tsne.html">Tsne</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqdtsne_1_1Tsne.html#a311b0f15fd59fc89d9e9937c315abe05">set_start_momentum</a> (double f=<a class="el" href="structqdtsne_1_1Tsne_1_1Defaults.html#a32c6f3b19ee821334246fa3c62823f1d">Defaults::final_momentum</a>)</td></tr>
-<tr class="separator:a311b0f15fd59fc89d9e9937c315abe05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cf792615ab330bc325d7bd1147577fa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classqdtsne_1_1Tsne.html">Tsne</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqdtsne_1_1Tsne.html#a9cf792615ab330bc325d7bd1147577fa">set_final_momentum</a> (double f=<a class="el" href="structqdtsne_1_1Tsne_1_1Defaults.html#a32c6f3b19ee821334246fa3c62823f1d">Defaults::final_momentum</a>)</td></tr>
+<tr class="separator:a9cf792615ab330bc325d7bd1147577fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae41f07ca947dff3124df43ed2ecd4c09"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classqdtsne_1_1Tsne.html">Tsne</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqdtsne_1_1Tsne.html#ae41f07ca947dff3124df43ed2ecd4c09">set_stop_lying_iter</a> (int s=<a class="el" href="structqdtsne_1_1Tsne_1_1Defaults.html#a56f12c572d0951ac188a6f5b27f8c2c2">Defaults::stop_lying_iter</a>)</td></tr>
 <tr class="separator:ae41f07ca947dff3124df43ed2ecd4c09"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad030365f29c1d531cef21698abf9b0a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classqdtsne_1_1Tsne.html">Tsne</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqdtsne_1_1Tsne.html#aad030365f29c1d531cef21698abf9b0a">set_eta</a> (double e=<a class="el" href="structqdtsne_1_1Tsne_1_1Defaults.html#a7d9181ee7cafc252ef4885a6a3c70a48">Defaults::eta</a>)</td></tr>
@@ -533,6 +533,41 @@ template&lt;int ndim = 2&gt; </div>
 
 </div>
 </div>
+<a id="a9cf792615ab330bc325d7bd1147577fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cf792615ab330bc325d7bd1147577fa">&#9670;&nbsp;</a></span>set_final_momentum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int ndim = 2&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classqdtsne_1_1Tsne.html">Tsne</a>&amp; <a class="el" href="classqdtsne_1_1Tsne.html">qdtsne::Tsne</a>&lt; ndim &gt;::set_final_momentum </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>f</em> = <code><a class="el" href="structqdtsne_1_1Tsne_1_1Defaults.html#a32c6f3b19ee821334246fa3c62823f1d">Defaults::final_momentum</a></code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>Final momentum, to be used in the later iterations after the momentum switch.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A reference to this <code><a class="el" href="classqdtsne_1_1Tsne.html" title="Implements the t-SNE algorithm.">Tsne</a></code> object. </dd></dl>
+
+</div>
+</div>
 <a id="a0a91cbce20585aeef1b54d61f11894de"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0a91cbce20585aeef1b54d61f11894de">&#9670;&nbsp;</a></span>set_max_depth()</h2>
 
@@ -674,43 +709,8 @@ template&lt;int ndim = 2&gt; </div>
 
 </div>
 </div>
-<a id="a311b0f15fd59fc89d9e9937c315abe05"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a311b0f15fd59fc89d9e9937c315abe05">&#9670;&nbsp;</a></span>set_start_momentum() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;int ndim = 2&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classqdtsne_1_1Tsne.html">Tsne</a>&amp; <a class="el" href="classqdtsne_1_1Tsne.html">qdtsne::Tsne</a>&lt; ndim &gt;::set_start_momentum </td>
-          <td>(</td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>f</em> = <code><a class="el" href="structqdtsne_1_1Tsne_1_1Defaults.html#a32c6f3b19ee821334246fa3c62823f1d">Defaults::final_momentum</a></code></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">f</td><td>Final momentum, to be used in the later iterations after the momentum switch.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>A reference to this <code><a class="el" href="classqdtsne_1_1Tsne.html" title="Implements the t-SNE algorithm.">Tsne</a></code> object. </dd></dl>
-
-</div>
-</div>
 <a id="a73beb0431cd9306fe2d379e4e3bcebfd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a73beb0431cd9306fe2d379e4e3bcebfd">&#9670;&nbsp;</a></span>set_start_momentum() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a73beb0431cd9306fe2d379e4e3bcebfd">&#9670;&nbsp;</a></span>set_start_momentum()</h2>
 
 <div class="memitem">
 <div class="memproto">

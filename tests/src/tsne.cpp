@@ -114,7 +114,7 @@ TEST_P(TsneTester, Runner) {
 
     auto status = thing.run(nn_index, nn_dist, K, Y.data());
     EXPECT_NE(old, Y); // there was some effect...
-    EXPECT_EQ(status.iteration, 1000); // actually ran through the specified iterations
+    EXPECT_EQ(status.iteration(), 1000); // actually ran through the specified iterations
 
     // Check that coordinates are zero-mean.
     for (int d = 0; d < 2; ++d) {

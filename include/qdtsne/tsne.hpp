@@ -44,21 +44,92 @@
 #include <algorithm>
 #include <type_traits>
 
+/**
+ * @file tsne.hpp
+ *
+ * @brief Implements the t-SNE algorithm.
+ */
+
 namespace qdtsne {
 
+/**
+ * @brief Implements the t-SNE algorithm.
+ *
+ * The t-distributed stochastic neighbor embedding (t-SNE) algorithm is a non-linear dimensionality reduction technique for visualizing high-dimensional datasets.
+ * It places each observation in a low-dimensional map (usually 2D) in a manner that preserves the identity of its neighbors in the original space, thus preserving the local structure of the dataset.
+ * This is achieved by converting the distances between neighbors in high-dimensional space to probabilities via a Gaussian kernel;
+ * creating a low-dimensional representation where the distances between neighbors can be converted to similar probabilities (in this case, with a t-distribution);
+ * and then iterating such that the Kullback-Leiber divergence between the two probability distributions is minimized.
+ * In practice, this involves balancing the attractive forces between neighbors and repulsive forces between all points.
+ *
+ * @tparam Number of dimensions of the final embedding.
+ * Values typically range from 2-3. 
+ *
+ * @see
+ * van der Maaten, L.J.P. and Hinton, G.E. (2008). 
+ * Visualizing high-dimensional data using t-SNE. 
+ * _Journal of Machine Learning Research_, 9, 2579-2605.
+ *
+ * @see 
+ * van der Maaten, L.J.P. (2014). 
+ * Accelerating t-SNE using tree-based algorithms. 
+ * _Journal of Machine Learning Research_, 15, 3221-3245.
+ */
 template <int ndim=2>
 class Tsne {
-public: 
+public:
+    /**
+     * @brief Default parameters for t-SNE iterations.
+     */
     struct Defaults {
+        /**
+         * See `set_perplexity()`.
+         */
         static constexpr double perplexity = 30;
+
+        /**
+         * See `set_theta()`.
+         */
         static constexpr double theta = 0.5;
+
+        /**
+         * See `set_max_iter()`.
+         */
         static constexpr int max_iter = 1000;
+
+        /**
+         * See `set_stop_lying_iter()`.
+         */
         static constexpr int stop_lying_iter = 250;
+
+        /**
+         * See `set_mom_switch_iter()`.
+         */
         static constexpr int mom_switch_iter = 250;
+
+        /**
+         * See `set_start_momentum()`.
+         */
         static constexpr double start_momentum = 0.5;
+
+        /**
+         * See `set_final_momentum()`.
+         */
         static constexpr double final_momentum = 0.8;
+
+        /**
+         * See `set_eta()`.
+         */
         static constexpr double eta = 200;
+
+        /**
+         * See `set_exaggeration_factor()`.
+         */
         static constexpr double exaggeration_factor = 12;
+
+        /**
+         * See `set_max_depth()`.
+         */
         static constexpr int max_depth = 7;
     };
 
@@ -75,34 +146,133 @@ private:
     int max_depth = Defaults::max_depth;
 
 public:
+    /**
+     * @param m Maximum number of iterations to perform.
+     *
+     * @return A reference to this `Tsne` object.
+     */
     Tsne& set_max_iter(int m = Defaults::max_iter) {
         max_iter = m;
         return *this;
     }
 
+    /**
+     * @param m Maximum depth of the Barnes-Hut tree.
+     * Larger values improve the quality of the approximation for the repulsive force calculation, at the cost of computational time.
+     *
+     * @return A reference to this `Tsne` object.
+     */
     Tsne& set_max_depth(int m = Defaults::max_depth) {
         max_depth = m;
         return *this;
     }
 
+    /**
+     * @param m Number of iterations to perform before switching from the starting momentum to the final momentum.
+     *
+     * @return A reference to this `Tsne` object.
+     *
+     * The idea here is that the update to each point includes a small step in the direction of its previous update, i.e., there is some "momentum" from the previous update.
+     * This aims to speed up the optimization and to avoid local minima by effectively smoothing the updates.
+     * The starting momentum is usually smaller than the final momentum,
+     * to give a chance for the points to improve their organization before encouraging iteration to a specific local minima.
+     */
     Tsne& set_mom_switch_iter(int m = Defaults::mom_switch_iter) {
         mom_switch_iter = m;
         return *this;
     }
 
+    /**
+     * @param s Starting momentum, to be used in the early iterations before the momentum switch.
+     *
+     * @return A reference to this `Tsne` object.
+     */
+    Tsne& set_start_momentum(double s = Defaults::start_momentum) {
+        start_momentum = s;
+        return *this;
+    }
+
+    /**
+     * @param f Final momentum, to be used in the later iterations after the momentum switch.
+     *
+     * @return A reference to this `Tsne` object.
+     */
+    Tsne& set_final_momentum(double f = Defaults::final_momentum) {
+        final_momentum = f;
+        return *this;
+    }
+
+    /**
+     * @param s Number of iterations to perform with exaggerated probabilities, as part of the early exaggeration phase.
+     *
+     * @return A reference to this `Tsne` object.
+     *
+     * In the early exaggeration phase, the probabilities are multiplied by `m`.
+     * This forces the algorithm to minimize the distances between neighbors, creating an embedding containing tight, well-separated clusters of neighboring cells.
+     * Because there is so much empty space, these clusters have an opportunity to move around to find better global positions before the phase ends and they are forced to settle down.
+     */
     Tsne& set_stop_lying_iter(int s = Defaults::stop_lying_iter) {
         stop_lying_iter = s;
         return *this;
     }
 
-    Tsne& set_perplexity(int p = Defaults::perplexity) {
+    /** 
+     * @param e The learning rate, used to scale the updates.
+     * Larger values yield larger updates that speed up convergence to a local minima at the cost of stability.
+     *
+     * @return A reference to this `Tsne` object.
+     */
+    Tsne& set_eta(double e = Defaults::eta) {
+        eta = e;
+        return *this;
+    }
+
+    /** 
+     * @param e Factor to scale the probabilities during the early exaggeration phase.
+     *
+     * @return A reference to this `Tsne` object.
+     */
+    Tsne& set_exaggeration_factor(double e = Defaults::eta) {
+        exaggeration_factor = e;
+        return *this;
+    }
+
+    /**
+     * @param p Perplexity, which determines the balance between local and global structure.
+     * Higher perplexities will focus on global structure, at the cost of increased runtime and decreased local resolution.
+     *
+     * @return A reference to this `Tsne` object.
+     */
+    Tsne& set_perplexity(double p = Defaults::perplexity) {
         perplexity = p;
         return *this;
     }
 
+    /** 
+     * @param t Level of the approximation to use in the Barnes-Hut tree calculation of repulsive forces.
+     * Lower values increase accuracy at the cost of computational time.
+     *
+     * @return A reference to this `Tsne` object.
+     */
+    Tsne& set_theta(double t = Defaults::theta) {
+        theta = t;
+        return *this;
+    }
+
 public:
+    /**
+     * @brief Current status of the t-SNE iterations.
+     *
+     * @tparam Index Integer type for the neighbor indices.
+     *
+     * This class holds the precomputed structures required to perform the t-SNE iterations.
+     * Users should refrain from interacting with the internals and should only be passing it to the `Tsne::run()` method.
+     */
     template<typename Index> 
     struct Status {
+        /**
+         * @cond
+         */
         Status(size_t N, int maxdepth) : dY(N * ndim), uY(N * ndim), gains(N * ndim, 1.0), pos_f(N * ndim), neg_f(N * ndim), tree(N, maxdepth) {
             neighbors.reserve(N);
             probabilities.reserve(N);
@@ -118,10 +288,37 @@ public:
 #endif
 
         SPTree<ndim> tree;
-        int iteration = 0;
+
+        int iter = 0;
+        /**
+         * @endcond
+         */
+
+        /**
+         * @return The number of iterations performed on this object so far.
+         */
+        int iteration() const {
+            return iter;
+        }
     };
 
 public:
+    /**
+     * @param nn_index Vector of pointers to arrays of length `K`.
+     * Each array corresponds to an observation and contains the indices to its `K` closest neighbors.
+     * @param nn_dist Vector of pointers to arrays of length `K`.
+     * Each array corresponds to an observation and contains the distances to its `K` closest neighbors.
+     * This should be of the same length as `nn_index`.
+     * @param K Number of nearest neighbors.
+     *
+     * @tparam Index Integer type for the neighbor indices.
+     * @tparam Dist Floating-point type for the neighbor distances.
+     *
+     * @return A `Status` object containing various pre-computed structures required for the iterations in `run()`.
+     *
+     * In this initialization mode, the perplexity from `set_perplexity()` is ignored.
+     * Instead, it is set to `K/3`.
+     */
     template<typename Index = int, typename Dist = double>
     auto initialize(const std::vector<Index*>& nn_index, const std::vector<Dist*>& nn_dist, int K) {
         if (nn_index.size() != nn_dist.size()) {
@@ -266,6 +463,25 @@ private:
     }
 
 public:
+    /**
+     * @param nn_index Vector of pointers to arrays of length `K`.
+     * Each array corresponds to an observation and contains the indices to its `K` closest neighbors.
+     * @param nn_dist Vector of pointers to arrays of length `K`.
+     * Each array corresponds to an observation and contains the distances to its `K` closest neighbors.
+     * This should be of the same length as `nn_index`.
+     * @param K Number of nearest neighbors.
+     * @param[in, out] Y Pointer to a 2D array with number of rows and columns equal to `ndim` and `nn_index.size()`, respectively.
+     * The array is treated as column-major where each column corresponds to an observation.
+     * On input, this should contain the initial locations of each observation; on output, it is updated to the final t-SNE locations.
+     *
+     * @tparam Index Integer type for the neighbor indices.
+     * @tparam Dist Floating-point type for the neighbor distances.
+     *
+     * @return A `Status` object containing the final state of the algorithm after all requested iterations are finished.
+     *
+     * In this initialization mode, the perplexity from `set_perplexity()` is ignored.
+     * Instead, it is set to `K/3`.
+     */
     template<typename Index = int, typename Dist = double>
     auto run(const std::vector<Index*>& nn_index, const std::vector<Dist*>& nn_dist, int K, double* Y) {
         auto status = initialize(nn_index, nn_dist, K);
@@ -273,9 +489,19 @@ public:
         return status;
     }
 
+    /**
+     * @param status The current status of the algorithm, generated either from `initialize()` or from a previous `run()` call.
+     * @param[in, out] Y Pointer to a 2D array with number of rows and columns equal to `ndim` and `nn_index.size()`, respectively.
+     * The array is treated as column-major where each column corresponds to an observation.
+     * On input, this should contain the initial locations of each observation; on output, it is updated to the final t-SNE locations.
+     *
+     * @tparam Index Integer type for the neighbor indices.
+     *
+     * @return A `Status` object containing the final state of the algorithm after applying iterations.
+     */
     template<typename Index = int>
     void run(Status<Index>& status, double* Y) {
-        int& iter = status.iteration;
+        int& iter = status.iter;
         double multiplier = (iter < stop_lying_iter ? exaggeration_factor : 1);
         double momentum = (iter < mom_switch_iter ? start_momentum : final_momentum);
 
@@ -406,8 +632,21 @@ private:
 
 public:
 #ifndef QDTSNE_CUSTOM_NEIGHBORS
+    /**
+     * @tparam Algorithm Class implementing a search algorithm, typically from the **knncolle* library.
+     * @tparam Input Floating point type for the input data.
+     * 
+     * @param[in] input Pointer to a 2D array containing the input high-dimensional data, with number of rows and columns equal to `D` and `N`, respectively.
+     * The array is treated as column-major where each row corresponds to a dimension and each column corresponds to an observation.
+     * @param D Number of dimensions.
+     * @param N Number of observations.
+     *
+     * @return A `Status` object containing various pre-computed structures required for the iterations in `run()`.
+     *
+     * This differs from the other `run()` methods in that it will internally compute the nearest neighbors for each observation.
+     */
     template<class Algorithm = knncolle::VpTreeEuclidean<>, typename Input = double>
-    auto initialize(const Input* input, size_t D, size_t N) {
+    auto initialize(const Input* input, size_t D, size_t N) { 
         Algorithm searcher(D, N, input); 
         const int K = std::ceil(perplexity * 3);
         if (K >= N) {
@@ -432,6 +671,20 @@ public:
         return initialize(nn_index, nn_dist, K);
     }
 
+    /**
+     * @tparam Algorithm Class implementing a search algorithm, typically from the **knncolle* library.
+     * @tparam Input Floating point type for the input data.
+     * 
+     * @param[in] input Pointer to a 2D array containing the input high-dimensional data, with number of rows and columns equal to `D` and `N`, respectively.
+     * The array is treated as column-major where each row corresponds to a dimension and each column corresponds to an observation.
+     * @param D Number of dimensions.
+     * @param N Number of observations.
+     * @param[in, out] Y Pointer to a 2D array with number of rows and columns equal to `ndim` and `nn_index.size()`, respectively.
+     * The array is treated as column-major where each column corresponds to an observation.
+     * On input, this should contain the initial locations of each observation; on output, it is updated to the final t-SNE locations.
+     *
+     * @return A `Status` object containing the final state of the algorithm after applying all iterations.
+     */
     template<class Algorithm = knncolle::VpTreeEuclidean<>, typename Input = double>
     auto run(const Input* input, size_t D, size_t N, double* Y) {
         auto status = initialize<Algorithm>(input, D, N);

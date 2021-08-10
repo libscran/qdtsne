@@ -121,12 +121,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1f3ac47d94f5df4f8cc9bfcd78cc2594"><td class="memTemplParams" colspan="2">template&lt;typename Index  = int&gt; </td></tr>
 <tr class="memitem:a1f3ac47d94f5df4f8cc9bfcd78cc2594"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classqdtsne_1_1Tsne.html#a1f3ac47d94f5df4f8cc9bfcd78cc2594">run</a> (<a class="el" href="structqdtsne_1_1Tsne_1_1Status.html">Status</a>&lt; Index &gt; &amp;status, double *Y)</td></tr>
 <tr class="separator:a1f3ac47d94f5df4f8cc9bfcd78cc2594"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4df0430d4bcfbe61632a4a84bc053305"><td class="memTemplParams" colspan="2">template&lt;class Algorithm  = knncolle::VpTreeEuclidean&lt;&gt;, typename Input  = double&gt; </td></tr>
-<tr class="memitem:a4df0430d4bcfbe61632a4a84bc053305"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classqdtsne_1_1Tsne.html#a4df0430d4bcfbe61632a4a84bc053305">initialize</a> (const Input *input, size_t D, size_t N)</td></tr>
-<tr class="separator:a4df0430d4bcfbe61632a4a84bc053305"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe1108e4f15bc9d99a72b97a6fafd3d3"><td class="memTemplParams" colspan="2">template&lt;class Algorithm  = knncolle::VpTreeEuclidean&lt;&gt;, typename Input  = double&gt; </td></tr>
-<tr class="memitem:abe1108e4f15bc9d99a72b97a6fafd3d3"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classqdtsne_1_1Tsne.html#abe1108e4f15bc9d99a72b97a6fafd3d3">run</a> (const Input *input, size_t D, size_t N, double *Y)</td></tr>
-<tr class="separator:abe1108e4f15bc9d99a72b97a6fafd3d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38e99fd21499b2bc6079a723b60dd982"><td class="memTemplParams" colspan="2">template&lt;typename Input  = double&gt; </td></tr>
+<tr class="memitem:a38e99fd21499b2bc6079a723b60dd982"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classqdtsne_1_1Tsne.html#a38e99fd21499b2bc6079a723b60dd982">initialize</a> (const Input *input, size_t D, size_t N)</td></tr>
+<tr class="separator:a38e99fd21499b2bc6079a723b60dd982"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae03a10379d3dab727c14416820fdb89f"><td class="memTemplParams" colspan="2">template&lt;typename Input  = double&gt; </td></tr>
+<tr class="memitem:ae03a10379d3dab727c14416820fdb89f"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classqdtsne_1_1Tsne.html#ae03a10379d3dab727c14416820fdb89f">run</a> (const Input *input, size_t D, size_t N, double *Y)</td></tr>
+<tr class="separator:ae03a10379d3dab727c14416820fdb89f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7900a41575c8388d5ac055283dff9a50"><td class="memTemplParams" colspan="2">template&lt;class Algorithm &gt; </td></tr>
+<tr class="memitem:a7900a41575c8388d5ac055283dff9a50"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classqdtsne_1_1Tsne.html#a7900a41575c8388d5ac055283dff9a50">initialize</a> (const Algorithm *searcher)</td></tr>
+<tr class="separator:a7900a41575c8388d5ac055283dff9a50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1eb0af514d56c85f54a3c5ea660d2a75"><td class="memTemplParams" colspan="2">template&lt;class Algorithm &gt; </td></tr>
+<tr class="memitem:a1eb0af514d56c85f54a3c5ea660d2a75"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classqdtsne_1_1Tsne.html#a1eb0af514d56c85f54a3c5ea660d2a75">run</a> (const Algorithm *searcher, double *Y)</td></tr>
+<tr class="separator:a1eb0af514d56c85f54a3c5ea660d2a75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;int ndim = 2&gt;<br />
@@ -144,15 +150,59 @@ class qdtsne::Tsne&lt; ndim &gt;</h3>
 <dd>
 van der Maaten, L.J.P. (2014). Accelerating t-SNE using tree-based algorithms. <em>Journal of Machine Learning Research</em>, 15, 3221-3245. </dd></dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a4df0430d4bcfbe61632a4a84bc053305"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4df0430d4bcfbe61632a4a84bc053305">&#9670;&nbsp;</a></span>initialize() <span class="overload">[1/2]</span></h2>
+<a id="a7900a41575c8388d5ac055283dff9a50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7900a41575c8388d5ac055283dff9a50">&#9670;&nbsp;</a></span>initialize() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;int ndim = 2&gt; </div>
 <div class="memtemplate">
-template&lt;class Algorithm  = knncolle::VpTreeEuclidean&lt;&gt;, typename Input  = double&gt; </div>
+template&lt;class Algorithm &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto <a class="el" href="classqdtsne_1_1Tsne.html">qdtsne::Tsne</a>&lt; ndim &gt;::initialize </td>
+          <td>(</td>
+          <td class="paramtype">const Algorithm *&#160;</td>
+          <td class="paramname"><em>searcher</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Algorithm</td><td><code>knncolle::Base</code> subclass implementing a nearest neighbor search algorithm.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">searcher</td><td>Pointer to a <code>knncolle::Base</code> subclass with a <code>find_nearest_neighbors()</code> method.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A <code><a class="el" href="structqdtsne_1_1Tsne_1_1Status.html" title="Current status of the t-SNE iterations.">Status</a></code> object containing various pre-computed structures required for the iterations in <code><a class="el" href="classqdtsne_1_1Tsne.html#a3683e5b8dd12cc9fdd744388be6f1444">run()</a></code>.</dd></dl>
+<p>Compared to other <code><a class="el" href="classqdtsne_1_1Tsne.html#aefec582eef4168c34acb8e3eae47f7b0">initialize()</a></code> methods, this provides more fine-tuned control over the nearest neighbor search parameters. </p>
+
+</div>
+</div>
+<a id="a38e99fd21499b2bc6079a723b60dd982"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38e99fd21499b2bc6079a723b60dd982">&#9670;&nbsp;</a></span>initialize() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int ndim = 2&gt; </div>
+<div class="memtemplate">
+template&lt;typename Input  = double&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -189,7 +239,6 @@ template&lt;class Algorithm  = knncolle::VpTreeEuclidean&lt;&gt;, typename Input
 </div><div class="memdoc">
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Algorithm</td><td>Class implementing a search algorithm, typically from the **knncolle* library. </td></tr>
     <tr><td class="paramname">Input</td><td>Floating point type for the input data.</td></tr>
   </table>
   </dd>
@@ -203,12 +252,12 @@ template&lt;class Algorithm  = knncolle::VpTreeEuclidean&lt;&gt;, typename Input
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A <code><a class="el" href="structqdtsne_1_1Tsne_1_1Status.html" title="Current status of the t-SNE iterations.">Status</a></code> object containing various pre-computed structures required for the iterations in <code><a class="el" href="classqdtsne_1_1Tsne.html#a3683e5b8dd12cc9fdd744388be6f1444">run()</a></code>.</dd></dl>
-<p>This differs from the other <code><a class="el" href="classqdtsne_1_1Tsne.html#a3683e5b8dd12cc9fdd744388be6f1444">run()</a></code> methods in that it will internally compute the nearest neighbors for each observation. </p>
+<p>This differs from the other <code><a class="el" href="classqdtsne_1_1Tsne.html#a3683e5b8dd12cc9fdd744388be6f1444">run()</a></code> methods in that it will internally compute the nearest neighbors for each observation. As with the original t-SNE implementation, it will use vantage point trees for the search. See the other <code><a class="el" href="classqdtsne_1_1Tsne.html#aefec582eef4168c34acb8e3eae47f7b0">initialize()</a></code> methods to specify a custom search algorithm. </p>
 
 </div>
 </div>
 <a id="aefec582eef4168c34acb8e3eae47f7b0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aefec582eef4168c34acb8e3eae47f7b0">&#9670;&nbsp;</a></span>initialize() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aefec582eef4168c34acb8e3eae47f7b0">&#9670;&nbsp;</a></span>initialize() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -270,15 +319,69 @@ template&lt;typename Index  = int, typename Dist  = double&gt; </div>
 
 </div>
 </div>
-<a id="abe1108e4f15bc9d99a72b97a6fafd3d3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abe1108e4f15bc9d99a72b97a6fafd3d3">&#9670;&nbsp;</a></span>run() <span class="overload">[1/3]</span></h2>
+<a id="a1eb0af514d56c85f54a3c5ea660d2a75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1eb0af514d56c85f54a3c5ea660d2a75">&#9670;&nbsp;</a></span>run() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;int ndim = 2&gt; </div>
 <div class="memtemplate">
-template&lt;class Algorithm  = knncolle::VpTreeEuclidean&lt;&gt;, typename Input  = double&gt; </div>
+template&lt;class Algorithm &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto <a class="el" href="classqdtsne_1_1Tsne.html">qdtsne::Tsne</a>&lt; ndim &gt;::run </td>
+          <td>(</td>
+          <td class="paramtype">const Algorithm *&#160;</td>
+          <td class="paramname"><em>searcher</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double *&#160;</td>
+          <td class="paramname"><em>Y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Algorithm</td><td><code>knncolle::Base</code> subclass implementing a nearest neighbor search algorithm.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">searcher</td><td>Pointer to a <code>knncolle::Base</code> subclass with a <code>find_nearest_neighbors()</code> method. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">Y</td><td>Pointer to a 2D array with number of rows and columns equal to <code>ndim</code> and <code>nn_index.size()</code>, respectively. The array is treated as column-major where each column corresponds to an observation. On input, this should contain the initial locations of each observation; on output, it is updated to the final t-SNE locations.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A <code><a class="el" href="structqdtsne_1_1Tsne_1_1Status.html" title="Current status of the t-SNE iterations.">Status</a></code> object containing the final state of the algorithm after applying all iterations. </dd></dl>
+
+</div>
+</div>
+<a id="ae03a10379d3dab727c14416820fdb89f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae03a10379d3dab727c14416820fdb89f">&#9670;&nbsp;</a></span>run() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int ndim = 2&gt; </div>
+<div class="memtemplate">
+template&lt;typename Input  = double&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
@@ -321,7 +424,6 @@ template&lt;class Algorithm  = knncolle::VpTreeEuclidean&lt;&gt;, typename Input
 </div><div class="memdoc">
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Algorithm</td><td>Class implementing a search algorithm, typically from the **knncolle* library. </td></tr>
     <tr><td class="paramname">Input</td><td>Floating point type for the input data.</td></tr>
   </table>
   </dd>
@@ -340,7 +442,7 @@ template&lt;class Algorithm  = knncolle::VpTreeEuclidean&lt;&gt;, typename Input
 </div>
 </div>
 <a id="a3683e5b8dd12cc9fdd744388be6f1444"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3683e5b8dd12cc9fdd744388be6f1444">&#9670;&nbsp;</a></span>run() <span class="overload">[2/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a3683e5b8dd12cc9fdd744388be6f1444">&#9670;&nbsp;</a></span>run() <span class="overload">[3/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -410,7 +512,7 @@ template&lt;typename Index  = int, typename Dist  = double&gt; </div>
 </div>
 </div>
 <a id="a1f3ac47d94f5df4f8cc9bfcd78cc2594"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1f3ac47d94f5df4f8cc9bfcd78cc2594">&#9670;&nbsp;</a></span>run() <span class="overload">[3/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f3ac47d94f5df4f8cc9bfcd78cc2594">&#9670;&nbsp;</a></span>run() <span class="overload">[4/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">

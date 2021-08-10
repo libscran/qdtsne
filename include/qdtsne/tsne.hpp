@@ -273,7 +273,11 @@ public:
         /**
          * @cond
          */
-        Status(size_t N, int maxdepth) : dY(N * ndim), uY(N * ndim), gains(N * ndim, 1.0), pos_f(N * ndim), neg_f(N * ndim), tree(N, maxdepth) {
+        Status(size_t N, int maxdepth) : dY(N * ndim), uY(N * ndim), gains(N * ndim, 1.0), pos_f(N * ndim), neg_f(N * ndim), tree(N, maxdepth)
+#ifdef _OPENMP
+            , omp_buffer(N)
+#endif
+        {
             neighbors.reserve(N);
             probabilities.reserve(N);
             return;

@@ -633,7 +633,6 @@ private:
 public:
 #ifndef QDTSNE_CUSTOM_NEIGHBORS
     /**
-     * @tparam Algorithm Class implementing a search algorithm, typically from the **knncolle* library.
      * @tparam Input Floating point type for the input data.
      * 
      * @param[in] input Pointer to a 2D array containing the input high-dimensional data, with number of rows and columns equal to `D` and `N`, respectively.
@@ -644,35 +643,16 @@ public:
      * @return A `Status` object containing various pre-computed structures required for the iterations in `run()`.
      *
      * This differs from the other `run()` methods in that it will internally compute the nearest neighbors for each observation.
+     * As with the original t-SNE implementation, it will use vantage point trees for the search.
+     * See the other `initialize()` methods to specify a custom search algorithm.
      */
-    template<class Algorithm = knncolle::VpTreeEuclidean<>, typename Input = double>
+    template<typename Input = double>
     auto initialize(const Input* input, size_t D, size_t N) { 
-        Algorithm searcher(D, N, input); 
-        const int K = std::ceil(perplexity * 3);
-        if (K >= N) {
-            throw std::runtime_error("number of observations should be greater than 3 * perplexity");
-        }
-
-        std::vector<int> indices(N * K);
-        std::vector<double> distances(N * K);
-        std::vector<const int*> nn_index(N);
-        std::vector<const double*> nn_dist(N);
-
-        for (size_t i = 0; i < N; ++i) {
-            auto out = searcher.find_nearest_neighbors(i, K);
-            for (size_t k = 0; k < out.size(); ++k) {
-                indices[k + i *K] = out[k].first;
-                distances[k + i *K] = out[k].second;
-            }
-            nn_index[i] = indices.data() + i * K;
-            nn_dist[i] = distances.data() + i * K;
-        }
-
-        return initialize(nn_index, nn_dist, K);
+        knncolle::VpTreeEuclidean<> searcher(D, N, input); 
+        return initialize(&searcher);
     }
 
     /**
-     * @tparam Algorithm Class implementing a search algorithm, typically from the **knncolle* library.
      * @tparam Input Floating point type for the input data.
      * 
      * @param[in] input Pointer to a 2D array containing the input high-dimensional data, with number of rows and columns equal to `D` and `N`, respectively.
@@ -685,13 +665,66 @@ public:
      *
      * @return A `Status` object containing the final state of the algorithm after applying all iterations.
      */
-    template<class Algorithm = knncolle::VpTreeEuclidean<>, typename Input = double>
+    template<typename Input = double>
     auto run(const Input* input, size_t D, size_t N, double* Y) {
-        auto status = initialize<Algorithm>(input, D, N);
+        auto status = initialize(input, D, N);
         run(status, Y);
         return status;
     }
 #endif
+
+    /**
+     * @tparam Algorithm `knncolle::Base` subclass implementing a nearest neighbor search algorithm.
+     * 
+     * @param searcher Pointer to a `knncolle::Base` subclass with a `find_nearest_neighbors()` method.
+     *
+     * @return A `Status` object containing various pre-computed structures required for the iterations in `run()`.
+     *
+     * Compared to other `initialize()` methods, this provides more fine-tuned control over the nearest neighbor search parameters.
+     */
+    template<class Algorithm>
+    auto initialize(const Algorithm* searcher) { 
+        const int K = std::ceil(perplexity * 3);
+        size_t N = searcher->nobs();
+        if (K >= N) {
+            throw std::runtime_error("number of observations should be greater than 3 * perplexity");
+        }
+
+        std::vector<int> indices(N * K);
+        std::vector<double> distances(N * K);
+        std::vector<const int*> nn_index(N);
+        std::vector<const double*> nn_dist(N);
+
+        #pragma omp parallel for
+        for (size_t i = 0; i < N; ++i) {
+            auto out = searcher->find_nearest_neighbors(i, K);
+            for (size_t k = 0; k < out.size(); ++k) {
+                indices[k + i *K] = out[k].first;
+                distances[k + i *K] = out[k].second;
+            }
+            nn_index[i] = indices.data() + i * K;
+            nn_dist[i] = distances.data() + i * K;
+        }
+
+        return initialize(nn_index, nn_dist, K);
+    }
+
+    /**
+     * @tparam Algorithm `knncolle::Base` subclass implementing a nearest neighbor search algorithm.
+     * 
+     * @param searcher Pointer to a `knncolle::Base` subclass with a `find_nearest_neighbors()` method.
+     * @param[in, out] Y Pointer to a 2D array with number of rows and columns equal to `ndim` and `nn_index.size()`, respectively.
+     * The array is treated as column-major where each column corresponds to an observation.
+     * On input, this should contain the initial locations of each observation; on output, it is updated to the final t-SNE locations.
+     *
+     * @return A `Status` object containing the final state of the algorithm after applying all iterations.
+     */
+    template<class Algorithm> 
+    auto run(const Algorithm* searcher, double* Y) {
+        auto status = initialize(searcher);
+        run(status, Y);
+        return status;
+    }
 };
 
 }

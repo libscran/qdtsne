@@ -23,9 +23,9 @@ protected:
     template<class V, class W>
     void validate_tree(const V& store, const W& locations, const double* data, size_t N, int maxdepth) {
         std::vector<int> covered(store.size());
-        int leaf_count = 0, depth = 0;
+        int leaf_count = 0;
 
-        validate_store(0, store, covered, leaf_count, depth);
+        validate_store(0, store, covered, leaf_count, maxdepth);
         for (auto c : covered) {
             EXPECT_EQ(c, 1); // checking that we hit every node of the tree.
         }
@@ -41,10 +41,6 @@ protected:
             }
         }
 
-        // Checking the max depth is not exceeded.
-        for (const auto& s : store) {
-            EXPECT_TRUE(s.depth <= maxdepth);
-        }
 
         // Checking that the locations are correct.
         for (size_t n = 0; n < N; ++n) {
@@ -68,11 +64,13 @@ protected:
     }
 
     template<class V>
-    void validate_store(int position, const V& store, std::vector<int>& covered, int& leaf_count, int depth) {
+    void validate_store(int position, const V& store, std::vector<int>& covered, int& leaf_count, int maxdepth, int depth = 0) {
         const auto& node = store[position];
         covered[position] = 1;
-        EXPECT_EQ(depth, node.depth);
-            
+
+        // Checking the max depth is not exceeded.
+        EXPECT_TRUE(depth <= maxdepth);
+
         // Check that halfwidth, midpoint and center of mass are all non-zero.
         for (int d = 0; d < ndim; ++d) {
             EXPECT_TRUE(node.midpoint[d] != 0);
@@ -115,7 +113,7 @@ protected:
                 EXPECT_EQ(node.halfwidth[d] / 2, child.halfwidth[d]);
             }
 
-            validate_store(kids[k], store, covered, leaf_count, depth + 1);
+            validate_store(kids[k], store, covered, leaf_count, maxdepth, depth + 1);
         }
 
         // Verifying that the number here is the sum of the counts in the children.

@@ -39,38 +39,6 @@
 
 namespace qdtsne {
 
-template <int ndim>
-struct SPTreeNode {
-    static constexpr int nchildren = (1 << ndim); 
-
-    SPTreeNode(const double* point, int d) : depth(d) {
-        std::copy_n(point, ndim, center_of_mass.data());
-        fill();
-        return;
-    }
-
-    SPTreeNode() {
-        std::fill_n(center_of_mass.data(), ndim, 0);
-        fill();
-        return;
-    }
-
-    void fill() {
-        std::fill_n(midpoint.begin(), ndim, 0);
-        std::fill_n(halfwidth.begin(), ndim, 0);
-        std::fill_n(children.begin(), nchildren, 0);
-    }
-
-    std::array<double, ndim> midpoint, halfwidth;
-    std::array<double, ndim> center_of_mass;
-    std::array<size_t, nchildren> children;
-
-    int number = 1;
-    int depth = 0;
-    bool is_leaf = true;
-    size_t self = 0; // only used for building, not for search. 
-};
-
 template<int ndim>
 class SPTree {
 public:
@@ -79,12 +47,43 @@ public:
         return;
     }
 
+public:
+    struct Node {
+        static constexpr int nchildren = (1 << ndim); 
+
+        Node(const double* point) {
+            std::copy_n(point, ndim, center_of_mass.data());
+            fill();
+            return;
+        }
+
+        Node() {
+            std::fill_n(center_of_mass.data(), ndim, 0);
+            fill();
+            return;
+        }
+
+        void fill() {
+            std::fill_n(midpoint.begin(), ndim, 0);
+            std::fill_n(halfwidth.begin(), ndim, 0);
+            std::fill_n(children.begin(), nchildren, 0);
+        }
+
+        std::array<size_t, nchildren> children;
+        std::array<double, ndim> midpoint, halfwidth;
+        std::array<double, ndim> center_of_mass;
+
+        int number = 1;
+        bool is_leaf = true;
+    };
+
 private:
     const double * data = NULL;
     size_t N;
     int maxdepth;
-    std::vector<SPTreeNode<ndim> > store;
+    std::vector<Node> store;
     std::vector<size_t> locations;
+    std::vector<size_t> self;
 
 public:
     void set(const double* Y) {
@@ -94,6 +93,10 @@ public:
         store.resize(1);
         store[0].is_leaf = false;
         store[0].number = N;
+
+        self.clear();
+        self.push_back(0); // placeholder for the root node.
+
         {
             std::array<double, ndim> min_Y{}, max_Y{};
             std::fill_n(min_Y.begin(), ndim, std::numeric_limits<double>::max());
@@ -123,7 +126,6 @@ public:
         for (size_t i = 0; i < N; ++i, point += ndim) {
             std::array<bool, ndim> side;
             size_t parent = 0;
-            int final_position = 0;
             size_t child_loc = 0;
 
             for (int depth = 1; depth <= maxdepth; ++depth) {
@@ -135,24 +137,23 @@ public:
                 if (child_loc == 0) { 
                     child_loc = store.size();
                     store[parent].children[child_idx] = child_loc;
-                    store.push_back(SPTreeNode<ndim>(point, depth));
+                    store.push_back(Node(point));
                     set_child_boundaries(parent, child_loc, side.data());
-
-                    store[child_loc].self = i;
+                    self.push_back(i);
                     break;
                 } 
 
                 if (store[child_loc].is_leaf && depth < maxdepth) {
                     // Shifting the current child to become a child of itself.
                     size_t grandchild_loc = store.size();
-                    store.push_back(SPTreeNode<ndim>(store[child_loc].center_of_mass.data(), depth + 1)); 
+                    store.push_back(Node(store[child_loc].center_of_mass.data())); 
 
                     std::array<bool, ndim> side2; 
                     size_t grandchild_idx = find_child(child_loc, store[grandchild_loc].center_of_mass.data(), side2.data());
                     set_child_boundaries(child_loc, grandchild_loc, side2.data());
 
-                    store[grandchild_loc].self = store[child_loc].self;
-                    locations[store[grandchild_loc].self] = grandchild_loc;
+                    self.push_back(self[child_loc]);
+                    locations[self[grandchild_loc]] = grandchild_loc;
 
                     store[child_loc].children[grandchild_idx] = grandchild_loc;
                     store[child_loc].is_leaf = false;

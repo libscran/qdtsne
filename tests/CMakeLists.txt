@@ -14,6 +14,7 @@ add_executable(
     libtest 
     src/sptree.cpp
     src/tsne.cpp
+    src/utils.cpp
 )
 
 target_link_libraries(

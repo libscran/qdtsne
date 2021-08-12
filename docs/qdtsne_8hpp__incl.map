@@ -1,13 +1,13 @@
 <map id="qdtsne/qdtsne.hpp" name="qdtsne/qdtsne.hpp">
-<area shape="rect" id="node1" title="Umbrella header for all qdtsne files." alt="" coords="235,5,363,32"/>
-<area shape="rect" id="node2" href="$tsne_8hpp.html" title="Implements the t&#45;SNE algorithm." alt="" coords="263,80,334,107"/>
-<area shape="rect" id="node3" href="$sptree_8hpp_source.html" title=" " alt="" coords="5,155,88,181"/>
-<area shape="rect" id="node10" href="$utils_8hpp_source.html" title=" " alt="" coords="495,80,566,107"/>
-<area shape="rect" id="node4" title=" " alt="" coords="347,229,405,256"/>
-<area shape="rect" id="node6" title=" " alt="" coords="88,229,163,256"/>
-<area shape="rect" id="node7" title=" " alt="" coords="163,155,309,181"/>
-<area shape="rect" id="node8" title=" " alt="" coords="333,155,392,181"/>
-<area shape="rect" id="node9" title=" " alt="" coords="416,155,499,181"/>
-<area shape="rect" id="node5" title=" " alt="" coords="13,229,64,256"/>
-<area shape="rect" id="node11" title=" " alt="" coords="574,155,639,181"/>
+<area shape="rect" id="node1" title="Umbrella header for all qdtsne files." alt="" coords="321,5,449,32"/>
+<area shape="rect" id="node2" href="$tsne_8hpp.html" title="Implements the t&#45;SNE algorithm." alt="" coords="349,80,420,107"/>
+<area shape="rect" id="node3" href="$sptree_8hpp_source.html" title=" " alt="" coords="607,155,690,181"/>
+<area shape="rect" id="node10" href="$utils_8hpp_source.html" title=" " alt="" coords="73,80,144,107"/>
+<area shape="rect" id="node4" title=" " alt="" coords="130,229,189,256"/>
+<area shape="rect" id="node6" title=" " alt="" coords="533,229,607,256"/>
+<area shape="rect" id="node7" title=" " alt="" coords="386,155,533,181"/>
+<area shape="rect" id="node8" title=" " alt="" coords="197,155,255,181"/>
+<area shape="rect" id="node9" title=" " alt="" coords="279,155,362,181"/>
+<area shape="rect" id="node5" title=" " alt="" coords="631,229,682,256"/>
+<area shape="rect" id="node11" title=" " alt="" coords="5,155,71,181"/>
 </map>

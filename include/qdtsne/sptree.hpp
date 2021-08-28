@@ -36,6 +36,7 @@
 #include <cmath>
 #include <array>
 #include <algorithm>
+#include <vector>
 
 namespace qdtsne {
 

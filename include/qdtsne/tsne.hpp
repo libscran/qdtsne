@@ -348,56 +348,88 @@ private:
         val_P.resize(N, std::vector<double>(K));
 #endif
 
-        #pragma omp parallel for 
-        for (size_t n = 0; n < N; ++n){
-            double beta = 1.0;
-            double min_beta = 0, max_beta = max_value;
-            double sum_P = 0;
-            const double* distances = nn_dist[n];
+        #pragma omp parallel
+        {
+            std::vector<double> squared_delta_dist(K);
+            std::vector<double> quad_delta_dist(K);
+
+            #pragma omp for 
+            for (size_t n = 0; n < N; ++n){
+                double beta = 1.0;
+                double min_beta = 0, max_beta = max_value;
+                double sum_P = 0;
+                const double* distances = nn_dist[n];
 
 #ifdef _OPENMP
-            auto& output = val_P[n];
+                auto& output = val_P[n];
 #else
-            val_P.emplace_back(K);
-            auto& output = val_P.back();
+                val_P.emplace_back(K);
+                auto& output = val_P.back();
 #endif
 
-            // Iterate until we found a good perplexity
-            for (int iter = 0; iter < 200; ++iter) {
-                for (int m = 0; m < K; ++m) {
-                    output[m] = std::exp(-beta * distances[m] * distances[m]); // apply gaussian kernel
+                // We adjust the probabilities by subtracting the first squared
+                // distance from everything. This avoids problems with underflow
+                // when converting distances to probabilities; it otherwise has no
+                // effect on the entropy or even the final probabilities because it
+                // just scales all probabilities up/down (and they need to be
+                // normalized anyway, so any scaling effect just cancels out).
+                const double first = distances[0] * distances[0];
+                for (int m = 1; m < K; ++m) {
+                    squared_delta_dist[m] = distances[m] * distances[m] - first;
+                    quad_delta_dist[m] = squared_delta_dist[m] * squared_delta_dist[m];
                 }
+                output[0] = 1;  
 
-                // Compute entropy of current row
-                sum_P = std::accumulate(output.begin(), output.end(), std::numeric_limits<double>::min());
-                double H = .0;
-                for(int m = 0; m < K; ++m) {
-                    H += beta * distances[m] * distances[m] * output[m];
-                }
-                H = (H / sum_P) + std::log(sum_P);
+                for (int iter = 0; iter < 200; ++iter) {
+                    // Apply gaussian kernel. We skip the first value because
+                    // we effectively normalized it to 1 by subtracting 'first'. 
+                    for (int m = 1; m < K; ++m) {
+                        output[m] = std::exp(-beta * squared_delta_dist[m]); 
+                    }
 
-                // Evaluate whether the entropy is within the tolerance level
-                double Hdiff = H - log_perplexity;
-                if (Hdiff < tol && -Hdiff < tol) {
-                    break;
-                } else {
-                    if (Hdiff > 0) {
-                        min_beta = beta;
-                        if (max_beta == max_value) {
-                            beta *= 2.0;
-                        } else {
-                            beta = (beta + max_beta) / 2.0;
+                    sum_P = std::accumulate(output.begin() + 1, output.end(), 1.0);
+                    const double prod = std::inner_product(squared_delta_dist.begin() + 1, squared_delta_dist.end(), output.begin() + 1, 0.0);
+                    const double entropy = beta * (prod / sum_P) + std::log(sum_P);
+
+                    const double diff = entropy - log_perplexity;
+                    if (std::abs(diff) < tol) {
+                        break;
+                    }
+
+                    // Attempt a Newton-Raphson search first. 
+                    bool nr_ok = false;
+#ifndef QDTSNE_BETA_BINARY_SEARCH_ONLY
+                    const double prod2 = std::inner_product(quad_delta_dist.begin() + 1, quad_delta_dist.end(), output.begin() + 1, 0.0);
+                    const double d1 = - beta / sum_P * (prod2 - prod * prod / sum_P);
+                    if (d1) {
+                        const double alt_beta = beta - (diff / d1); // if it overflows, we should get Inf or -Inf, so the following comparison should be fine.
+                        if (alt_beta > min_beta && alt_beta < max_beta) {
+                            beta = alt_beta;
+                            nr_ok = true;
                         }
-                    } else {
-                        max_beta = beta;
-                        beta = (beta + min_beta) / 2.0;
+                    }
+#endif
+
+                    // Otherwise do a binary search.
+                    if (!nr_ok) {
+                        if (diff > 0) {
+                            min_beta = beta;
+                            if (max_beta == max_value) {
+                                beta *= 2.0;
+                            } else {
+                                beta = (beta + max_beta) / 2.0;
+                            }
+                        } else {
+                            max_beta = beta;
+                            beta = (beta + min_beta) / 2.0;
+                        }
                     }
                 }
-            }
 
-            // Row-normalize current row of P.
-            for (auto& o : output) {
-                o /= sum_P;
+                // Row-normalize current row of P.
+                for (auto& o : output) {
+                    o /= sum_P;
+                }
             }
         }
 

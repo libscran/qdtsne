@@ -1,6 +1,7 @@
 #include "Rcpp.h"
 #include <algorithm>
 
+#define QDTSNE_BETA_BINARY_SEARCH_ONLY
 #define QDTSNE_CUSTOM_NEIGHBORS
 #include "qdtsne/tsne.hpp"
 

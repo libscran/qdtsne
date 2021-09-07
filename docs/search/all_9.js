@@ -1,16 +1,16 @@
 var searchData=
 [
-  ['set_5feta_13',['set_eta',['../classqdtsne_1_1Tsne.html#aad030365f29c1d531cef21698abf9b0a',1,'qdtsne::Tsne']]],
-  ['set_5fexaggeration_5ffactor_14',['set_exaggeration_factor',['../classqdtsne_1_1Tsne.html#a59e911595a6f27ada714bab593f6cf75',1,'qdtsne::Tsne']]],
-  ['set_5ffinal_5fmomentum_15',['set_final_momentum',['../classqdtsne_1_1Tsne.html#a9cf792615ab330bc325d7bd1147577fa',1,'qdtsne::Tsne']]],
-  ['set_5fmax_5fdepth_16',['set_max_depth',['../classqdtsne_1_1Tsne.html#a0a91cbce20585aeef1b54d61f11894de',1,'qdtsne::Tsne']]],
-  ['set_5fmax_5fiter_17',['set_max_iter',['../classqdtsne_1_1Tsne.html#a72f193ba522fa610878fa3113b7326ec',1,'qdtsne::Tsne']]],
-  ['set_5fmom_5fswitch_5fiter_18',['set_mom_switch_iter',['../classqdtsne_1_1Tsne.html#a40164e72e679c9db9d9a61934232def0',1,'qdtsne::Tsne']]],
-  ['set_5fperplexity_19',['set_perplexity',['../classqdtsne_1_1Tsne.html#a73d513252f6c91ffebc2aa083a81842c',1,'qdtsne::Tsne']]],
-  ['set_5fstart_5fmomentum_20',['set_start_momentum',['../classqdtsne_1_1Tsne.html#a73beb0431cd9306fe2d379e4e3bcebfd',1,'qdtsne::Tsne']]],
-  ['set_5fstop_5flying_5fiter_21',['set_stop_lying_iter',['../classqdtsne_1_1Tsne.html#ae41f07ca947dff3124df43ed2ecd4c09',1,'qdtsne::Tsne']]],
-  ['set_5ftheta_22',['set_theta',['../classqdtsne_1_1Tsne.html#a457720dfeb70b3a41b5452e3bfb66f13',1,'qdtsne::Tsne']]],
-  ['start_5fmomentum_23',['start_momentum',['../structqdtsne_1_1Tsne_1_1Defaults.html#ac2441b93126db8fb2fc89c50a8d385f5',1,'qdtsne::Tsne::Defaults']]],
-  ['status_24',['Status',['../structqdtsne_1_1Tsne_1_1Status.html',1,'qdtsne::Tsne']]],
-  ['stop_5flying_5fiter_25',['stop_lying_iter',['../structqdtsne_1_1Tsne_1_1Defaults.html#a56f12c572d0951ac188a6f5b27f8c2c2',1,'qdtsne::Tsne::Defaults']]]
+  ['set_5feta_0',['set_eta',['../classqdtsne_1_1Tsne.html#aaa8dcf17d32a46c0c55bee2cb44a3db6',1,'qdtsne::Tsne']]],
+  ['set_5fexaggeration_5ffactor_1',['set_exaggeration_factor',['../classqdtsne_1_1Tsne.html#a33cf06b1e86881cf045e05b7938bdadb',1,'qdtsne::Tsne']]],
+  ['set_5ffinal_5fmomentum_2',['set_final_momentum',['../classqdtsne_1_1Tsne.html#a2abbde384693bce0cf01cd8bc9070dc5',1,'qdtsne::Tsne']]],
+  ['set_5fmax_5fdepth_3',['set_max_depth',['../classqdtsne_1_1Tsne.html#a0029836d8f79f40b99216417d057a3ab',1,'qdtsne::Tsne']]],
+  ['set_5fmax_5fiter_4',['set_max_iter',['../classqdtsne_1_1Tsne.html#a3cfe03609c56ffbacb4cfe9e55b63b3a',1,'qdtsne::Tsne']]],
+  ['set_5fmom_5fswitch_5fiter_5',['set_mom_switch_iter',['../classqdtsne_1_1Tsne.html#a55511d380f7e6c698968db67795fe6a9',1,'qdtsne::Tsne']]],
+  ['set_5fperplexity_6',['set_perplexity',['../classqdtsne_1_1Tsne.html#af28a18a7e3cfc1cb2f7b06943b46087a',1,'qdtsne::Tsne']]],
+  ['set_5fstart_5fmomentum_7',['set_start_momentum',['../classqdtsne_1_1Tsne.html#afbcbf8dcc0f99469fe3c1136294f42ca',1,'qdtsne::Tsne']]],
+  ['set_5fstop_5flying_5fiter_8',['set_stop_lying_iter',['../classqdtsne_1_1Tsne.html#a5361ed22afcac4ad44211ce6caae8b94',1,'qdtsne::Tsne']]],
+  ['set_5ftheta_9',['set_theta',['../classqdtsne_1_1Tsne.html#a9d7bde3b74eefd42ecf42fe41c3a74f2',1,'qdtsne::Tsne']]],
+  ['start_5fmomentum_10',['start_momentum',['../structqdtsne_1_1Tsne_1_1Defaults.html#ac2441b93126db8fb2fc89c50a8d385f5',1,'qdtsne::Tsne::Defaults']]],
+  ['status_11',['Status',['../structqdtsne_1_1Tsne_1_1Status.html',1,'qdtsne::Tsne']]],
+  ['stop_5flying_5fiter_12',['stop_lying_iter',['../structqdtsne_1_1Tsne_1_1Defaults.html#a56f12c572d0951ac188a6f5b27f8c2c2',1,'qdtsne::Tsne::Defaults']]]
 ];

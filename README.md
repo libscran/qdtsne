@@ -63,7 +63,7 @@ If you're already using CMake, you can add something like this to your `CMakeLis
 include(FetchContent)
 
 FetchContent_Declare(
-  WeightedLowess 
+  qdtsne 
   GIT_REPOSITORY https://github.com/LTLA/qdtsne
   GIT_TAG master # or any version of interest
 )
@@ -81,7 +81,9 @@ target_link_libraries(myexe qdtsne)
 target_link_libraries(mylib INTERFACE qdtsne)
 ```
 
-Otherwise, you can just copy the header file into some location that is visible to your compiler.
+Otherwise, you can just copy the header files in `include/` into some location that is visible to your compiler.
+This also requires the [**knncolle**](https://github.com/LTLA/knncolle) library for nearest neighbor search.
+If you are instead supplying your own neighbor search, this dependency can be eliminated by defining the `QDTSNE_CUSTOM_NEIGHBORS` macro.
 
 ## References
 

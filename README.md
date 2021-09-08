@@ -82,8 +82,11 @@ target_link_libraries(mylib INTERFACE qdtsne)
 ```
 
 Otherwise, you can just copy the header files in `include/` into some location that is visible to your compiler.
-This also requires the [**knncolle**](https://github.com/LTLA/knncolle) library for nearest neighbor search.
+This requires the manual inclusion of a few dependencies:
+
+- The [**knncolle**](https://github.com/LTLA/knncolle) library for nearest neighbor search.
 If you are instead supplying your own neighbor search, this dependency can be eliminated by defining the `QDTSNE_CUSTOM_NEIGHBORS` macro.
+- The [**aarand**](https://github.com/LTLA/aarand) library for random distribution functions.
 
 ## References
 

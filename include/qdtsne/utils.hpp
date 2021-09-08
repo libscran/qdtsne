@@ -9,19 +9,9 @@
 
 #include <random>
 #include <cmath>
+#include "aarand/aarand.hpp"
 
 namespace qdtsne {
-
-template<class Engine>
-double uniform01 (Engine& eng) {
-    // Stolen from Boost.
-    const double factor = 1.0 / static_cast<double>((eng.max)()-(eng.min)());
-    double result;
-    do {
-        result = static_cast<double>(eng() - (eng.min)()) * factor;
-    } while (result == 1.0);
-    return result;
-}
 
 /**
  * Initializes the starting locations of each observation in the embedding.
@@ -39,7 +29,6 @@ double uniform01 (Engine& eng) {
 template<int ndim = 2>
 void initialize_random(double* Y, size_t N, int seed = 42) {
     std::mt19937_64 rng(seed);
-    constexpr double pi = 3.14159265358979323846;
 
     size_t total = N * ndim;
     bool odd = total % 2;
@@ -49,17 +38,15 @@ void initialize_random(double* Y, size_t N, int seed = 42) {
 
     // Box-Muller gives us two random values at a time.
     for (size_t i = 0; i < total; i += 2) {
-        double constant = std::sqrt(-2 * std::log(uniform01(rng)));
-        double angle = 2 * pi * uniform01(rng);
-        Y[i] = constant * std::sin(angle);
-        Y[i + 1] = constant * std::cos(angle);
+        auto paired = aarand::standard_normal(rng);
+        Y[i] = paired.first;
+        Y[i + 1] = paired.second;
     }
 
     if (odd) {
         // Adding the poor extra for odd total lengths.
-        double constant = std::sqrt(-2 * std::log(uniform01(rng)));
-        double angle = 2 * pi * uniform01(rng);
-        Y[total] = constant * std::sin(angle);
+        auto paired = aarand::standard_normal(rng);
+        Y[total] = paired.first;
     }
 
     return;

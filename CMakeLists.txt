@@ -13,7 +13,7 @@ target_include_directories(qdtsne INTERFACE include/)
 
 add_subdirectory(extern)
 
-target_link_libraries(qdtsne INTERFACE knncolle)
+target_link_libraries(qdtsne INTERFACE knncolle aarand)
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     include(CTest)

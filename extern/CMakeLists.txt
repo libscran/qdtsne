@@ -7,3 +7,11 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(knncolle)
+
+FetchContent_Declare(
+  aarand
+  GIT_REPOSITORY https://github.com/LTLA/aarand
+  GIT_TAG master
+)
+
+FetchContent_MakeAvailable(aarand)

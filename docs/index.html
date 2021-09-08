@@ -117,7 +117,11 @@ $(function() {
 <div class="line"> </div>
 <div class="line"># For libaries</div>
 <div class="line">target_link_libraries(mylib INTERFACE qdtsne)</div>
-</div><!-- fragment --><p >Otherwise, you can just copy the header files in <code>include/</code> into some location that is visible to your compiler. This also requires the <a href="https://github.com/LTLA/knncolle"><b>knncolle</b></a> library for nearest neighbor search. If you are instead supplying your own neighbor search, this dependency can be eliminated by defining the <code>QDTSNE_CUSTOM_NEIGHBORS</code> macro.</p>
+</div><!-- fragment --><p >Otherwise, you can just copy the header files in <code>include/</code> into some location that is visible to your compiler. This requires the manual inclusion of a few dependencies:</p>
+<ul>
+<li>The <a href="https://github.com/LTLA/knncolle"><b>knncolle</b></a> library for nearest neighbor search. If you are instead supplying your own neighbor search, this dependency can be eliminated by defining the <code>QDTSNE_CUSTOM_NEIGHBORS</code> macro.</li>
+<li>The <a href="https://github.com/LTLA/aarand"><b>aarand</b></a> library for random distribution functions.</li>
+</ul>
 <h1>References</h1>
 <p >van der Maaten, L.J.P. and Hinton, G.E. (2008). Visualizing high-dimensional data using t-SNE. <em>Journal of Machine Learning Research</em>, 9, 2579-2605.</p>
 <p >van der Maaten, L.J.P. (2014). Accelerating t-SNE using tree-based algorithms. <em>Journal of Machine Learning Research</em>, 15, 3221-3245. </p>

@@ -17,27 +17,15 @@ protected:
         }
 
         knncolle::VpTreeEuclidean<> searcher(D, N, X.data()); 
-        indices.resize(N * K);
-        distances.resize(N * K);
-
         for (size_t i = 0; i < N; ++i) {
-            auto out = searcher.find_nearest_neighbors(i, K);
-            for (size_t k = 0; k < out.size(); ++k) {
-                indices[k + i *K] = out[k].first;
-                distances[k + i *K] = out[k].second;
-            }
-            nn_index.push_back(indices.data() + i * K);
-            nn_dist.push_back(distances.data() + i * K);
+            neighbors.push_back(searcher.find_nearest_neighbors(i, K));
         }
 
         return;
     }
 
     std::vector<double> X;
-    std::vector<int> indices;
-    std::vector<double> distances;
-    std::vector<const int*> nn_index;
-    std::vector<const double*> nn_dist;
+    qdtsne::NeighborList<int> neighbors;
 };
 
 TEST_P(TsneTester, Initialization) {
@@ -48,38 +36,36 @@ TEST_P(TsneTester, Initialization) {
     assemble(N, D, K);
 
     qdtsne::Tsne thing;
-    auto status = thing.initialize(nn_index, nn_dist, K);
+    auto status = thing.initialize(neighbors);
 
     // Checking probabilities are all between zero and 1.
-    const auto& probs = status.probabilities;
-    EXPECT_EQ(probs.size(), nn_index.size());
+    const auto& probs = status.neighbors;
+    EXPECT_EQ(probs.size(), N);
     double total = 0;
     for (const auto& curp : probs) {
         EXPECT_TRUE(curp.size() >= K);
         for (const auto& p : curp) {
-            EXPECT_TRUE(p < 1);
-            EXPECT_TRUE(p > 0);
-            total += p;
+            EXPECT_TRUE(p.second < 1);
+            EXPECT_TRUE(p.second > 0);
+            total += p.second;
         }
     }
     EXPECT_FLOAT_EQ(total, 1);
 
     // Checking symmetry of the probabilities.
     std::map<std::pair<int, int>, std::tuple<double, bool, bool> > stuff;
-    for (size_t n = 0; n < nn_index.size(); ++n) {
-        const auto& curp = status.probabilities[n];
-        const auto& curi = status.neighbors[n];
-        EXPECT_EQ(curi.size(), curp.size());
+    for (size_t n = 0; n < neighbors.size(); ++n) {
+        const auto& current = status.neighbors[n];
 
-        for (size_t x = 0; x < curp.size(); ++x) {
-            auto neighbor = curi[x];
+        for (const auto& y : current) {
+            auto neighbor = y.first;
             EXPECT_TRUE(neighbor != n);
 
             std::pair<int, int> key(std::min((int)n, neighbor), std::max((int)n, neighbor)); // only consider combinations
             auto it = stuff.lower_bound(key);
 
             if (it != stuff.end() && it->first == key) {
-                EXPECT_EQ(std::get<0>(it->second), curp[x]);
+                EXPECT_EQ(std::get<0>(it->second), y.second);
 
                 // Checking that this permutation doesn't already exist.
                 if (n > neighbor) {
@@ -90,7 +76,7 @@ TEST_P(TsneTester, Initialization) {
                     std::get<2>(it->second) = true;
                 }
             } else {
-                stuff.insert(it, std::make_pair(key, std::make_tuple(curp[x], n > neighbor, n < neighbor)));
+                stuff.insert(it, std::make_pair(key, std::make_tuple(y.second, n > neighbor, n < neighbor)));
             }
         }
     }
@@ -112,7 +98,7 @@ TEST_P(TsneTester, Runner) {
     auto Y = qdtsne::initialize_random<>(N);
     auto old = Y;
 
-    auto status = thing.run(nn_index, nn_dist, K, Y.data());
+    auto status = thing.run(neighbors, Y.data());
     EXPECT_NE(old, Y); // there was some effect...
     EXPECT_EQ(status.iteration(), 1000); // actually ran through the specified iterations
 
@@ -137,9 +123,9 @@ TEST_P(TsneTester, StopStart) {
     auto copy = Y;
 
     qdtsne::Tsne thing;
-    auto ref = thing.run(nn_index, nn_dist, K, Y.data());
+    auto ref = thing.run(neighbors, Y.data());
 
-    auto status = thing.initialize(nn_index, nn_dist, K);
+    auto status = thing.initialize(neighbors);
     thing.set_max_iter(500).run(status, copy.data());
     thing.set_max_iter(1000).run(status, copy.data());
 
@@ -158,15 +144,15 @@ TEST_P(TsneTester, EasyStart) {
     thing.set_max_iter(10); // don't need that many iterations for this...
 
     auto Y = original;
-    auto ref = thing.run(nn_index, nn_dist, K, Y.data());
+    auto ref = thing.run(neighbors, Y.data());
 
     auto copy = original;
     auto easy = thing.set_perplexity(K/3).run(X.data(), D, N, copy.data());
     EXPECT_EQ(copy, Y);
 
     EXPECT_EQ(ref.neighbors[0], easy.neighbors[0]);
-    EXPECT_EQ(ref.probabilities[0], easy.probabilities[0]);
-    EXPECT_EQ(ref.probabilities[10], easy.probabilities[10]);
+    EXPECT_EQ(ref.neighbors[10], easy.neighbors[10]);
+    EXPECT_EQ(ref.neighbors[100], easy.neighbors[100]);
 }
 
 INSTANTIATE_TEST_CASE_P(

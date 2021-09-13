@@ -33,6 +33,8 @@
 #ifndef QDTSNE_TSNE_HPP
 #define QDTSNE_TSNE_HPP
 
+#include "gaussian.hpp"
+#include "symmetrize.hpp"
 #include "sptree.hpp"
 
 #ifndef QDTSNE_CUSTOM_NEIGHBORS
@@ -88,6 +90,11 @@ public:
         static constexpr double perplexity = 30;
 
         /**
+         * See `set_infer_perplexity()`.
+         */
+        static constexpr bool infer_perplexity = true;
+
+        /**
          * See `set_theta()`.
          */
         static constexpr double theta = 0.5;
@@ -135,6 +142,7 @@ public:
 
 private:
     double perplexity = Defaults::perplexity;
+    bool infer_perplexity = Defaults::infer_perplexity;
     double theta = Defaults::theta;
     int max_iter = Defaults::max_iter;
     int stop_lying_iter = Defaults::stop_lying_iter;
@@ -248,6 +256,18 @@ public:
         return *this;
     }
 
+    /**
+     * @param i Whether to infer the perplexity in `initialize()` and `run()` methods that accept a `NeighborList` object.
+     * In such cases, the value in `set_perplexity()` is ignored.
+     * The perplexity is instead defined from the `NeighborList` as the number of nearest neighbors per observation divided by 3.
+     *
+     * @return A reference to this `Tsne` object.
+     */
+    Tsne& set_infer_perplexity(double i = Defaults::infer_perplexity) {
+        infer_perplexity = i;
+        return *this;
+    }
+
     /** 
      * @param t Level of the approximation to use in the Barnes-Hut tree calculation of repulsive forces.
      * Lower values increase accuracy at the cost of computational time.
@@ -273,18 +293,25 @@ public:
         /**
          * @cond
          */
-        Status(size_t N, int maxdepth) : dY(N * ndim), uY(N * ndim), gains(N * ndim, 1.0), pos_f(N * ndim), neg_f(N * ndim), tree(N, maxdepth)
+        Status(NeighborList<Index> nn, int maxdepth) : 
+            neighbors(std::move(nn)),
+            N(neighbors.size()),
+            dY(N * ndim), 
+            uY(N * ndim), 
+            gains(N * ndim, 1.0), 
+            pos_f(N * ndim), 
+            neg_f(N * ndim), 
+            tree(N, maxdepth)
 #ifdef _OPENMP
             , omp_buffer(N)
 #endif
         {
             neighbors.reserve(N);
-            probabilities.reserve(N);
             return;
         }
 
-        std::vector<std::vector<Index> > neighbors;
-        std::vector<std::vector<double> > probabilities;
+        NeighborList<Index> neighbors; 
+        const size_t N;
         std::vector<double> dY, uY, gains, pos_f, neg_f;
 
 #ifdef _OPENMP
@@ -308,204 +335,48 @@ public:
 
 public:
     /**
-     * @param nn_index Vector of pointers to arrays of length `K`.
-     * Each array corresponds to an observation and contains the indices to its `K` closest neighbors.
-     * @param nn_dist Vector of pointers to arrays of length `K`.
-     * Each array corresponds to an observation and contains the distances to its `K` closest neighbors.
-     * This should be of the same length as `nn_index`.
-     * @param K Number of nearest neighbors.
+     * @param nn List of indices and distances to nearest neighbors for each observation. 
+     * Each observation should have the same number of neighbors, sorted by increasing distance, which should not include itself.
      *
      * @tparam Index Integer type for the neighbor indices.
-     * @tparam Dist Floating-point type for the neighbor distances.
      *
-     * @return A `Status` object containing various pre-computed structures required for the iterations in `run()`.
+     * @return A `Status` object containing various precomputed structures required for the iterations in `run()`.
      *
-     * In this initialization mode, the perplexity from `set_perplexity()` is ignored.
-     * Instead, it is set to `K/3`.
+     * If `set_infer_perplexity()` is set to `true`, the perplexity is determined from `nn` and the value in `set_perplexity()` is ignored.
      */
-    template<typename Index = int, typename Dist = double>
-    auto initialize(const std::vector<Index*>& nn_index, const std::vector<Dist*>& nn_dist, int K) {
-        if (nn_index.size() != nn_dist.size()) {
-            throw std::runtime_error("indices and distances should be of the same length");
+    template<typename Index = int>
+    auto initialize(NeighborList<Index> nn) {
+        double perp;
+        if (infer_perplexity && nn.size()) {
+            perp = static_cast<double>(nn.front().size())/3;
+        } else {
+            perp = perplexity;
         }
+        return initialize_internal(std::move(nn), perp);
+    }
 
-        Status<typename std::remove_const<Index>::type> status(nn_index.size(), max_depth);
-        compute_gaussian_perplexity(nn_dist, K, status);
-        symmetrize_matrix(nn_index, K, status);
+private:
+    template<typename Index = int>
+    auto initialize_internal(NeighborList<Index> nn, double perp) {
+        Status<typename std::remove_const<Index>::type> status(std::move(nn), max_depth);
+
+#ifdef PROGRESS_PRINTER
+        PROGRESS_PRINTER("qdtsne::Tsne::initialize", "Computing neighbor probabilities")
+#endif
+        compute_gaussian_perplexity(status.neighbors, perp);
+
+#ifdef PROGRESS_PRINTER
+        PROGRESS_PRINTER("qdtsne::Tsne::initialize", "Symmetrizing the matrix")
+#endif
+        symmetrize_matrix(status.neighbors);
+
         return status;
-    }
-
-private:
-    template<typename Index, typename Dist>
-    void compute_gaussian_perplexity(const std::vector<Dist*>& nn_dist, int K, Status<Index>& status) {
-        const size_t N = nn_dist.size();
-        constexpr double max_value = std::numeric_limits<double>::max();
-        constexpr double tol = 1e-5;
-        const double log_perplexity = std::log(static_cast<double>(K)/3.0); // implicitly taken from choice of 'k'.
-
-        std::vector<std::vector<double> >& val_P = status.probabilities;
-#ifdef _OPENMP
-        val_P.resize(N, std::vector<double>(K));
-#endif
-
-        #pragma omp parallel
-        {
-            std::vector<double> squared_delta_dist(K);
-            std::vector<double> quad_delta_dist(K);
-
-            #pragma omp for 
-            for (size_t n = 0; n < N; ++n){
-                double beta = 1.0;
-                double min_beta = 0, max_beta = max_value;
-                double sum_P = 0;
-                const double* distances = nn_dist[n];
-
-#ifdef _OPENMP
-                auto& output = val_P[n];
-#else
-                val_P.emplace_back(K);
-                auto& output = val_P.back();
-#endif
-
-                // We adjust the probabilities by subtracting the first squared
-                // distance from everything. This avoids problems with underflow
-                // when converting distances to probabilities; it otherwise has no
-                // effect on the entropy or even the final probabilities because it
-                // just scales all probabilities up/down (and they need to be
-                // normalized anyway, so any scaling effect just cancels out).
-                const double first = distances[0] * distances[0];
-                for (int m = 1; m < K; ++m) {
-                    squared_delta_dist[m] = distances[m] * distances[m] - first;
-                    quad_delta_dist[m] = squared_delta_dist[m] * squared_delta_dist[m];
-                }
-                output[0] = 1;  
-
-                for (int iter = 0; iter < 200; ++iter) {
-                    // Apply gaussian kernel. We skip the first value because
-                    // we effectively normalized it to 1 by subtracting 'first'. 
-                    for (int m = 1; m < K; ++m) {
-                        output[m] = std::exp(-beta * squared_delta_dist[m]); 
-                    }
-
-                    sum_P = std::accumulate(output.begin() + 1, output.end(), 1.0);
-                    const double prod = std::inner_product(squared_delta_dist.begin() + 1, squared_delta_dist.end(), output.begin() + 1, 0.0);
-                    const double entropy = beta * (prod / sum_P) + std::log(sum_P);
-
-                    const double diff = entropy - log_perplexity;
-                    if (std::abs(diff) < tol) {
-                        break;
-                    }
-
-                    // Attempt a Newton-Raphson search first. 
-                    bool nr_ok = false;
-#ifndef QDTSNE_BETA_BINARY_SEARCH_ONLY
-                    const double prod2 = std::inner_product(quad_delta_dist.begin() + 1, quad_delta_dist.end(), output.begin() + 1, 0.0);
-                    const double d1 = - beta / sum_P * (prod2 - prod * prod / sum_P);
-                    if (d1) {
-                        const double alt_beta = beta - (diff / d1); // if it overflows, we should get Inf or -Inf, so the following comparison should be fine.
-                        if (alt_beta > min_beta && alt_beta < max_beta) {
-                            beta = alt_beta;
-                            nr_ok = true;
-                        }
-                    }
-#endif
-
-                    // Otherwise do a binary search.
-                    if (!nr_ok) {
-                        if (diff > 0) {
-                            min_beta = beta;
-                            if (max_beta == max_value) {
-                                beta *= 2.0;
-                            } else {
-                                beta = (beta + max_beta) / 2.0;
-                            }
-                        } else {
-                            max_beta = beta;
-                            beta = (beta + min_beta) / 2.0;
-                        }
-                    }
-                }
-
-                // Row-normalize current row of P.
-                for (auto& o : output) {
-                    o /= sum_P;
-                }
-            }
-        }
-
-        return;
-    }
-
-private:
-    template<typename Index>
-    void symmetrize_matrix(const std::vector<Index*>& nn_index, int K, Status<typename std::remove_const<Index>::type>& status) {
-        auto& col_P = status.neighbors;
-        auto& probabilities = status.probabilities;
-        const size_t N = nn_index.size();
-
-        // Initializing the output neighbor list.
-        for (size_t n = 0; n < N; ++n) {
-            col_P.emplace_back(nn_index[n], nn_index[n] + K);
-        }
-
-        for (size_t n = 0; n < N; ++n) {
-            auto my_neighbors = nn_index[n];
-
-            for (int k1 = 0; k1 < K; ++k1) {
-                auto curneighbor = my_neighbors[k1];
-                auto neighbors_neighbors = nn_index[curneighbor];
-
-                // Check whether the current point is present in its neighbor's set.
-                bool present = false;
-                for (int k2 = 0; k2 < K; ++k2) {
-                    if (neighbors_neighbors[k2] == n) {
-                        if (n < curneighbor) {
-                            // Adding the probabilities - but if n >= curneighbor, then this would have
-                            // already been done at n = curneighbor, so we skip this to avoid adding it twice.
-                            double sum = probabilities[n][k1] + probabilities[curneighbor][k2];
-                            probabilities[n][k1] = sum;
-                            probabilities[curneighbor][k2] = sum;
-                        }
-                        present = true;
-                        break;
-                    }
-                }
-
-                if (!present) {
-                    // If not present, no addition of probabilities is involved.
-                    col_P[curneighbor].push_back(n);
-                    probabilities[curneighbor].push_back(probabilities[n][k1]);
-                }
-            }
-        }
-
-        // Divide the result by two
-        double total = 0;
-        for (auto& x : probabilities) {
-            for (auto& y : x) {
-                y /= 2;
-                total += y;
-            }
-        }
-
-        // Probabilities across the entire matrix sum to unity.
-        for (auto& x : probabilities) {
-            for (auto& y : x) {
-                y /= total;
-            }
-        }
-
-        return;
     }
 
 public:
     /**
-     * @param nn_index Vector of pointers to arrays of length `K`.
-     * Each array corresponds to an observation and contains the indices to its `K` closest neighbors.
-     * @param nn_dist Vector of pointers to arrays of length `K`.
-     * Each array corresponds to an observation and contains the distances to its `K` closest neighbors.
-     * This should be of the same length as `nn_index`.
-     * @param K Number of nearest neighbors.
+     * @param nn List of indices and distances to nearest neighbors for each observation. 
+     * Each observation should have the same number of neighbors, sorted by increasing distance, which should not include itself.
      * @param[in, out] Y Pointer to a 2D array with number of rows and columns equal to `ndim` and `nn_index.size()`, respectively.
      * The array is treated as column-major where each column corresponds to an observation.
      * On input, this should contain the initial locations of each observation; on output, it is updated to the final t-SNE locations.
@@ -515,12 +386,11 @@ public:
      *
      * @return A `Status` object containing the final state of the algorithm after all requested iterations are finished.
      *
-     * In this initialization mode, the perplexity from `set_perplexity()` is ignored.
-     * Instead, it is set to `K/3`.
+     * If `set_infer_perplexity()` is set to `true`, the perplexity is determined from `nn` and the value in `set_perplexity()` is ignored.
      */
     template<typename Index = int, typename Dist = double>
-    auto run(const std::vector<Index*>& nn_index, const std::vector<Dist*>& nn_dist, int K, double* Y) {
-        auto status = initialize(nn_index, nn_dist, K);
+    auto run(NeighborList<Index> nn, double* Y) {
+        auto status = initialize(std::move(nn));
         run(status, Y);
         return status;
     }
@@ -637,26 +507,24 @@ private:
 
     template<typename Index>
     void compute_edge_forces(Status<Index>& status, const double* Y, double multiplier) {
-        const auto& col_P = status.neighbors;
-        const auto& val_P = status.probabilities;
+        const auto& neighbors = status.neighbors;
         auto& pos_f = status.pos_f;
         std::fill(pos_f.begin(), pos_f.end(), 0);
 
         #pragma omp parallel for 
-        for (size_t n = 0; n < col_P.size(); ++n) {
-            const auto& cur_prob = val_P[n];
-            const auto& cur_col = col_P[n];
+        for (size_t n = 0; n < neighbors.size(); ++n) {
+            const auto& current = neighbors[n];
             const double* self = Y + n * ndim;
             double* pos_out = pos_f.data() + n * ndim;
 
-            for (size_t i = 0; i < cur_col.size(); ++i) {
+            for (const auto& x : current) {
                 double sqdist = 0; 
-                const double* neighbor = Y + cur_col[i] * ndim;
+                const double* neighbor = Y + x.first * ndim;
                 for (int d = 0; d < ndim; ++d) {
                     sqdist += (self[d] - neighbor[d]) * (self[d] - neighbor[d]);
                 }
 
-                const double mult = multiplier * cur_prob[i] / (1 + sqdist);
+                const double mult = multiplier * x.second / (1 + sqdist);
                 for (int d = 0; d < ndim; ++d) {
                     pos_out[d] += mult * (self[d] - neighbor[d]);
                 }
@@ -684,6 +552,9 @@ public:
      */
     template<typename Input = double>
     auto initialize(const Input* input, size_t D, size_t N) { 
+#ifdef PROGRESS_PRINTER
+        PROGRESS_PRINTER("qdtsne::Tsne::initialize", "Constructing neighbor search indices")
+#endif
         knncolle::VpTreeEuclidean<> searcher(D, N, input); 
         return initialize(&searcher);
     }
@@ -716,7 +587,7 @@ public:
      *
      * @return A `Status` object containing various pre-computed structures required for the iterations in `run()`.
      *
-     * Compared to other `initialize()` methods, this provides more fine-tuned control over the nearest neighbor search parameters.
+     * Compared to other `initialize()` methods, this allows users to construct `searcher` with custom search parameters for finer control over the neighbor search.
      */
     template<class Algorithm>
     auto initialize(const Algorithm* searcher) { 
@@ -726,23 +597,17 @@ public:
             throw std::runtime_error("number of observations should be greater than 3 * perplexity");
         }
 
-        std::vector<int> indices(N * K);
-        std::vector<double> distances(N * K);
-        std::vector<const int*> nn_index(N);
-        std::vector<const double*> nn_dist(N);
+#ifdef PROGRESS_PRINTER
+        PROGRESS_PRINTER("qdtsne::Tsne::initialize", "Searching for nearest neighbors")
+#endif
+        NeighborList<decltype(searcher->nobs())> neighbors(N);
 
         #pragma omp parallel for
         for (size_t i = 0; i < N; ++i) {
-            auto out = searcher->find_nearest_neighbors(i, K);
-            for (size_t k = 0; k < out.size(); ++k) {
-                indices[k + i *K] = out[k].first;
-                distances[k + i *K] = out[k].second;
-            }
-            nn_index[i] = indices.data() + i * K;
-            nn_dist[i] = distances.data() + i * K;
+            neighbors[i] = searcher->find_nearest_neighbors(i, K);
         }
 
-        return initialize(nn_index, nn_dist, K);
+        return initialize_internal(std::move(neighbors), perplexity);
     }
 
     /**

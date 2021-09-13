@@ -2,7 +2,7 @@
 #define QDTSNE_UTILS_HPP
 
 /**
- * @file tsne.hpp
+ * @file utils.hpp
  *
  * @brief Utilities for running t-SNE.
  */
@@ -12,6 +12,13 @@
 #include "aarand/aarand.hpp"
 
 namespace qdtsne {
+
+/**
+ * A vector of length equal to the number of observations,
+ * where each entry contains the indices of and distances to that observation's nearest neighbors.
+ */
+template<typename Index>
+using NeighborList = std::vector<std::vector<std::pair<Index, double> > >;
 
 /**
  * Initializes the starting locations of each observation in the embedding.

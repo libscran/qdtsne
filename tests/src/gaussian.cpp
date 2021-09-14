@@ -1,0 +1,64 @@
+#include <gtest/gtest.h>
+
+#include "knncolle/knncolle.hpp"
+#include "qdtsne/gaussian.hpp"
+#include "aarand/aarand.hpp"
+#include <random>
+
+class GaussianTest : public ::testing::TestWithParam<std::tuple<int, int, int, double> > {
+protected:
+    void assemble(int N, int D, int K) {
+        std::vector<double> X(N * D);
+        std::mt19937_64 rng(42);
+        std::normal_distribution<> dist(0, 1);
+        for (auto& y : X) {
+            y = dist(rng);
+        }
+
+        knncolle::VpTreeEuclidean<> searcher(D, N, X.data()); 
+        for (size_t i = 0; i < N; ++i) {
+            neighbors.push_back(searcher.find_nearest_neighbors(i, K));
+        }
+
+        return;
+    }
+
+    qdtsne::NeighborList<int> neighbors;
+};
+
+TEST_P(GaussianTest, Gaussian) {
+    auto PARAM = GetParam();
+    size_t N = std::get<0>(PARAM);
+    size_t D = std::get<1>(PARAM);
+    size_t K = std::get<2>(PARAM);
+    double P = std::get<3>(PARAM);
+    assemble(N, D, K);
+
+    qdtsne::compute_gaussian_perplexity(neighbors, P);
+    const double expected = std::log(P);
+
+    // Checking that the entropy is within range.
+    for (size_t i = 0; i < N; ++i) {
+        double entropy = 0;
+        double sum = 0;
+        for (const auto& x : neighbors[i]) {
+            entropy += x.second * std::log(x.second);
+            sum += x.second;
+        }
+        entropy *= -1;
+        
+        EXPECT_TRUE(std::abs(expected - entropy) < 1e-5);
+        EXPECT_TRUE(std::abs(sum - 1) < 1e-8);
+    }
+}
+
+INSTANTIATE_TEST_CASE_P(
+    Gaussian,
+    GaussianTest,
+    ::testing::Combine(
+        ::testing::Values(200), // number of observations
+        ::testing::Values(5), // input dimensions, doesn't really matter
+        ::testing::Values(30, 60, 90), // number of neighbors
+        ::testing::Values(10.0, 20.0, 30.0) // perplexity
+    )
+);

@@ -62,6 +62,10 @@ void symmetrize_matrix(NeighborList<Index>& x) {
         for (auto& y : current) {
             y.second /= total;
         }
+
+        // Sorting to obtain increasing indices, which should be more cache
+        // friendly in the edge force calculations in tsne.hpp.
+        std::sort(current.begin(), current.end());
     }
 
     return;

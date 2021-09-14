@@ -76,7 +76,9 @@ $(function() {
 
 <p>Implements the t-SNE algorithm.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &quot;sptree.hpp&quot;</code><br />
+<div class="textblock"><code>#include &quot;gaussian.hpp&quot;</code><br />
+<code>#include &quot;symmetrize.hpp&quot;</code><br />
+<code>#include &quot;sptree.hpp&quot;</code><br />
 <code>#include &quot;knncolle/knncolle.hpp&quot;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 <code>#include &lt;cmath&gt;</code><br />
@@ -87,14 +89,20 @@ Include dependency graph for tsne.hpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="tsne_8hpp__incl.png" border="0" usemap="#aqdtsne_2tsne_8hpp" alt=""/></div>
 <map name="aqdtsne_2tsne_8hpp" id="aqdtsne_2tsne_8hpp">
-<area shape="rect" title="Implements the t&#45;SNE algorithm." alt="" coords="168,5,283,32"/>
-<area shape="rect" href="sptree_8hpp_source.html" title=" " alt="" coords="80,80,163,107"/>
-<area shape="rect" title=" " alt="" coords="5,155,64,181"/>
-<area shape="rect" title=" " alt="" coords="163,155,237,181"/>
-<area shape="rect" title=" " alt="" coords="261,155,320,181"/>
-<area shape="rect" title=" " alt="" coords="288,80,435,107"/>
-<area shape="rect" title=" " alt="" coords="459,80,541,107"/>
-<area shape="rect" title=" " alt="" coords="88,155,139,181"/>
+<area shape="rect" title="Implements the t&#45;SNE algorithm." alt="" coords="384,5,499,32"/>
+<area shape="rect" href="gaussian_8hpp_source.html" title=" " alt="" coords="80,80,179,107"/>
+<area shape="rect" title=" " alt="" coords="296,229,355,256"/>
+<area shape="rect" title=" " alt="" coords="240,155,299,181"/>
+<area shape="rect" href="symmetrize_8hpp_source.html" title=" " alt="" coords="203,80,315,107"/>
+<area shape="rect" title=" " alt="" coords="323,155,397,181"/>
+<area shape="rect" href="sptree_8hpp_source.html" title=" " alt="" coords="440,80,523,107"/>
+<area shape="rect" title=" " alt="" coords="597,80,744,107"/>
+<area shape="rect" title=" " alt="" coords="768,80,851,107"/>
+<area shape="rect" href="utils_8hpp.html" title="Utilities for running t&#45;SNE." alt="" coords="94,155,165,181"/>
+<area shape="rect" title=" " alt="" coords="16,155,69,181"/>
+<area shape="rect" title=" " alt="" coords="158,229,223,256"/>
+<area shape="rect" title=" " alt="" coords="5,229,133,256"/>
+<area shape="rect" title=" " alt="" coords="472,155,523,181"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -123,7 +131,6 @@ Classes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Implements the t-SNE algorithm. </p>
-<p >Utilities for running t-SNE.</p>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

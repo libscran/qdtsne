@@ -15,6 +15,8 @@ add_executable(
     src/sptree.cpp
     src/tsne.cpp
     src/utils.cpp
+    src/gaussian.cpp
+    src/symmetrize.cpp
 )
 
 target_link_libraries(

@@ -222,13 +222,27 @@ public:
         return result_sum;
     }
 
+    double compute_non_edge_forces(const double * point, double theta, double* neg_f) const {
+        double result_sum = 0;
+        const auto& cur_children = store[0].children;
+        std::fill_n(neg_f, ndim, 0);
+
+        for (int i = 0; i < cur_children.size(); ++i) {
+            if (cur_children[i]) {
+                result_sum += compute_non_edge_forces(N, point, theta, neg_f, cur_children[i]);
+            }
+        }
+
+        return result_sum;
+    }
+
 private:
     double compute_non_edge_forces(size_t index, const double* point, double theta, double* neg_f, size_t position) const {
         const auto& node = store[position];
         std::array<double, ndim> temp;
         const double * center = node.center_of_mass.data();
 
-        if (position == locations[index]) {
+        if (index < N && position == locations[index]) {
             if (node.number == 1) {
                 return 0; // skipping self.
             } else if (node.is_leaf) {

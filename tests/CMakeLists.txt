@@ -14,7 +14,7 @@ add_executable(
     libtest 
     src/sptree.cpp
     src/tsne.cpp
-    src/utils.cpp
+    src/interpolate.cpp
     src/gaussian.cpp
     src/symmetrize.cpp
 )

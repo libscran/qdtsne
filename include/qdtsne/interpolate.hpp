@@ -2,6 +2,8 @@
 #define QDTSNE_INTEROPLATE_HPP
 
 #include "utils.hpp"
+#include "sptree.hpp"
+
 #include <unordered_map>
 #include <array>
 #include <algorithm>
@@ -17,8 +19,9 @@ using coords = std::array<double, ndim>;
 template<int ndim>
 std::array<size_t, ndim> encode(const double* data, const coords<ndim>& mins, const coords<ndim>& step, int intervals) {
     std::array<size_t, ndim> current;
+    size_t limit = intervals - 1;
     for (int d = 0; d < ndim; ++d, ++data) {
-        current[d] = static_cast<size_t>(std::min(*data - mins[d], intervals - 1) / step[d]); // set upper bound to catch the largest value.
+        current[d] = std::min(static_cast<size_t>((*data - mins[d]) / step[d]), limit); // set upper bound to catch the value at the max.
     }
     return current;
 }
@@ -36,10 +39,10 @@ size_t hash(const std::array<size_t, ndim>& index, int intervals) {
 template<int ndim>
 coords<ndim> unhash(size_t hash, const coords<ndim>& mins, const coords<ndim>& step, int intervals) {
     coords<ndim> current;
-    for (int d = 0; d < ndim; ++d, ++copy) {
+    for (int d = 0; d < ndim; ++d) {
         int d0 = ndim - d - 1;
-        current[d0] = (x % (intervals + 1)) * step[d0] + mins[d0];
-        x /= intervals + 1;
+        current[d0] = (hash % (intervals + 1)) * step[d0] + mins[d0];
+        hash /= intervals + 1;
     }
     return current;
 }
@@ -47,38 +50,37 @@ coords<ndim> unhash(size_t hash, const coords<ndim>& mins, const coords<ndim>& s
 template<int ndim>
 std::array<size_t, ndim> unhash(size_t hash, int intervals) {
     std::array<size_t, ndim> current;
-    for (int d = 0; d < ndim; ++d, ++copy) {
-        current[ndim - d - 1] = (x % (intervals + 1));
-        x /= intervals + 1;
+    for (int d = 0; d < ndim; ++d) {
+        current[ndim - d - 1] = (hash % (intervals + 1));
+        hash /= intervals + 1;
     }
     return current;
 }
 
 template<int ndim, int d = 0>
-double populate_corners(std::unordered_map<size_t, coords<ndim> >& collected, const coords<ndim>& current, int intervals, int shifted = 0) {
+double populate_corners(std::unordered_map<size_t, size_t>& collected, std::array<size_t, ndim> current, int intervals, int shifted = 0) {
     if constexpr(d == ndim - 1) {
-        auto fill = [&](const coords<ndim>& x) -> void {
+        auto fill = [&](const std::array<size_t, ndim>& x) -> void {
             size_t h = hash<ndim>(x, intervals);
             auto it = collected.find(h);
-            if (it != collected.end()) {
+            if (it == collected.end()) {
                 collected[h] = -1;
             }
         };
 
+        // Must have at least one hit.
         if (shifted) {
             fill(current);
-            auto copy = current;
-            ++copy[d];
-            fill(copy);
+            ++current[d];
+            fill(current);
         } else {
             ++current[d];
             fill(current);
         }
     } else {
-        populate_corners<ndim, d + 1>(collected, current, shifted);
-        auto copy = current;
-        ++copy[d];
-        populate_corners<ndim, d + 1>(collected, copy, shifted + 1);
+        populate_corners<ndim, d + 1>(collected, current, intervals, shifted);
+        ++current[d];
+        populate_corners<ndim, d + 1>(collected, current, intervals, shifted + 1);
     }
 }
 
@@ -130,7 +132,8 @@ double interpolate_non_edge_forces(const SPTree<ndim>& tree, size_t N, const dou
     // Second pass to compute forces for the waypoints.
     std::unordered_map<size_t, size_t> has_zero;
     has_zero.reserve(waypoints.size());
-    std::vector<double> collected((ndim + 1) * waypoints.size());
+    constexpr int nvalues = ndim + 1;
+    std::vector<double> collected(nvalues * waypoints.size());
 #ifdef _OPENMP
     std::vector<size_t> indices(waypoints.size());
 #endif
@@ -145,18 +148,18 @@ double interpolate_non_edge_forces(const SPTree<ndim>& tree, size_t N, const dou
 #ifdef _OPENMP
             indices[i] = h;
 #else
-            auto current = unhash(h, intervals);
-            double* curcollected = collected.data() + (ndim + 1) * i;
+            auto current = unhash<ndim>(h, mins, step, intervals);
+            double* curcollected = collected.data() + nvalues * i;
             curcollected[ndim] = tree.compute_non_edge_forces(current.data(), theta, curcollected);
 #endif
         }
     }
 
-#ifndef _OPENMP
+#ifdef _OPENMP
     #pragma omp parallel for
     for (size_t i = 0; i < indices.size(); ++i) {
-        auto current = unhash(indices[i], intervals);
-        double* curcollected = collected.data() + (ndim + 1) * i;
+        auto current = unhash<ndim>(h, mins, step, intervals);
+        double* curcollected = collected.data() + nvalues * i;
         curcollected[ndim] = tree.compute_non_edge_forces(current.data(), theta, curcollected);
     }
 #endif
@@ -166,33 +169,27 @@ double interpolate_non_edge_forces(const SPTree<ndim>& tree, size_t N, const dou
         throw std::runtime_error("interpolation is not yet supported for ndim != 2");
     }
     constexpr int ncorners = (1 << ndim);
-    size_t blocksize = ncorners * (ndim + 1);
+    size_t blocksize = ncorners * nvalues;
     std::vector<double> interpolants(blocksize * has_zero.size());
 
-    for (auto& x : has_zero) {
-        // Decoding self.
-        auto x = has_zero->first;
-        coords<ndim> current;
-        for (int d = 0; d < ndim; ++d, ++copy) {
-            current[ndim - d - 1] = (x % intervals);
-            x /= intervals;
-        }
+    for (const auto& y : has_zero) {
+        auto current = unhash<ndim>(y.first, intervals);
 
         // Finding the other points in the same box, by traversing the corners.
         std::array<size_t, ncorners> others; 
-        others[0] = waypoints[hash(current, intervals)];
+        others[0] = waypoints[hash<ndim>(current, intervals)];
         ++current[0];
-        others[1] = waypoints[hash(current, intervals)];
+        others[1] = waypoints[hash<ndim>(current, intervals)];
         ++current[1];
-        others[3] = waypoints[hash(current, intervals)];
+        others[3] = waypoints[hash<ndim>(current, intervals)];
         --current[0];
-        others[2] = waypoints[hash(current, intervals)];
+        others[2] = waypoints[hash<ndim>(current, intervals)];
 
         // Computing the slopes and intercepts.
         for (int d = 0; d <= ndim; ++d) {
             std::array<double, ncorners> obs;
             for (size_t o = 0; o < others.size(); ++o) {
-                obs[o] = collected[(ndim + 1) * others[o] + d];
+                obs[o] = collected[nvalues * others[o] + d];
             }
 
             double slope0 = (obs[1] - obs[0]) / step[0];
@@ -200,7 +197,7 @@ double interpolate_non_edge_forces(const SPTree<ndim>& tree, size_t N, const dou
             double slope1 = (obs[3] - obs[2]) / step[0];
             double intercept1 = obs[2];
 
-            size_t offset = has_zero->second * blocksize + d * (1 << ndim);
+            size_t offset = y.second * blocksize + d * (1 << ndim);
             interpolants[offset + 0] = (slope1 - slope0) / step[1]; // slope of the slope.
             interpolants[offset + 1] = slope0; // intercept of the slope.
             interpolants[offset + 2] = (intercept1 - intercept0) / step[1]; // slope of the intercept.
@@ -208,7 +205,7 @@ double interpolate_non_edge_forces(const SPTree<ndim>& tree, size_t N, const dou
         }
     }
 
-    // Final pass for the actual interpolation.
+    // Final pass for the actual interpolation. TODO: parallelize this with the omp_buffer.
     double output_sum = 0;
     for (size_t i = 0; i < N; ++i) {
         auto copy = Y + i * ndim;

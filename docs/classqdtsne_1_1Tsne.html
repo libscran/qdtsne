@@ -114,6 +114,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a2cc1f02c130a6c8f997eb5f6c70d00f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9d7bde3b74eefd42ecf42fe41c3a74f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classqdtsne_1_1Tsne.html">Tsne</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqdtsne_1_1Tsne.html#a9d7bde3b74eefd42ecf42fe41c3a74f2">set_theta</a> (double t=<a class="el" href="structqdtsne_1_1Tsne_1_1Defaults.html#a4b2dc7f44d3d3af65d0b6f3fca022887">Defaults::theta</a>)</td></tr>
 <tr class="separator:a9d7bde3b74eefd42ecf42fe41c3a74f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af85415b66fabcb7fe5dcc5277845cc57"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classqdtsne_1_1Tsne.html">Tsne</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqdtsne_1_1Tsne.html#af85415b66fabcb7fe5dcc5277845cc57">set_interpolation</a> (int i=<a class="el" href="structqdtsne_1_1Tsne_1_1Defaults.html#ab65c4af2f5d2dc300faccb4df49a419e">Defaults::interpolation</a>)</td></tr>
+<tr class="separator:af85415b66fabcb7fe5dcc5277845cc57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa56a41100785c53e9d049a52ce83f352"><td class="memTemplParams" colspan="2">template&lt;typename Index  = int&gt; </td></tr>
 <tr class="memitem:aa56a41100785c53e9d049a52ce83f352"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classqdtsne_1_1Tsne.html#aa56a41100785c53e9d049a52ce83f352">initialize</a> (<a class="el" href="utils_8hpp.html#a3f5b7a34209b4c7bffc8d42821458c5d">NeighborList</a>&lt; Index &gt; nn)</td></tr>
 <tr class="separator:aa56a41100785c53e9d049a52ce83f352"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -665,6 +667,41 @@ template&lt;int ndim = 2&gt; </div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">i</td><td>Whether to infer the perplexity in <code><a class="el" href="classqdtsne_1_1Tsne.html#aa56a41100785c53e9d049a52ce83f352">initialize()</a></code> and <code><a class="el" href="classqdtsne_1_1Tsne.html#a29820d39b9ae52c19dcc1f3e7a57781a">run()</a></code> methods that accept a <code>NeighborList</code> object. In such cases, the value in <code><a class="el" href="classqdtsne_1_1Tsne.html#af28a18a7e3cfc1cb2f7b06943b46087a">set_perplexity()</a></code> is ignored. The perplexity is instead defined from the <code>NeighborList</code> as the number of nearest neighbors per observation divided by 3.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A reference to this <code><a class="el" href="classqdtsne_1_1Tsne.html" title="Implements the t-SNE algorithm.">Tsne</a></code> object. </dd></dl>
+
+</div>
+</div>
+<a id="af85415b66fabcb7fe5dcc5277845cc57" name="af85415b66fabcb7fe5dcc5277845cc57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af85415b66fabcb7fe5dcc5277845cc57">&#9670;&nbsp;</a></span>set_interpolation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int ndim = 2&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classqdtsne_1_1Tsne.html">Tsne</a> &amp; <a class="el" href="classqdtsne_1_1Tsne.html">qdtsne::Tsne</a>&lt; ndim &gt;::set_interpolation </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em> = <code><a class="el" href="structqdtsne_1_1Tsne_1_1Defaults.html#ab65c4af2f5d2dc300faccb4df49a419e">Defaults::interpolation</a></code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">i</td><td>Length of the grid in each dimension when performing interpolation to compute repulsive forces. Larger values improve the resolution of the grid (and the quality of the approximation) at the cost of computational time. A value of 100 is a good compromise for most applications. If set to 0, no interpolation is performed.</td></tr>
   </table>
   </dd>
 </dl>

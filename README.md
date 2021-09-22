@@ -12,10 +12,8 @@ t-SNE is a non-linear dimensionality reduction technique that enables visualizat
 The general idea is that neighboring observations are placed next to each other, thus preserving the local structure of the dataset from its original high-dimensional form.
 The non-linear nature of the algorithm gives it the flexibility to accommodate complicated structure that is not possible in linear techniques like PCA.
 
-The code here is derived from the C++ code in the [**Rtsne** R package](https://github.com/jkrijthe/Rtsne/), updated for more modern C++.
-The only modification is that we have introduced an extra `max_depth` parameter that bounds the depth of the quad trees used for the Barnes-Hut force calculations.
-All nodes at the maximum depth are designated as leaf nodes; if multiple observations are present, they are aggregated into the center of mass for that node.
-This provides an upper bound on the runtime of the force calculation for each observation, improving performance for large datasets at the cost of some approximation.
+The code here is derived from the C++ code in the [**Rtsne** R package](https://github.com/jkrijthe/Rtsne/), itself taken from the 2014 paper.
+It has been updated to use more modern C++, along with some additional options to sacrifice accuracy for speed - see below for details.
 
 ## Quick start
 
@@ -87,6 +85,22 @@ This requires the manual inclusion of a few dependencies:
 - The [**knncolle**](https://github.com/LTLA/knncolle) library for nearest neighbor search.
 If you are instead supplying your own neighbor search, this dependency can be eliminated by defining the `QDTSNE_CUSTOM_NEIGHBORS` macro.
 - The [**aarand**](https://github.com/LTLA/aarand) library for random distribution functions.
+
+## Approximations for speed
+
+We have introduced an extra `max_depth` parameter that bounds the depth of the quad trees used for the Barnes-Hut force calculations.
+All nodes at the maximum depth are designated as leaf nodes; if multiple observations are present, they are aggregated into the center of mass for that node.
+This provides an upper bound on the runtime of the force calculation for each observation, e.g., a maximum depth of 7 means that there can be no more than 16384 leaf nodes 
+
+We have also added an `interpolation` parameter that causes the algorithm to use interpolation to compute the repulsive forces.
+Specifically, it divides up the bounding box for the current embedding into a grid of length equal to `interpolation` in each dimension.
+We compute the repulsive forces at each grid point and then perform linear interpolation to obtain the force at each point inside the grid.
+
+Some timings with the `gallery/speedtest.cpp` code indicate that the improvements can be considerable:
+
+- Without any approximation, the iterations take 114 ± 1 seconds.
+- With `max_depth = 7`, the iterations take 85 ± 2 seonds.
+- With `max_depth = 7` and `interpolation = 100`, the iterations take 46 ± 1 seconds.
 
 ## References
 

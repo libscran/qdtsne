@@ -17,6 +17,7 @@ add_executable(
     src/interpolate.cpp
     src/gaussian.cpp
     src/symmetrize.cpp
+    src/utils.cpp
 )
 
 target_link_libraries(

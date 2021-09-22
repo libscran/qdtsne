@@ -8,17 +8,17 @@ TEST(InterpolateUtils, Encode) {
     std::array<double, 2> steps { 0.07, 0.15 };
 
     std::array<size_t, 2> expected { 1, 3 };
-    EXPECT_EQ(qdtsne::interpolator::encode<2>(thing.data(), mins, steps, 10), expected);
+    EXPECT_EQ(qdtsne::interpolate::encode<2>(thing.data(), mins, steps, 10), expected);
 }
 
 TEST(InterpolateUtils, Hash) {
     std::array<size_t, 2> expected { 1, 3 };
-    EXPECT_EQ(qdtsne::interpolator::hash<2>(expected, 10), 14); // remember, we +1 the intervals.
-    EXPECT_EQ(qdtsne::interpolator::unhash<2>(14, 10), expected);
+    EXPECT_EQ(qdtsne::interpolate::hash<2>(expected, 10), 14); // remember, we +1 the intervals.
+    EXPECT_EQ(qdtsne::interpolate::unhash<2>(14, 10), expected);
 
     std::array<size_t, 2> expected2 { 9, 9 };
-    EXPECT_EQ(qdtsne::interpolator::hash<2>(expected2, 10), 108);
-    EXPECT_EQ(qdtsne::interpolator::unhash<2>(108, 10), expected2);
+    EXPECT_EQ(qdtsne::interpolate::hash<2>(expected2, 10), 108);
+    EXPECT_EQ(qdtsne::interpolate::unhash<2>(108, 10), expected2);
 }
 
 TEST(InterpolateUtils, Corners) {
@@ -26,29 +26,29 @@ TEST(InterpolateUtils, Corners) {
     int intervals = 10;
 
     std::unordered_map<size_t, size_t> collected;
-    collected[qdtsne::interpolator::hash<2>(thing, intervals)] = 0;
-    qdtsne::interpolator::populate_corners<2>(collected, thing, intervals);
+    collected[qdtsne::interpolate::hash<2>(thing, intervals)] = 0;
+    qdtsne::interpolate::populate_corners<2>(collected, thing, intervals);
 
     EXPECT_EQ(collected.size(), 4);
     ++thing[0];
-    EXPECT_EQ(collected[qdtsne::interpolator::hash<2>(thing, intervals)], -1);
+    EXPECT_EQ(collected[qdtsne::interpolate::hash<2>(thing, intervals)], -1);
     ++thing[1];
-    EXPECT_EQ(collected[qdtsne::interpolator::hash<2>(thing, intervals)], -1);
+    EXPECT_EQ(collected[qdtsne::interpolate::hash<2>(thing, intervals)], -1);
     --thing[0];
-    EXPECT_EQ(collected[qdtsne::interpolator::hash<2>(thing, intervals)], -1);
+    EXPECT_EQ(collected[qdtsne::interpolate::hash<2>(thing, intervals)], -1);
 
     // Doesn't overwrite existing 0's.
     std::array<size_t, 2> thing2 { 0, 5 };
-    collected[qdtsne::interpolator::hash<2>(thing2, intervals)] = 0;
-    qdtsne::interpolator::populate_corners<2>(collected, thing2, intervals);
+    collected[qdtsne::interpolate::hash<2>(thing2, intervals)] = 0;
+    qdtsne::interpolate::populate_corners<2>(collected, thing2, intervals);
 
     EXPECT_EQ(collected.size(), 6);
     ++thing2[0];
-    EXPECT_EQ(collected[qdtsne::interpolator::hash<2>(thing2, intervals)], 0);
+    EXPECT_EQ(collected[qdtsne::interpolate::hash<2>(thing2, intervals)], 0);
     ++thing2[1];
-    EXPECT_EQ(collected[qdtsne::interpolator::hash<2>(thing2, intervals)], -1);
+    EXPECT_EQ(collected[qdtsne::interpolate::hash<2>(thing2, intervals)], -1);
     --thing2[0];
-    EXPECT_EQ(collected[qdtsne::interpolator::hash<2>(thing2, intervals)], -1);
+    EXPECT_EQ(collected[qdtsne::interpolate::hash<2>(thing2, intervals)], -1);
 }
 
 class InterpolateTester : public ::testing::TestWithParam<std::tuple<int, int> > {
@@ -91,7 +91,7 @@ protected:
     int N;
     int intervals;
     std::vector<double> Y;
-    qdtsne::interpolator::coords<ndim> mins, maxs, step;
+    qdtsne::interpolate::coords<ndim> mins, maxs, step;
 };
 
 TEST_P(InterpolateTester, ExactGrid) {
@@ -113,7 +113,7 @@ TEST_P(InterpolateTester, ExactGrid) {
     // Computing forces through the grid; results should be the same as the
     // forces computed directly on the grid points.
     std::vector<double> neg(npts * npts * ndim);
-    qdtsne::interpolator::interpolate_non_edge_forces(tree, npts * npts, grid.data(), 0.1, neg.data(), intervals);
+    qdtsne::interpolate::compute_non_edge_forces(tree, npts * npts, grid.data(), 0.1, neg.data(), intervals);
 
     for (int i = 0; i <= intervals; ++i) {
         for (int j = 0; j <= intervals; ++j) {
@@ -151,7 +151,7 @@ TEST_P(InterpolateTester, MidGrid) {
     // Computing forces through the grid; results should be the same as the
     // forces computed directly on the grid points.
     std::vector<double> neg(grid.size());
-    qdtsne::interpolator::interpolate_non_edge_forces(tree, grid.size() / ndim, grid.data(), 0.1, neg.data(), intervals);
+    qdtsne::interpolate::compute_non_edge_forces(tree, grid.size() / ndim, grid.data(), 0.1, neg.data(), intervals);
 
     for (int i = 0; i < intervals; ++i) {
         for (int j = 0; j < intervals; ++j) {

@@ -11,7 +11,7 @@
 
 namespace qdtsne {
 
-namespace interpolator {
+namespace interpolate {
 
 template<int ndim>
 using coords = std::array<double, ndim>;
@@ -85,7 +85,17 @@ double populate_corners(std::unordered_map<size_t, size_t>& collected, std::arra
 }
 
 template<int ndim=2>
-double interpolate_non_edge_forces(const SPTree<ndim>& tree, size_t N, const double* Y, double theta, double* neg, int intervals) {
+double compute_non_edge_forces(
+    const SPTree<ndim>& tree, 
+    size_t N, 
+    const double* Y, 
+    double theta, 
+    double* neg, 
+    int intervals
+#ifdef _OPENMP
+    , std::vector<double>& omp_buffer
+#endif
+) {
     // Get the limits of the existing coordinates.
     coords<ndim> mins, maxs;
     std::fill_n(mins.begin(), ndim, std::numeric_limits<double>::max());
@@ -205,8 +215,10 @@ double interpolate_non_edge_forces(const SPTree<ndim>& tree, size_t N, const dou
         }
     }
 
-    // Final pass for the actual interpolation. TODO: parallelize this with the omp_buffer.
+    // Final pass for the actual interpolation. 
+#ifndef _OPENMP    
     double output_sum = 0;
+#endif
     for (size_t i = 0; i < N; ++i) {
         auto copy = Y + i * ndim;
         auto current = encode<ndim>(copy, mins, step, intervals);
@@ -227,10 +239,18 @@ double interpolate_non_edge_forces(const SPTree<ndim>& tree, size_t N, const dou
             output = slope * delta[0] + intercept;
         }
 
+#ifdef _OPENMP
+        omp_buffer[i] = current_sum;
+#else
         output_sum += current_sum;
+#endif
     }
 
+#ifdef _OPENMP
+    return std::accumulate(omp_buffer.begin(), omp_buffer.end(), 0.0);
+#else
     return output_sum;
+#endif
 }
 
 }

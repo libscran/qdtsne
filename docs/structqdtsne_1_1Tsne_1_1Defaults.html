@@ -102,7 +102,7 @@ Static Public Attributes</h2></td></tr>
 <tr class="separator:a7d9181ee7cafc252ef4885a6a3c70a48"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b14419b2a719d26a1fcf8e17724eccd"><td class="memItemLeft" align="right" valign="top">static constexpr double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structqdtsne_1_1Tsne_1_1Defaults.html#a9b14419b2a719d26a1fcf8e17724eccd">exaggeration_factor</a> = 12</td></tr>
 <tr class="separator:a9b14419b2a719d26a1fcf8e17724eccd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a52deb5e34425320fe6c7be605b2ea305"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structqdtsne_1_1Tsne_1_1Defaults.html#a52deb5e34425320fe6c7be605b2ea305">max_depth</a> = 7</td></tr>
+<tr class="memitem:a52deb5e34425320fe6c7be605b2ea305"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structqdtsne_1_1Tsne_1_1Defaults.html#a52deb5e34425320fe6c7be605b2ea305">max_depth</a> = std::numeric_limits&lt;int&gt;::max()</td></tr>
 <tr class="separator:a52deb5e34425320fe6c7be605b2ea305"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab65c4af2f5d2dc300faccb4df49a419e"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structqdtsne_1_1Tsne_1_1Defaults.html#ab65c4af2f5d2dc300faccb4df49a419e">interpolation</a> = 0</td></tr>
 <tr class="separator:ab65c4af2f5d2dc300faccb4df49a419e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -248,7 +248,7 @@ template&lt;int ndim = 2&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">constexpr int <a class="el" href="classqdtsne_1_1Tsne.html">qdtsne::Tsne</a>&lt; ndim &gt;::Defaults::max_depth = 7</td>
+          <td class="memname">constexpr int <a class="el" href="classqdtsne_1_1Tsne.html">qdtsne::Tsne</a>&lt; ndim &gt;::Defaults::max_depth = std::numeric_limits&lt;int&gt;::max()</td>
         </tr>
       </table>
   </td>

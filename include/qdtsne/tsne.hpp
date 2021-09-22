@@ -46,6 +46,7 @@
 #include <cmath>
 #include <algorithm>
 #include <type_traits>
+#include <limits>
 
 /**
  * @file tsne.hpp
@@ -138,7 +139,7 @@ public:
         /**
          * See `set_max_depth()`.
          */
-        static constexpr int max_depth = 7;
+        static constexpr int max_depth = std::numeric_limits<int>::max();
 
         /**
          * See `set_interpolation()`.
@@ -168,17 +169,6 @@ public:
      */
     Tsne& set_max_iter(int m = Defaults::max_iter) {
         max_iter = m;
-        return *this;
-    }
-
-    /**
-     * @param m Maximum depth of the Barnes-Hut tree.
-     * Larger values improve the quality of the approximation for the repulsive force calculation, at the cost of computational time.
-     *
-     * @return A reference to this `Tsne` object.
-     */
-    Tsne& set_max_depth(int m = Defaults::max_depth) {
-        max_depth = m;
         return *this;
     }
 
@@ -287,6 +277,19 @@ public:
     }
 
     /**
+     * @param m Maximum depth of the Barnes-Hut tree.
+     * Larger values improve the quality of the approximation for the repulsive force calculation, at the cost of computational time.
+     * A value of 7 is a good compromise for most applications.
+     * The default is a very large value, which means that the tree's depth is practically unbounded unless otherwise specified.
+     *
+     * @return A reference to this `Tsne` object.
+     */
+    Tsne& set_max_depth(int m = Defaults::max_depth) {
+        max_depth = m;
+        return *this;
+    }
+
+    /**
      * @param i Length of the grid in each dimension when performing interpolation to compute repulsive forces.
      * Larger values improve the resolution of the grid (and the quality of the approximation) at the cost of computational time.
      * A value of 100 is a good compromise for most applications.
@@ -298,7 +301,6 @@ public:
         interpolation = i;
         return *this;
     }
-
 
 public:
     /**

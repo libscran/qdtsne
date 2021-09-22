@@ -289,6 +289,7 @@ public:
     /**
      * @param i Length of the grid in each dimension when performing interpolation to compute repulsive forces.
      * Larger values improve the resolution of the grid (and the quality of the approximation) at the cost of computational time.
+     * A value of 100 is a good compromise for most applications.
      * If set to 0, no interpolation is performed.
      *
      * @return A reference to this `Tsne` object.

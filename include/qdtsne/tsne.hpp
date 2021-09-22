@@ -36,6 +36,7 @@
 #include "gaussian.hpp"
 #include "symmetrize.hpp"
 #include "sptree.hpp"
+#include "interpolate.hpp"
 
 #ifndef QDTSNE_CUSTOM_NEIGHBORS
 #include "knncolle/knncolle.hpp"
@@ -138,6 +139,11 @@ public:
          * See `set_max_depth()`.
          */
         static constexpr int max_depth = 7;
+
+        /**
+         * See `set_interpolation()`.
+         */
+        static constexpr int interpolation = 0;
     };
 
 private:
@@ -152,6 +158,7 @@ private:
     double eta = Defaults::eta;
     double exaggeration_factor = Defaults::exaggeration_factor;
     int max_depth = Defaults::max_depth;
+    int interpolation = Defaults::interpolation;
 
 public:
     /**
@@ -278,6 +285,20 @@ public:
         theta = t;
         return *this;
     }
+
+    /**
+     * @param i Length of the grid in each dimension when performing interpolation to compute repulsive forces.
+     * Larger values improve the resolution of the grid (and the quality of the approximation) at the cost of computational time.
+     * A value of 100 is a good compromise for most applications.
+     * If set to 0, no interpolation is performed.
+     *
+     * @return A reference to this `Tsne` object.
+     */
+    Tsne& set_interpolation(int i = Defaults::interpolation) {
+        interpolation = i;
+        return *this;
+    }
+
 
 public:
     /**
@@ -485,19 +506,34 @@ private:
         auto& neg_f = status.neg_f;
         std::fill(neg_f.begin(), neg_f.end(), 0);
 
-#ifdef _OPENMP
-        // Don't use reduction methods to ensure that we sum in a consistent order.
-        #pragma omp parallel for
-        for (size_t n = 0; n < N; ++n) {
-            status.omp_buffer[n] = status.tree.compute_non_edge_forces(n, theta, neg_f.data() + n * ndim);
-        }
-        double sum_Q = std::accumulate(status.omp_buffer.begin(), status.omp_buffer.end(), 0.0);
-#else
         double sum_Q = 0;
-        for (size_t n = 0; n < N; ++n) {
-            sum_Q += status.tree.compute_non_edge_forces(n, theta, neg_f.data() + n * ndim);
-        }
+        if (interpolation) {
+            sum_Q = interpolate::compute_non_edge_forces(
+                tree, 
+                N, 
+                Y, 
+                theta, 
+                neg_f.data(), 
+                interpolation
+#ifdef _OPENMP
+                , status.omp_buffer
 #endif
+            );
+
+        } else {
+#ifdef _OPENMP
+            // Don't use reduction methods to ensure that we sum in a consistent order.
+            #pragma omp parallel for
+            for (size_t n = 0; n < N; ++n) {
+                status.omp_buffer[n] = status.tree.compute_non_edge_forces(n, theta, neg_f.data() + n * ndim);
+            }
+            sum_Q = std::accumulate(status.omp_buffer.begin(), status.omp_buffer.end(), 0.0);
+#else
+            for (size_t n = 0; n < N; ++n) {
+                sum_Q += status.tree.compute_non_edge_forces(n, theta, neg_f.data() + n * ndim);
+            }
+#endif
+        }
 
         // Compute final t-SNE gradient
         for (size_t i = 0; i < N * ndim; ++i) {

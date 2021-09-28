@@ -80,47 +80,47 @@ $(function() {
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span>qdtsne {</div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Index&gt;</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="utils_8hpp.html#a3f5b7a34209b4c7bffc8d42821458c5d">   21</a></span><span class="keyword">using</span> <a class="code hl_typedef" href="utils_8hpp.html#a3f5b7a34209b4c7bffc8d42821458c5d">NeighborList</a> = std::vector&lt;std::vector&lt;std::pair&lt;Index, double&gt; &gt; &gt;;</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">template</span>&lt;<span class="keywordtype">int</span> ndim = 2&gt;</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="utils_8hpp.html#adcce1a11ba75b593bd7b0468cee39f72">   37</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="utils_8hpp.html#adcce1a11ba75b593bd7b0468cee39f72">initialize_random</a>(<span class="keywordtype">double</span>* Y, <span class="keywordtype">size_t</span> N, <span class="keywordtype">int</span> seed = 42) {</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    std::mt19937_64 rng(seed);</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordtype">size_t</span> total = N * ndim;</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordtype">bool</span> odd = total % 2;</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">if</span> (odd) {</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        --total;</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    }</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="comment">// Box-Muller gives us two random values at a time.</span></div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; total; i += 2) {</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keyword">auto</span> paired = aarand::standard_normal(rng);</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        Y[i] = paired.first;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        Y[i + 1] = paired.second;</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    }</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordflow">if</span> (odd) {</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="comment">// Adding the poor extra for odd total lengths.</span></div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <span class="keyword">auto</span> paired = aarand::standard_normal(rng);</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        Y[total] = paired.first;</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    }</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>}</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="keyword">template</span>&lt;<span class="keywordtype">int</span> ndim = 2&gt;</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="utils_8hpp.html#a97c2692b4fdb0a120f81bf7b6e06891b">   73</a></span>std::vector&lt;double&gt; <a class="code hl_function" href="utils_8hpp.html#adcce1a11ba75b593bd7b0468cee39f72">initialize_random</a>(<span class="keywordtype">size_t</span> N, <span class="keywordtype">int</span> seed = 42) {</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    std::vector&lt;double&gt; Y(ndim * N);</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    initialize_random&lt;ndim&gt;(Y.data(), N, seed);</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordflow">return</span> Y;</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>}</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="autils_8hpp_html_a3f5b7a34209b4c7bffc8d42821458c5d"><div class="ttname"><a href="utils_8hpp.html#a3f5b7a34209b4c7bffc8d42821458c5d">qdtsne::NeighborList</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; std::pair&lt; Index, double &gt; &gt; &gt; NeighborList</div><div class="ttdef"><b>Definition:</b> utils.hpp:21</div></div>
-<div class="ttc" id="autils_8hpp_html_adcce1a11ba75b593bd7b0468cee39f72"><div class="ttname"><a href="utils_8hpp.html#adcce1a11ba75b593bd7b0468cee39f72">qdtsne::initialize_random</a></div><div class="ttdeci">void initialize_random(double *Y, size_t N, int seed=42)</div><div class="ttdef"><b>Definition:</b> utils.hpp:37</div></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Index, <span class="keyword">typename</span> Float&gt;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="utils_8hpp.html#a705e394d4929f075451d5d1967ad590c">   24</a></span><span class="keyword">using</span> <a class="code hl_typedef" href="utils_8hpp.html#a705e394d4929f075451d5d1967ad590c">NeighborList</a> = std::vector&lt;std::vector&lt;std::pair&lt;Index, Float&gt; &gt; &gt;;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">template</span>&lt;<span class="keywordtype">int</span> ndim = 2, <span class="keyword">typename</span> Float = <span class="keywordtype">double</span>&gt;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="utils_8hpp.html#a1414488fa189a2fd7cd3f97db0e1956e">   41</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="utils_8hpp.html#a1414488fa189a2fd7cd3f97db0e1956e">initialize_random</a>(<span class="keywordtype">double</span>* Y, <span class="keywordtype">size_t</span> N, <span class="keywordtype">int</span> seed = 42) {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    std::mt19937_64 rng(seed);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordtype">size_t</span> total = N * ndim;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">bool</span> odd = total % 2;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">if</span> (odd) {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        --total;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    }</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="comment">// Box-Muller gives us two random values at a time.</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; total; i += 2) {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keyword">auto</span> paired = aarand::standard_normal&lt;Float&gt;(rng);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        Y[i] = paired.first;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        Y[i + 1] = paired.second;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    }</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordflow">if</span> (odd) {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="comment">// Adding the poor extra for odd total lengths.</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <span class="keyword">auto</span> paired = aarand::standard_normal&lt;Float&gt;(rng);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        Y[total] = paired.first;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    }</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>}</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="keyword">template</span>&lt;<span class="keywordtype">int</span> ndim = 2, <span class="keyword">typename</span> Float = <span class="keywordtype">double</span>&gt;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="utils_8hpp.html#a81f07f18a19fe9afbc004be7796ead39">   78</a></span>std::vector&lt;Float&gt; <a class="code hl_function" href="utils_8hpp.html#a1414488fa189a2fd7cd3f97db0e1956e">initialize_random</a>(<span class="keywordtype">size_t</span> N, <span class="keywordtype">int</span> seed = 42) {</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    std::vector&lt;Float&gt; Y(ndim * N);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    initialize_random&lt;ndim&gt;(Y.data(), N, seed);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordflow">return</span> Y;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>}</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>}</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="autils_8hpp_html_a1414488fa189a2fd7cd3f97db0e1956e"><div class="ttname"><a href="utils_8hpp.html#a1414488fa189a2fd7cd3f97db0e1956e">qdtsne::initialize_random</a></div><div class="ttdeci">void initialize_random(double *Y, size_t N, int seed=42)</div><div class="ttdef"><b>Definition:</b> utils.hpp:41</div></div>
+<div class="ttc" id="autils_8hpp_html_a705e394d4929f075451d5d1967ad590c"><div class="ttname"><a href="utils_8hpp.html#a705e394d4929f075451d5d1967ad590c">qdtsne::NeighborList</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; std::pair&lt; Index, Float &gt; &gt; &gt; NeighborList</div><div class="ttdef"><b>Definition:</b> utils.hpp:24</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['run_0',['run',['../classqdtsne_1_1Tsne.html#a29820d39b9ae52c19dcc1f3e7a57781a',1,'qdtsne::Tsne::run(NeighborList&lt; Index &gt; nn, double *Y)'],['../classqdtsne_1_1Tsne.html#a1f3ac47d94f5df4f8cc9bfcd78cc2594',1,'qdtsne::Tsne::run(Status&lt; Index &gt; &amp;status, double *Y)'],['../classqdtsne_1_1Tsne.html#ae03a10379d3dab727c14416820fdb89f',1,'qdtsne::Tsne::run(const Input *input, size_t D, size_t N, double *Y)'],['../classqdtsne_1_1Tsne.html#a1eb0af514d56c85f54a3c5ea660d2a75',1,'qdtsne::Tsne::run(const Algorithm *searcher, double *Y)']]]
+  ['run_0',['run',['../classqdtsne_1_1Tsne.html#a90a9f9cf6ed48a8449ad372057464528',1,'qdtsne::Tsne::run(NeighborList&lt; Index, Float &gt; nn, Float *Y)'],['../classqdtsne_1_1Tsne.html#ad6186c0ca17d49476f490072449d8b36',1,'qdtsne::Tsne::run(Status&lt; Index &gt; &amp;status, Float *Y)'],['../classqdtsne_1_1Tsne.html#a6daf7934f0119b67b3dc6ac642bdfbd7',1,'qdtsne::Tsne::run(const Input *input, size_t D, size_t N, Float *Y)'],['../classqdtsne_1_1Tsne.html#a3d4e648de18a8f3063f754216b9354f9',1,'qdtsne::Tsne::run(const Algorithm *searcher, Float *Y)']]]
 ];

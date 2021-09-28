@@ -80,12 +80,12 @@ $(function() {
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span>qdtsne {</div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Index&gt;</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keywordtype">void</span> symmetrize_matrix(NeighborList&lt;Index&gt;&amp; x) {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Index, <span class="keyword">typename</span> Float&gt;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keywordtype">void</span> symmetrize_matrix(NeighborList&lt;Index, Float&gt;&amp; x) {</div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    std::vector&lt;size_t&gt; last(x.size());</div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    std::vector&lt;size_t&gt; original(x.size());</div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keywordtype">double</span> total = 0;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    Float total = 0;</div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; x.size(); ++i) {</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        <span class="keyword">auto</span>&amp; current = x[i];</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        std::sort(current.begin(), current.end()); <span class="comment">// sorting by ID, see below.</span></div>
@@ -119,7 +119,7 @@ $(function() {
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                    <span class="comment">// Adding the probabilities - but if desired &gt; y.first,</span></div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                    <span class="comment">// then this would have already been done when y.first was</span></div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                    <span class="comment">// &#39;desired&#39;. So we skip this to avoid adding it twice.</span></div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                    <span class="keywordtype">double</span> combined = y.second + target[curlast].second;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                    Float combined = y.second + target[curlast].second;</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                    y.second = combined;</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                    target[curlast].second = combined;</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                }</div>
@@ -130,7 +130,7 @@ $(function() {
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    }</div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="comment">// Divide the result by twice the total, so that it all sums to unity.</span></div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    total *= 2;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    total *= <span class="keyword">static_cast&lt;</span>Float<span class="keyword">&gt;</span>(2);</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; current : x) {</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; y : current) {</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            y.second /= total;</div>

@@ -109,47 +109,54 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a3f5b7a34209b4c7bffc8d42821458c5d"><td class="memTemplParams" colspan="2">template&lt;typename Index &gt; </td></tr>
-<tr class="memitem:a3f5b7a34209b4c7bffc8d42821458c5d"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="utils_8hpp.html#a3f5b7a34209b4c7bffc8d42821458c5d">qdtsne::NeighborList</a> = std::vector&lt; std::vector&lt; std::pair&lt; Index, double &gt; &gt; &gt;</td></tr>
-<tr class="separator:a3f5b7a34209b4c7bffc8d42821458c5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a705e394d4929f075451d5d1967ad590c"><td class="memTemplParams" colspan="2">template&lt;typename Index , typename Float &gt; </td></tr>
+<tr class="memitem:a705e394d4929f075451d5d1967ad590c"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="utils_8hpp.html#a705e394d4929f075451d5d1967ad590c">qdtsne::NeighborList</a> = std::vector&lt; std::vector&lt; std::pair&lt; Index, Float &gt; &gt; &gt;</td></tr>
+<tr class="separator:a705e394d4929f075451d5d1967ad590c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:adcce1a11ba75b593bd7b0468cee39f72"><td class="memTemplParams" colspan="2">template&lt;int ndim = 2&gt; </td></tr>
-<tr class="memitem:adcce1a11ba75b593bd7b0468cee39f72"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="utils_8hpp.html#adcce1a11ba75b593bd7b0468cee39f72">qdtsne::initialize_random</a> (double *Y, size_t N, int seed=42)</td></tr>
-<tr class="separator:adcce1a11ba75b593bd7b0468cee39f72"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a97c2692b4fdb0a120f81bf7b6e06891b"><td class="memTemplParams" colspan="2">template&lt;int ndim = 2&gt; </td></tr>
-<tr class="memitem:a97c2692b4fdb0a120f81bf7b6e06891b"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="utils_8hpp.html#a97c2692b4fdb0a120f81bf7b6e06891b">qdtsne::initialize_random</a> (size_t N, int seed=42)</td></tr>
-<tr class="separator:a97c2692b4fdb0a120f81bf7b6e06891b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1414488fa189a2fd7cd3f97db0e1956e"><td class="memTemplParams" colspan="2">template&lt;int ndim = 2, typename Float  = double&gt; </td></tr>
+<tr class="memitem:a1414488fa189a2fd7cd3f97db0e1956e"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="utils_8hpp.html#a1414488fa189a2fd7cd3f97db0e1956e">qdtsne::initialize_random</a> (double *Y, size_t N, int seed=42)</td></tr>
+<tr class="separator:a1414488fa189a2fd7cd3f97db0e1956e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81f07f18a19fe9afbc004be7796ead39"><td class="memTemplParams" colspan="2">template&lt;int ndim = 2, typename Float  = double&gt; </td></tr>
+<tr class="memitem:a81f07f18a19fe9afbc004be7796ead39"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; Float &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="utils_8hpp.html#a81f07f18a19fe9afbc004be7796ead39">qdtsne::initialize_random</a> (size_t N, int seed=42)</td></tr>
+<tr class="separator:a81f07f18a19fe9afbc004be7796ead39"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Utilities for running t-SNE. </p>
 </div><h2 class="groupheader">Typedef Documentation</h2>
-<a id="a3f5b7a34209b4c7bffc8d42821458c5d" name="a3f5b7a34209b4c7bffc8d42821458c5d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3f5b7a34209b4c7bffc8d42821458c5d">&#9670;&nbsp;</a></span>NeighborList</h2>
+<a id="a705e394d4929f075451d5d1967ad590c" name="a705e394d4929f075451d5d1967ad590c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a705e394d4929f075451d5d1967ad590c">&#9670;&nbsp;</a></span>NeighborList</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Index &gt; </div>
+template&lt;typename Index , typename Float &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="utils_8hpp.html#a3f5b7a34209b4c7bffc8d42821458c5d">qdtsne::NeighborList</a> = typedef std::vector&lt;std::vector&lt;std::pair&lt;Index, double&gt; &gt; &gt;</td>
+          <td class="memname">using <a class="el" href="utils_8hpp.html#a705e394d4929f075451d5d1967ad590c">qdtsne::NeighborList</a> = typedef std::vector&lt;std::vector&lt;std::pair&lt;Index, Float&gt; &gt; &gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >A vector of length equal to the number of observations, where each entry contains the indices of and distances to that observation's nearest neighbors. </p>
+<p >A vector of length equal to the number of observations, where each entry contains the indices of and distances to that observation's nearest neighbors.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Index</td><td>Integer type to use for the indices. </td></tr>
+    <tr><td class="paramname">Float</td><td>Floating-point type to use for the calculations. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="adcce1a11ba75b593bd7b0468cee39f72" name="adcce1a11ba75b593bd7b0468cee39f72"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adcce1a11ba75b593bd7b0468cee39f72">&#9670;&nbsp;</a></span>initialize_random() <span class="overload">[1/2]</span></h2>
+<a id="a1414488fa189a2fd7cd3f97db0e1956e" name="a1414488fa189a2fd7cd3f97db0e1956e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1414488fa189a2fd7cd3f97db0e1956e">&#9670;&nbsp;</a></span>initialize_random() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;int ndim = 2&gt; </div>
+template&lt;int ndim = 2, typename Float  = double&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">void qdtsne::initialize_random </td>
@@ -179,7 +186,8 @@ template&lt;int ndim = 2&gt; </div>
 <p >Initializes the starting locations of each observation in the embedding. We do so using our own implementation of the Box-Muller transform, to avoid problems with differences in the distribution functions across C++ standard library implementations.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">ndim</td><td>Number of dimensions.</td></tr>
+    <tr><td class="paramname">ndim</td><td>Number of dimensions. </td></tr>
+    <tr><td class="paramname">Float</td><td>Floating-point type to use for the calculations.</td></tr>
   </table>
   </dd>
 </dl>
@@ -195,16 +203,16 @@ template&lt;int ndim = 2&gt; </div>
 
 </div>
 </div>
-<a id="a97c2692b4fdb0a120f81bf7b6e06891b" name="a97c2692b4fdb0a120f81bf7b6e06891b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a97c2692b4fdb0a120f81bf7b6e06891b">&#9670;&nbsp;</a></span>initialize_random() <span class="overload">[2/2]</span></h2>
+<a id="a81f07f18a19fe9afbc004be7796ead39" name="a81f07f18a19fe9afbc004be7796ead39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81f07f18a19fe9afbc004be7796ead39">&#9670;&nbsp;</a></span>initialize_random() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;int ndim = 2&gt; </div>
+template&lt;int ndim = 2, typename Float  = double&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; double &gt; qdtsne::initialize_random </td>
+          <td class="memname">std::vector&lt; Float &gt; qdtsne::initialize_random </td>
           <td>(</td>
           <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>N</em>, </td>
@@ -225,7 +233,8 @@ template&lt;int ndim = 2&gt; </div>
 <p >Creates the initial locations of each observation in the embedding.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">ndim</td><td>Number of dimensions.</td></tr>
+    <tr><td class="paramname">ndim</td><td>Number of dimensions. </td></tr>
+    <tr><td class="paramname">Float</td><td>Floating-point type to use for the calculations.</td></tr>
   </table>
   </dd>
 </dl>

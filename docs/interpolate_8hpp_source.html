@@ -72,7 +72,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef QDTSNE_INTERPOLATE_HPP</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define QDTSNE_INTEROPLATE_HPP</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define QDTSNE_INTERPOLATE_HPP</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="utils_8hpp.html">utils.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;sptree.hpp&quot;</span></div>
@@ -86,11 +86,11 @@ $(function() {
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span>interpolate {</div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">template</span>&lt;<span class="keywordtype">int</span> ndim&gt;</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">using</span> coords = std::array&lt;double, ndim&gt;;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">template</span>&lt;<span class="keywordtype">int</span> ndim, <span class="keyword">typename</span> Float&gt;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">using</span> coords = std::array&lt;Float, ndim&gt;;</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">template</span>&lt;<span class="keywordtype">int</span> ndim&gt;</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>std::array&lt;size_t, ndim&gt; encode(<span class="keyword">const</span> <span class="keywordtype">double</span>* data, <span class="keyword">const</span> coords&lt;ndim&gt;&amp; mins, <span class="keyword">const</span> coords&lt;ndim&gt;&amp; step, <span class="keywordtype">int</span> intervals) {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">template</span>&lt;<span class="keywordtype">int</span> ndim, <span class="keyword">typename</span> Float = <span class="keywordtype">double</span>&gt;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>std::array&lt;size_t, ndim&gt; encode(<span class="keyword">const</span> Float* data, <span class="keyword">const</span> coords&lt;ndim, Float&gt;&amp; mins, <span class="keyword">const</span> coords&lt;ndim, Float&gt;&amp; step, <span class="keywordtype">int</span> intervals) {</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    std::array&lt;size_t, ndim&gt; current;</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordtype">size_t</span> limit = intervals - 1;</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> d = 0; d &lt; ndim; ++d, ++data) {</div>
@@ -109,9 +109,9 @@ $(function() {
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">return</span> counter;</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">template</span>&lt;<span class="keywordtype">int</span> ndim&gt;</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>coords&lt;ndim&gt; unhash(<span class="keywordtype">size_t</span> hash, <span class="keyword">const</span> coords&lt;ndim&gt;&amp; mins, <span class="keyword">const</span> coords&lt;ndim&gt;&amp; step, <span class="keywordtype">int</span> intervals) {</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    coords&lt;ndim&gt; current;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">template</span>&lt;<span class="keywordtype">int</span> ndim, <span class="keyword">typename</span> Float&gt;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>coords&lt;ndim, Float&gt; unhash(<span class="keywordtype">size_t</span> hash, <span class="keyword">const</span> coords&lt;ndim, Float&gt;&amp; mins, <span class="keyword">const</span> coords&lt;ndim, Float&gt;&amp; step, <span class="keywordtype">int</span> intervals) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    coords&lt;ndim, Float&gt; current;</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> d = 0; d &lt; ndim; ++d) {</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordtype">int</span> d0 = ndim - d - 1;</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        current[d0] = (hash % (intervals + 1)) * step[d0] + mins[d0];</div>
@@ -131,7 +131,7 @@ $(function() {
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>}</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="keyword">template</span>&lt;<span class="keywordtype">int</span> ndim, <span class="keywordtype">int</span> d = 0&gt;</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="keywordtype">double</span> populate_corners(std::unordered_map&lt;size_t, size_t&gt;&amp; collected, std::array&lt;size_t, ndim&gt; current, <span class="keywordtype">int</span> intervals, <span class="keywordtype">int</span> shifted = 0) {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="keywordtype">void</span> populate_corners(std::unordered_map&lt;size_t, size_t&gt;&amp; collected, std::array&lt;size_t, ndim&gt; current, <span class="keywordtype">int</span> intervals, <span class="keywordtype">int</span> shifted = 0) {</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span>(d == ndim - 1) {</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keyword">auto</span> fill = [&amp;](<span class="keyword">const</span> std::array&lt;size_t, ndim&gt;&amp; x) -&gt; <span class="keywordtype">void</span> {</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <span class="keywordtype">size_t</span> h = hash&lt;ndim&gt;(x, intervals);</div>
@@ -157,22 +157,22 @@ $(function() {
 <div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    }</div>
 <div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>}</div>
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="keyword">template</span>&lt;<span class="keywordtype">int</span> ndim=2&gt;</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="keywordtype">double</span> compute_non_edge_forces(</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keyword">const</span> SPTree&lt;ndim&gt;&amp; tree, </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="keyword">template</span>&lt;<span class="keywordtype">int</span> ndim = 2, <span class="keyword">typename</span> Float = <span class="keywordtype">double</span>&gt;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>Float compute_non_edge_forces(</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keyword">const</span> SPTree&lt;ndim, Float&gt;&amp; tree, </div>
 <div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordtype">size_t</span> N, </div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keyword">const</span> <span class="keywordtype">double</span>* Y, </div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordtype">double</span> theta, </div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordtype">double</span>* neg, </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keyword">const</span> Float* Y, </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    Float theta, </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    Float* neg, </div>
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordtype">int</span> intervals</div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>#ifdef _OPENMP</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    , std::vector&lt;double&gt;&amp; omp_buffer</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    , std::vector&lt;Float&gt;&amp; omp_buffer</div>
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>#endif</div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>) {</div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="comment">// Get the limits of the existing coordinates.</span></div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    coords&lt;ndim&gt; mins, maxs;</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    std::fill_n(mins.begin(), ndim, std::numeric_limits&lt;double&gt;::max());</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    std::fill_n(maxs.begin(), ndim, std::numeric_limits&lt;double&gt;::lowest());</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    coords&lt;ndim, Float&gt; mins, maxs;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    std::fill_n(mins.begin(), ndim, std::numeric_limits&lt;Float&gt;::max());</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    std::fill_n(maxs.begin(), ndim, std::numeric_limits&lt;Float&gt;::lowest());</div>
 <div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    {</div>
 <div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <span class="keyword">const</span> <span class="keyword">auto</span>* copy = Y;</div>
 <div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; N; ++i) {</div>
@@ -183,7 +183,7 @@ $(function() {
 <div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        }</div>
 <div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    }</div>
 <div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    coords&lt;ndim&gt; step;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    coords&lt;ndim, Float&gt; step;</div>
 <div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> d = 0; d &lt; ndim; ++d) {</div>
 <div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        step[d] = (maxs[d] - mins[d]) / intervals;</div>
 <div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keywordflow">if</span> (step[d] == 0) {</div>
@@ -216,7 +216,7 @@ $(function() {
 <div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    std::unordered_map&lt;size_t, size_t&gt; has_zero;</div>
 <div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    has_zero.reserve(waypoints.size());</div>
 <div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keyword">constexpr</span> <span class="keywordtype">int</span> nvalues = ndim + 1;</div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    std::vector&lt;double&gt; collected(nvalues * waypoints.size());</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    std::vector&lt;Float&gt; collected(nvalues * waypoints.size());</div>
 <div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span><span class="preprocessor">#ifdef _OPENMP</span></div>
 <div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    std::vector&lt;size_t&gt; indices(waypoints.size());</div>
 <div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span><span class="preprocessor">#endif</span></div>
@@ -232,7 +232,7 @@ $(function() {
 <div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>            indices[i] = h;</div>
 <div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span><span class="preprocessor">#else</span></div>
 <div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>            <span class="keyword">auto</span> current = unhash&lt;ndim&gt;(h, mins, step, intervals);</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>            <span class="keywordtype">double</span>* curcollected = collected.data() + nvalues * i;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>            Float* curcollected = collected.data() + nvalues * i;</div>
 <div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>            curcollected[ndim] = tree.compute_non_edge_forces(current.data(), theta, curcollected);</div>
 <div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        }</div>
@@ -242,7 +242,7 @@ $(function() {
 <div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span><span class="preprocessor">    #pragma omp parallel for</span></div>
 <div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; indices.size(); ++i) {</div>
 <div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        <span class="keyword">auto</span> current = unhash&lt;ndim&gt;(h, mins, step, intervals);</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        <span class="keywordtype">double</span>* curcollected = collected.data() + nvalues * i;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        Float* curcollected = collected.data() + nvalues * i;</div>
 <div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        curcollected[ndim] = tree.compute_non_edge_forces(current.data(), theta, curcollected);</div>
 <div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    }</div>
 <div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span><span class="preprocessor">#endif</span></div>
@@ -253,7 +253,7 @@ $(function() {
 <div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    }</div>
 <div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <span class="keyword">constexpr</span> <span class="keywordtype">int</span> ncorners = (1 &lt;&lt; ndim);</div>
 <div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <span class="keywordtype">size_t</span> blocksize = ncorners * nvalues;</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    std::vector&lt;double&gt; interpolants(blocksize * has_zero.size());</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    std::vector&lt;Float&gt; interpolants(blocksize * has_zero.size());</div>
 <div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
 <div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; y : has_zero) {</div>
 <div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        <span class="keyword">auto</span> current = unhash&lt;ndim&gt;(y.first, intervals);</div>
@@ -270,15 +270,15 @@ $(function() {
 <div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
 <div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        <span class="comment">// Computing the slopes and intercepts.</span></div>
 <div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> d = 0; d &lt;= ndim; ++d) {</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>            std::array&lt;double, ncorners&gt; obs;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>            std::array&lt;Float, ncorners&gt; obs;</div>
 <div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> o = 0; o &lt; others.size(); ++o) {</div>
 <div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>                obs[o] = collected[nvalues * others[o] + d];</div>
 <div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>            }</div>
 <div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>            <span class="keywordtype">double</span> slope0 = (obs[1] - obs[0]) / step[0];</div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>            <span class="keywordtype">double</span> intercept0 = obs[0];</div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>            <span class="keywordtype">double</span> slope1 = (obs[3] - obs[2]) / step[0];</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>            <span class="keywordtype">double</span> intercept1 = obs[2];</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>            Float slope0 = (obs[1] - obs[0]) / step[0];</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>            Float intercept0 = obs[0];</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>            Float slope1 = (obs[3] - obs[2]) / step[0];</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>            Float intercept1 = obs[2];</div>
 <div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
 <div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>            <span class="keywordtype">size_t</span> offset = y.second * blocksize + d * (1 &lt;&lt; ndim);</div>
 <div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>            interpolants[offset + 0] = (slope1 - slope0) / step[1]; <span class="comment">// slope of the slope.</span></div>
@@ -290,24 +290,24 @@ $(function() {
 <div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span> </div>
 <div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    <span class="comment">// Final pass for the actual interpolation. </span></div>
 <div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span><span class="preprocessor">#ifndef _OPENMP    </span></div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    <span class="keywordtype">double</span> output_sum = 0;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    Float output_sum = 0;</div>
 <div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; N; ++i) {</div>
 <div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        <span class="keyword">auto</span> copy = Y + i * ndim;</div>
 <div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        <span class="keyword">auto</span> current = encode&lt;ndim&gt;(copy, mins, step, intervals);</div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>        std::array&lt;double, ndim&gt; delta;</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>        std::array&lt;Float, ndim&gt; delta;</div>
 <div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> d = 0; d &lt; ndim; ++d, ++copy) {</div>
 <div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>            delta[d] = *copy - (current[d] * step[d] + mins[d]);</div>
 <div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>        }</div>
 <div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span> </div>
 <div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        <span class="keywordtype">size_t</span> h = hash&lt;ndim&gt;(current, intervals);</div>
 <div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>        <span class="keywordtype">size_t</span> counter = has_zero[h]; <span class="comment">// this had better not miss!</span></div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>        <span class="keywordtype">double</span> current_sum = 0;</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>        Float current_sum = 0;</div>
 <div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span> </div>
 <div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> d = 0; d &lt;= ndim; ++d) {</div>
 <div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>            <span class="keywordtype">size_t</span> offset = counter * blocksize + d * ncorners;</div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>            <span class="keywordtype">double</span> slope = interpolants[offset] * delta[1] + interpolants[offset + 1];</div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>            <span class="keywordtype">double</span> intercept = interpolants[offset + 2] * delta[1] + interpolants[offset + 3];</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>            Float slope = interpolants[offset] * delta[1] + interpolants[offset + 1];</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>            Float intercept = interpolants[offset + 2] * delta[1] + interpolants[offset + 3];</div>
 <div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>            <span class="keyword">auto</span>&amp; output = (d == ndim ? current_sum : neg[i * ndim + d]);</div>
 <div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>            output = slope * delta[0] + intercept;</div>
 <div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>        }</div>
@@ -320,7 +320,7 @@ $(function() {
 <div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    }</div>
 <div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span> </div>
 <div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span><span class="preprocessor">#ifdef _OPENMP</span></div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    <span class="keywordflow">return</span> std::accumulate(omp_buffer.begin(), omp_buffer.end(), 0.0);</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    <span class="keywordflow">return</span> std::accumulate(omp_buffer.begin(), omp_buffer.end(), <span class="keyword">static_cast&lt;</span>Float<span class="keyword">&gt;</span>(0));</div>
 <div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span><span class="preprocessor">#else</span></div>
 <div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    <span class="keywordflow">return</span> output_sum;</div>
 <div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span><span class="preprocessor">#endif</span></div>

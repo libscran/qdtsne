@@ -7,12 +7,12 @@
 
 namespace qdtsne {
 
-template<typename Index>
-void symmetrize_matrix(NeighborList<Index>& x) {
+template<typename Index, typename Float>
+void symmetrize_matrix(NeighborList<Index, Float>& x) {
     std::vector<size_t> last(x.size());
     std::vector<size_t> original(x.size());
 
-    double total = 0;
+    Float total = 0;
     for (size_t i = 0; i < x.size(); ++i) {
         auto& current = x[i];
         std::sort(current.begin(), current.end()); // sorting by ID, see below.
@@ -46,7 +46,7 @@ void symmetrize_matrix(NeighborList<Index>& x) {
                     // Adding the probabilities - but if desired > y.first,
                     // then this would have already been done when y.first was
                     // 'desired'. So we skip this to avoid adding it twice.
-                    double combined = y.second + target[curlast].second;
+                    Float combined = y.second + target[curlast].second;
                     y.second = combined;
                     target[curlast].second = combined;
                 }
@@ -57,7 +57,7 @@ void symmetrize_matrix(NeighborList<Index>& x) {
     }
 
     // Divide the result by twice the total, so that it all sums to unity.
-    total *= 2;
+    total *= static_cast<Float>(2);
     for (auto& current : x) {
         for (auto& y : current) {
             y.second /= total;

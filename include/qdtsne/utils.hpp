@@ -16,9 +16,12 @@ namespace qdtsne {
 /**
  * A vector of length equal to the number of observations,
  * where each entry contains the indices of and distances to that observation's nearest neighbors.
+ *
+ * @tparam Index Integer type to use for the indices.
+ * @tparam Float Floating-point type to use for the calculations.
  */
-template<typename Index>
-using NeighborList = std::vector<std::vector<std::pair<Index, double> > >;
+template<typename Index, typename Float>
+using NeighborList = std::vector<std::vector<std::pair<Index, Float> > >;
 
 /**
  * Initializes the starting locations of each observation in the embedding.
@@ -26,6 +29,7 @@ using NeighborList = std::vector<std::vector<std::pair<Index, double> > >;
  * to avoid problems with differences in the distribution functions across C++ standard library implementations.
  *
  * @tparam ndim Number of dimensions.
+ * @tparam Float Floating-point type to use for the calculations.
  *
  * @param[out] Y Pointer to a 2D array with number of rows and columns equal to `ndim` and N`, respectively.
  * @param N Number of observations.
@@ -33,7 +37,7 @@ using NeighborList = std::vector<std::vector<std::pair<Index, double> > >;
  *
  * @return `Y` is filled with random draws from a standard normal distribution. 
  */
-template<int ndim = 2>
+template<int ndim = 2, typename Float = double>
 void initialize_random(double* Y, size_t N, int seed = 42) {
     std::mt19937_64 rng(seed);
 
@@ -45,14 +49,14 @@ void initialize_random(double* Y, size_t N, int seed = 42) {
 
     // Box-Muller gives us two random values at a time.
     for (size_t i = 0; i < total; i += 2) {
-        auto paired = aarand::standard_normal(rng);
+        auto paired = aarand::standard_normal<Float>(rng);
         Y[i] = paired.first;
         Y[i + 1] = paired.second;
     }
 
     if (odd) {
         // Adding the poor extra for odd total lengths.
-        auto paired = aarand::standard_normal(rng);
+        auto paired = aarand::standard_normal<Float>(rng);
         Y[total] = paired.first;
     }
 
@@ -63,15 +67,16 @@ void initialize_random(double* Y, size_t N, int seed = 42) {
  * Creates the initial locations of each observation in the embedding. 
  *
  * @tparam ndim Number of dimensions.
+ * @tparam Float Floating-point type to use for the calculations.
  *
  * @param N Number of observations.
  * @param seed Seed for the random number generator.
  *
  * @return A vector of length `N * ndim` containing random draws from a standard normal distribution. 
  */
-template<int ndim = 2>
-std::vector<double> initialize_random(size_t N, int seed = 42) {
-    std::vector<double> Y(ndim * N);
+template<int ndim = 2, typename Float = double>
+std::vector<Float> initialize_random(size_t N, int seed = 42) {
+    std::vector<Float> Y(ndim * N);
     initialize_random<ndim>(Y.data(), N, seed);
     return Y;
 }

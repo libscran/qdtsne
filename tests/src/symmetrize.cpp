@@ -23,7 +23,7 @@ protected:
             data[r] = dist(rng);
         }
 
-        qdtsne::NeighborList<int> stored(nobs);
+        qdtsne::NeighborList<int, double> stored(nobs);
         knncolle::VpTreeEuclidean<> searcher(ndim, nobs, data.data());
         for (size_t i = 0; i < nobs; ++i) {
             stored[i] = searcher.find_nearest_neighbors(i, k);

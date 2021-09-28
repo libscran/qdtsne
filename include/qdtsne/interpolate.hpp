@@ -1,5 +1,5 @@
 #ifndef QDTSNE_INTERPOLATE_HPP
-#define QDTSNE_INTEROPLATE_HPP
+#define QDTSNE_INTERPOLATE_HPP
 
 #include "utils.hpp"
 #include "sptree.hpp"
@@ -13,11 +13,11 @@ namespace qdtsne {
 
 namespace interpolate {
 
-template<int ndim>
-using coords = std::array<double, ndim>;
+template<int ndim, typename Float>
+using coords = std::array<Float, ndim>;
 
-template<int ndim>
-std::array<size_t, ndim> encode(const double* data, const coords<ndim>& mins, const coords<ndim>& step, int intervals) {
+template<int ndim, typename Float = double>
+std::array<size_t, ndim> encode(const Float* data, const coords<ndim, Float>& mins, const coords<ndim, Float>& step, int intervals) {
     std::array<size_t, ndim> current;
     size_t limit = intervals - 1;
     for (int d = 0; d < ndim; ++d, ++data) {
@@ -36,9 +36,9 @@ size_t hash(const std::array<size_t, ndim>& index, int intervals) {
     return counter;
 }
 
-template<int ndim>
-coords<ndim> unhash(size_t hash, const coords<ndim>& mins, const coords<ndim>& step, int intervals) {
-    coords<ndim> current;
+template<int ndim, typename Float>
+coords<ndim, Float> unhash(size_t hash, const coords<ndim, Float>& mins, const coords<ndim, Float>& step, int intervals) {
+    coords<ndim, Float> current;
     for (int d = 0; d < ndim; ++d) {
         int d0 = ndim - d - 1;
         current[d0] = (hash % (intervals + 1)) * step[d0] + mins[d0];
@@ -58,7 +58,7 @@ std::array<size_t, ndim> unhash(size_t hash, int intervals) {
 }
 
 template<int ndim, int d = 0>
-double populate_corners(std::unordered_map<size_t, size_t>& collected, std::array<size_t, ndim> current, int intervals, int shifted = 0) {
+void populate_corners(std::unordered_map<size_t, size_t>& collected, std::array<size_t, ndim> current, int intervals, int shifted = 0) {
     if constexpr(d == ndim - 1) {
         auto fill = [&](const std::array<size_t, ndim>& x) -> void {
             size_t h = hash<ndim>(x, intervals);
@@ -84,22 +84,22 @@ double populate_corners(std::unordered_map<size_t, size_t>& collected, std::arra
     }
 }
 
-template<int ndim=2>
-double compute_non_edge_forces(
-    const SPTree<ndim>& tree, 
+template<int ndim = 2, typename Float = double>
+Float compute_non_edge_forces(
+    const SPTree<ndim, Float>& tree, 
     size_t N, 
-    const double* Y, 
-    double theta, 
-    double* neg, 
+    const Float* Y, 
+    Float theta, 
+    Float* neg, 
     int intervals
 #ifdef _OPENMP
-    , std::vector<double>& omp_buffer
+    , std::vector<Float>& omp_buffer
 #endif
 ) {
     // Get the limits of the existing coordinates.
-    coords<ndim> mins, maxs;
-    std::fill_n(mins.begin(), ndim, std::numeric_limits<double>::max());
-    std::fill_n(maxs.begin(), ndim, std::numeric_limits<double>::lowest());
+    coords<ndim, Float> mins, maxs;
+    std::fill_n(mins.begin(), ndim, std::numeric_limits<Float>::max());
+    std::fill_n(maxs.begin(), ndim, std::numeric_limits<Float>::lowest());
     {
         const auto* copy = Y;
         for (size_t i = 0; i < N; ++i) {
@@ -110,7 +110,7 @@ double compute_non_edge_forces(
         }
     }
 
-    coords<ndim> step;
+    coords<ndim, Float> step;
     for (int d = 0; d < ndim; ++d) {
         step[d] = (maxs[d] - mins[d]) / intervals;
         if (step[d] == 0) {
@@ -143,7 +143,7 @@ double compute_non_edge_forces(
     std::unordered_map<size_t, size_t> has_zero;
     has_zero.reserve(waypoints.size());
     constexpr int nvalues = ndim + 1;
-    std::vector<double> collected(nvalues * waypoints.size());
+    std::vector<Float> collected(nvalues * waypoints.size());
 #ifdef _OPENMP
     std::vector<size_t> indices(waypoints.size());
 #endif
@@ -159,7 +159,7 @@ double compute_non_edge_forces(
             indices[i] = h;
 #else
             auto current = unhash<ndim>(h, mins, step, intervals);
-            double* curcollected = collected.data() + nvalues * i;
+            Float* curcollected = collected.data() + nvalues * i;
             curcollected[ndim] = tree.compute_non_edge_forces(current.data(), theta, curcollected);
 #endif
         }
@@ -169,7 +169,7 @@ double compute_non_edge_forces(
     #pragma omp parallel for
     for (size_t i = 0; i < indices.size(); ++i) {
         auto current = unhash<ndim>(h, mins, step, intervals);
-        double* curcollected = collected.data() + nvalues * i;
+        Float* curcollected = collected.data() + nvalues * i;
         curcollected[ndim] = tree.compute_non_edge_forces(current.data(), theta, curcollected);
     }
 #endif
@@ -180,7 +180,7 @@ double compute_non_edge_forces(
     }
     constexpr int ncorners = (1 << ndim);
     size_t blocksize = ncorners * nvalues;
-    std::vector<double> interpolants(blocksize * has_zero.size());
+    std::vector<Float> interpolants(blocksize * has_zero.size());
 
     for (const auto& y : has_zero) {
         auto current = unhash<ndim>(y.first, intervals);
@@ -197,15 +197,15 @@ double compute_non_edge_forces(
 
         // Computing the slopes and intercepts.
         for (int d = 0; d <= ndim; ++d) {
-            std::array<double, ncorners> obs;
+            std::array<Float, ncorners> obs;
             for (size_t o = 0; o < others.size(); ++o) {
                 obs[o] = collected[nvalues * others[o] + d];
             }
 
-            double slope0 = (obs[1] - obs[0]) / step[0];
-            double intercept0 = obs[0];
-            double slope1 = (obs[3] - obs[2]) / step[0];
-            double intercept1 = obs[2];
+            Float slope0 = (obs[1] - obs[0]) / step[0];
+            Float intercept0 = obs[0];
+            Float slope1 = (obs[3] - obs[2]) / step[0];
+            Float intercept1 = obs[2];
 
             size_t offset = y.second * blocksize + d * (1 << ndim);
             interpolants[offset + 0] = (slope1 - slope0) / step[1]; // slope of the slope.
@@ -217,24 +217,24 @@ double compute_non_edge_forces(
 
     // Final pass for the actual interpolation. 
 #ifndef _OPENMP    
-    double output_sum = 0;
+    Float output_sum = 0;
 #endif
     for (size_t i = 0; i < N; ++i) {
         auto copy = Y + i * ndim;
         auto current = encode<ndim>(copy, mins, step, intervals);
-        std::array<double, ndim> delta;
+        std::array<Float, ndim> delta;
         for (int d = 0; d < ndim; ++d, ++copy) {
             delta[d] = *copy - (current[d] * step[d] + mins[d]);
         }
 
         size_t h = hash<ndim>(current, intervals);
         size_t counter = has_zero[h]; // this had better not miss!
-        double current_sum = 0;
+        Float current_sum = 0;
 
         for (int d = 0; d <= ndim; ++d) {
             size_t offset = counter * blocksize + d * ncorners;
-            double slope = interpolants[offset] * delta[1] + interpolants[offset + 1];
-            double intercept = interpolants[offset + 2] * delta[1] + interpolants[offset + 3];
+            Float slope = interpolants[offset] * delta[1] + interpolants[offset + 1];
+            Float intercept = interpolants[offset + 2] * delta[1] + interpolants[offset + 3];
             auto& output = (d == ndim ? current_sum : neg[i * ndim + d]);
             output = slope * delta[0] + intercept;
         }
@@ -247,7 +247,7 @@ double compute_non_edge_forces(
     }
 
 #ifdef _OPENMP
-    return std::accumulate(omp_buffer.begin(), omp_buffer.end(), 0.0);
+    return std::accumulate(omp_buffer.begin(), omp_buffer.end(), static_cast<Float>(0));
 #else
     return output_sum;
 #endif

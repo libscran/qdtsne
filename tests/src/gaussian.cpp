@@ -23,7 +23,7 @@ protected:
         return;
     }
 
-    qdtsne::NeighborList<int> neighbors;
+    qdtsne::NeighborList<int, double> neighbors;
 };
 
 TEST_P(GaussianTest, Gaussian) {

@@ -68,6 +68,7 @@ namespace qdtsne {
  *
  * @tparam Number of dimensions of the final embedding.
  * Values typically range from 2-3. 
+ * @tparam Float Floating-point type to use for the calculations.
  *
  * @see
  * van der Maaten, L.J.P. and Hinton, G.E. (2008). 
@@ -79,7 +80,7 @@ namespace qdtsne {
  * Accelerating t-SNE using tree-based algorithms. 
  * _Journal of Machine Learning Research_, 15, 3221-3245.
  */
-template <int ndim=2>
+template <int ndim = 2, typename Float = double>
 class Tsne {
 public:
     /**
@@ -89,7 +90,7 @@ public:
         /**
          * See `set_perplexity()`.
          */
-        static constexpr double perplexity = 30;
+        static constexpr Float perplexity = 30;
 
         /**
          * See `set_infer_perplexity()`.
@@ -99,7 +100,7 @@ public:
         /**
          * See `set_theta()`.
          */
-        static constexpr double theta = 0.5;
+        static constexpr Float theta = 0.5;
 
         /**
          * See `set_max_iter()`.
@@ -119,22 +120,22 @@ public:
         /**
          * See `set_start_momentum()`.
          */
-        static constexpr double start_momentum = 0.5;
+        static constexpr Float start_momentum = 0.5;
 
         /**
          * See `set_final_momentum()`.
          */
-        static constexpr double final_momentum = 0.8;
+        static constexpr Float final_momentum = 0.8;
 
         /**
          * See `set_eta()`.
          */
-        static constexpr double eta = 200;
+        static constexpr Float eta = 200;
 
         /**
          * See `set_exaggeration_factor()`.
          */
-        static constexpr double exaggeration_factor = 12;
+        static constexpr Float exaggeration_factor = 12;
 
         /**
          * See `set_max_depth()`.
@@ -148,16 +149,16 @@ public:
     };
 
 private:
-    double perplexity = Defaults::perplexity;
+    Float perplexity = Defaults::perplexity;
     bool infer_perplexity = Defaults::infer_perplexity;
-    double theta = Defaults::theta;
+    Float theta = Defaults::theta;
     int max_iter = Defaults::max_iter;
     int stop_lying_iter = Defaults::stop_lying_iter;
     int mom_switch_iter = Defaults::mom_switch_iter;
-    double start_momentum = Defaults::start_momentum;
-    double final_momentum = Defaults::final_momentum;
-    double eta = Defaults::eta;
-    double exaggeration_factor = Defaults::exaggeration_factor;
+    Float start_momentum = Defaults::start_momentum;
+    Float final_momentum = Defaults::final_momentum;
+    Float eta = Defaults::eta;
+    Float exaggeration_factor = Defaults::exaggeration_factor;
     int max_depth = Defaults::max_depth;
     int interpolation = Defaults::interpolation;
 
@@ -192,7 +193,7 @@ public:
      *
      * @return A reference to this `Tsne` object.
      */
-    Tsne& set_start_momentum(double s = Defaults::start_momentum) {
+    Tsne& set_start_momentum(Float s = Defaults::start_momentum) {
         start_momentum = s;
         return *this;
     }
@@ -202,7 +203,7 @@ public:
      *
      * @return A reference to this `Tsne` object.
      */
-    Tsne& set_final_momentum(double f = Defaults::final_momentum) {
+    Tsne& set_final_momentum(Float f = Defaults::final_momentum) {
         final_momentum = f;
         return *this;
     }
@@ -227,7 +228,7 @@ public:
      *
      * @return A reference to this `Tsne` object.
      */
-    Tsne& set_eta(double e = Defaults::eta) {
+    Tsne& set_eta(Float e = Defaults::eta) {
         eta = e;
         return *this;
     }
@@ -237,7 +238,7 @@ public:
      *
      * @return A reference to this `Tsne` object.
      */
-    Tsne& set_exaggeration_factor(double e = Defaults::eta) {
+    Tsne& set_exaggeration_factor(Float e = Defaults::eta) {
         exaggeration_factor = e;
         return *this;
     }
@@ -248,7 +249,7 @@ public:
      *
      * @return A reference to this `Tsne` object.
      */
-    Tsne& set_perplexity(double p = Defaults::perplexity) {
+    Tsne& set_perplexity(Float p = Defaults::perplexity) {
         perplexity = p;
         return *this;
     }
@@ -260,7 +261,7 @@ public:
      *
      * @return A reference to this `Tsne` object.
      */
-    Tsne& set_infer_perplexity(double i = Defaults::infer_perplexity) {
+    Tsne& set_infer_perplexity(Float i = Defaults::infer_perplexity) {
         infer_perplexity = i;
         return *this;
     }
@@ -271,7 +272,7 @@ public:
      *
      * @return A reference to this `Tsne` object.
      */
-    Tsne& set_theta(double t = Defaults::theta) {
+    Tsne& set_theta(Float t = Defaults::theta) {
         theta = t;
         return *this;
     }
@@ -316,7 +317,7 @@ public:
         /**
          * @cond
          */
-        Status(NeighborList<Index> nn, int maxdepth) : 
+        Status(NeighborList<Index, Float> nn, int maxdepth) : 
             neighbors(std::move(nn)),
             N(neighbors.size()),
             dY(N * ndim), 
@@ -333,12 +334,12 @@ public:
             return;
         }
 
-        NeighborList<Index> neighbors; 
+        NeighborList<Index, Float> neighbors; 
         const size_t N;
-        std::vector<double> dY, uY, gains, pos_f, neg_f;
+        std::vector<Float> dY, uY, gains, pos_f, neg_f;
 
 #ifdef _OPENMP
-        std::vector<double> omp_buffer;
+        std::vector<Float> omp_buffer;
 #endif
 
         SPTree<ndim> tree;
@@ -368,10 +369,10 @@ public:
      * If `set_infer_perplexity()` is set to `true`, the perplexity is determined from `nn` and the value in `set_perplexity()` is ignored.
      */
     template<typename Index = int>
-    auto initialize(NeighborList<Index> nn) {
-        double perp;
+    auto initialize(NeighborList<Index, Float> nn) {
+        Float perp;
         if (infer_perplexity && nn.size()) {
-            perp = static_cast<double>(nn.front().size())/3;
+            perp = static_cast<Float>(nn.front().size())/3;
         } else {
             perp = perplexity;
         }
@@ -380,7 +381,7 @@ public:
 
 private:
     template<typename Index = int>
-    auto initialize_internal(NeighborList<Index> nn, double perp) {
+    auto initialize_internal(NeighborList<Index, Float> nn, Float perp) {
         Status<typename std::remove_const<Index>::type> status(std::move(nn), max_depth);
 
 #ifdef PROGRESS_PRINTER
@@ -411,8 +412,8 @@ public:
      *
      * If `set_infer_perplexity()` is set to `true`, the perplexity is determined from `nn` and the value in `set_perplexity()` is ignored.
      */
-    template<typename Index = int, typename Dist = double>
-    auto run(NeighborList<Index> nn, double* Y) {
+    template<typename Index = int, typename Dist = Float>
+    auto run(NeighborList<Index, Float> nn, Float* Y) {
         auto status = initialize(std::move(nn));
         run(status, Y);
         return status;
@@ -429,10 +430,10 @@ public:
      * @return A `Status` object containing the final state of the algorithm after applying iterations.
      */
     template<typename Index = int>
-    void run(Status<Index>& status, double* Y) {
+    void run(Status<Index>& status, Float* Y) {
         int& iter = status.iter;
-        double multiplier = (iter < stop_lying_iter ? exaggeration_factor : 1);
-        double momentum = (iter < mom_switch_iter ? start_momentum : final_momentum);
+        Float multiplier = (iter < stop_lying_iter ? exaggeration_factor : 1);
+        Float momentum = (iter < mom_switch_iter ? start_momentum : final_momentum);
 
         for(; iter < max_iter; ++iter) {
             // Stop lying about the P-values after a while, and switch momentum
@@ -450,12 +451,14 @@ public:
     }
 
 private:
-    static double sign(double x) { 
-        return (x == .0 ? .0 : (x < .0 ? -1.0 : 1.0));
+    static Float sign(Float x) { 
+        constexpr Float zero = 0;
+        constexpr Float one = 1;
+        return (x == zero ? zero : (x < zero ? -one : one));
     }
 
     template<typename Index>
-    void iterate(Status<Index>& status,  double* Y, double multiplier, double momentum) {
+    void iterate(Status<Index>& status,  Float* Y, Float multiplier, Float momentum) {
         compute_gradient(status, Y, multiplier);
 
         auto& gains = status.gains;
@@ -465,8 +468,11 @@ private:
 
         // Update gains
         for (size_t i = 0; i < gains.size(); ++i) {
-            double& g = gains[i];
-            g = std::max(0.01, sign(dY[i]) != sign(uY[i]) ? (g + 0.2) : (g * 0.8));
+            Float& g = gains[i];
+            constexpr Float lower_bound = 0.01;
+            constexpr Float to_add = 0.2;
+            constexpr Float to_mult = 0.8;
+            g = std::max(lower_bound, sign(dY[i]) != sign(uY[i]) ? (g + to_add) : (g * to_mult));
         }
 
         // Perform gradient update (with momentum and gains)
@@ -481,7 +487,7 @@ private:
             size_t N = col_P.size();
 
             // Compute means from column-major coordinates.
-            double sum = 0;
+            Float sum = 0;
             for (size_t i = 0; i < N; ++i, start += ndim) {
                 sum += *start;
             }
@@ -498,7 +504,7 @@ private:
 
 private:
     template<typename Index>
-    void compute_gradient(Status<Index>& status, const double* Y, double multiplier) {
+    void compute_gradient(Status<Index>& status, const Float* Y, Float multiplier) {
         auto& tree = status.tree;
         tree.set(Y);
 
@@ -508,7 +514,7 @@ private:
         auto& neg_f = status.neg_f;
         std::fill(neg_f.begin(), neg_f.end(), 0);
 
-        double sum_Q = 0;
+        Float sum_Q = 0;
         if (interpolation) {
             sum_Q = interpolate::compute_non_edge_forces(
                 tree, 
@@ -529,7 +535,7 @@ private:
             for (size_t n = 0; n < N; ++n) {
                 status.omp_buffer[n] = status.tree.compute_non_edge_forces(n, theta, neg_f.data() + n * ndim);
             }
-            sum_Q = std::accumulate(status.omp_buffer.begin(), status.omp_buffer.end(), 0.0);
+            sum_Q = std::accumulate(status.omp_buffer.begin(), status.omp_buffer.end(), static_cast<Float>(0));
 #else
             for (size_t n = 0; n < N; ++n) {
                 sum_Q += status.tree.compute_non_edge_forces(n, theta, neg_f.data() + n * ndim);
@@ -544,7 +550,7 @@ private:
     }
 
     template<typename Index>
-    void compute_edge_forces(Status<Index>& status, const double* Y, double multiplier) {
+    void compute_edge_forces(Status<Index>& status, const Float* Y, Float multiplier) {
         const auto& neighbors = status.neighbors;
         auto& pos_f = status.pos_f;
         std::fill(pos_f.begin(), pos_f.end(), 0);
@@ -552,17 +558,17 @@ private:
         #pragma omp parallel for 
         for (size_t n = 0; n < neighbors.size(); ++n) {
             const auto& current = neighbors[n];
-            const double* self = Y + n * ndim;
-            double* pos_out = pos_f.data() + n * ndim;
+            const Float* self = Y + n * ndim;
+            Float* pos_out = pos_f.data() + n * ndim;
 
             for (const auto& x : current) {
-                double sqdist = 0; 
-                const double* neighbor = Y + x.first * ndim;
+                Float sqdist = 0; 
+                const Float* neighbor = Y + x.first * ndim;
                 for (int d = 0; d < ndim; ++d) {
                     sqdist += (self[d] - neighbor[d]) * (self[d] - neighbor[d]);
                 }
 
-                const double mult = multiplier * x.second / (1 + sqdist);
+                const Float mult = multiplier * x.second / (static_cast<Float>(1) + sqdist);
                 for (int d = 0; d < ndim; ++d) {
                     pos_out[d] += mult * (self[d] - neighbor[d]);
                 }
@@ -588,7 +594,7 @@ public:
      * As with the original t-SNE implementation, it will use vantage point trees for the search.
      * See the other `initialize()` methods to specify a custom search algorithm.
      */
-    template<typename Input = double>
+    template<typename Input = Float>
     auto initialize(const Input* input, size_t D, size_t N) { 
 #ifdef PROGRESS_PRINTER
         PROGRESS_PRINTER("qdtsne::Tsne::initialize", "Constructing neighbor search indices")
@@ -610,8 +616,8 @@ public:
      *
      * @return A `Status` object containing the final state of the algorithm after applying all iterations.
      */
-    template<typename Input = double>
-    auto run(const Input* input, size_t D, size_t N, double* Y) {
+    template<typename Input = Float>
+    auto run(const Input* input, size_t D, size_t N, Float* Y) {
         auto status = initialize(input, D, N);
         run(status, Y);
         return status;
@@ -638,7 +644,7 @@ public:
 #ifdef PROGRESS_PRINTER
         PROGRESS_PRINTER("qdtsne::Tsne::initialize", "Searching for nearest neighbors")
 #endif
-        NeighborList<decltype(searcher->nobs())> neighbors(N);
+        NeighborList<decltype(searcher->nobs()), Float> neighbors(N);
 
         #pragma omp parallel for
         for (size_t i = 0; i < N; ++i) {
@@ -659,7 +665,7 @@ public:
      * @return A `Status` object containing the final state of the algorithm after applying all iterations.
      */
     template<class Algorithm> 
-    auto run(const Algorithm* searcher, double* Y) {
+    auto run(const Algorithm* searcher, Float* Y) {
         auto status = initialize(searcher);
         run(status, Y);
         return status;

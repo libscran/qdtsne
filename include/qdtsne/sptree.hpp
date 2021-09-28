@@ -40,11 +40,11 @@
 
 namespace qdtsne {
 
-template<int ndim>
+template<int ndim, typename Float = double>
 class SPTree {
 public:
     SPTree(size_t n, int max) : N(n), maxdepth(max), locations(N) {
-        store.reserve(std::min(static_cast<double>(n), std::pow(4.0, static_cast<double>(maxdepth))) * 2);
+        store.reserve(std::min(static_cast<Float>(n), std::pow(static_cast<Float>(4.0), static_cast<Float>(maxdepth))) * 2);
         return;
     }
 
@@ -52,7 +52,7 @@ public:
     struct Node {
         static constexpr int nchildren = (1 << ndim); 
 
-        Node(const double* point) {
+        Node(const Float* point) {
             std::copy_n(point, ndim, center_of_mass.data());
             fill();
             return;
@@ -71,15 +71,15 @@ public:
         }
 
         std::array<size_t, nchildren> children;
-        std::array<double, ndim> midpoint, halfwidth;
-        std::array<double, ndim> center_of_mass;
+        std::array<Float, ndim> midpoint, halfwidth;
+        std::array<Float, ndim> center_of_mass;
 
         int number = 1;
         bool is_leaf = true;
     };
 
 private:
-    const double * data = NULL;
+    const Float * data = NULL;
     size_t N;
     int maxdepth;
     std::vector<Node> store;
@@ -87,7 +87,7 @@ private:
     std::vector<size_t> self;
 
 public:
-    void set(const double* Y) {
+    void set(const Float* Y) {
         data = Y;
 
         store.clear();
@@ -99,9 +99,9 @@ public:
         self.push_back(0); // placeholder for the root node.
 
         {
-            std::array<double, ndim> min_Y{}, max_Y{};
-            std::fill_n(min_Y.begin(), ndim, std::numeric_limits<double>::max());
-            std::fill_n(max_Y.begin(), ndim, std::numeric_limits<double>::lowest());
+            std::array<Float, ndim> min_Y{}, max_Y{};
+            std::fill_n(min_Y.begin(), ndim, std::numeric_limits<Float>::max());
+            std::fill_n(max_Y.begin(), ndim, std::numeric_limits<Float>::lowest());
 
             auto& mean_Y = store[0].midpoint;
             auto copy = Y;
@@ -119,7 +119,7 @@ public:
 
             auto& halfwidth = store[0].halfwidth;
             for (int d = 0; d < ndim; ++d) {
-                halfwidth[d] = std::max(max_Y[d] - mean_Y[d], mean_Y[d] - min_Y[d]) + 1e-5;
+                halfwidth[d] = std::max(max_Y[d] - mean_Y[d], mean_Y[d] - min_Y[d]) + static_cast<Float>(1e-5);
             }
         }
 
@@ -163,8 +163,8 @@ public:
                 // Online update of cumulative size and center-of-mass
                 auto& node = store[child_loc];
                 ++node.number;
-                const double cum_size = node.number;
-                const double mult1 = (cum_size - 1) / cum_size;
+                const Float cum_size = node.number;
+                const Float mult1 = (cum_size - 1) / cum_size;
 
                 for (int d = 0; d < ndim; ++d) {
                     node.center_of_mass[d] *= mult1;
@@ -181,7 +181,7 @@ public:
     }
 
 private:
-    size_t find_child (size_t parent, const double* point, bool * side) const {
+    size_t find_child (size_t parent, const Float* point, bool * side) const {
         int multiplier = 1;
         size_t child = 0;
         for (int c = 0; c < ndim; ++c) {
@@ -196,7 +196,7 @@ private:
         auto& current = store[child];
         auto& parental = store[parent];
         for (int c = 0; c < ndim; ++c) {
-            current.halfwidth[c] = parental.halfwidth[c] / 2.0;
+            current.halfwidth[c] = parental.halfwidth[c] / static_cast<Float>(2);
             if (keep[c]) {
                 current.midpoint[c] = parental.midpoint[c] + current.halfwidth[c];
             } else {
@@ -207,9 +207,9 @@ private:
     }
 
 public:
-    double compute_non_edge_forces(size_t index, double theta, double* neg_f) const {
-        double result_sum = 0;
-        const double * point = data + index * ndim;
+    Float compute_non_edge_forces(size_t index, Float theta, Float* neg_f) const {
+        Float result_sum = 0;
+        const Float * point = data + index * ndim;
         const auto& cur_children = store[0].children;
         std::fill_n(neg_f, ndim, 0);
 
@@ -222,8 +222,8 @@ public:
         return result_sum;
     }
 
-    double compute_non_edge_forces(const double * point, double theta, double* neg_f) const {
-        double result_sum = 0;
+    Float compute_non_edge_forces(const Float * point, Float theta, Float* neg_f) const {
+        Float result_sum = 0;
         const auto& cur_children = store[0].children;
         std::fill_n(neg_f, ndim, 0);
 
@@ -237,10 +237,10 @@ public:
     }
 
 private:
-    double compute_non_edge_forces(size_t index, const double* point, double theta, double* neg_f, size_t position) const {
+    Float compute_non_edge_forces(size_t index, const Float* point, Float theta, Float* neg_f, size_t position) const {
         const auto& node = store[position];
-        std::array<double, ndim> temp;
-        const double * center = node.center_of_mass.data();
+        std::array<Float, ndim> temp;
+        const Float * center = node.center_of_mass.data();
 
         if (index < N && position == locations[index]) {
             if (node.number == 1) {
@@ -254,7 +254,7 @@ private:
         }
 
         // Compute squared distance between point and center-of-mass
-        double sqdist = 0;
+        Float sqdist = 0;
         for (int d = 0; d < ndim; ++d) {
             sqdist += (point[d] - center[d]) * (point[d] - center[d]);
         }
@@ -262,15 +262,15 @@ private:
         // Check whether we can use this node as a "summary"
         bool skip_children = node.is_leaf;
         if (!skip_children) {
-            double max_halfwidth = *std::max_element(node.halfwidth.begin(), node.halfwidth.end());
+            Float max_halfwidth = *std::max_element(node.halfwidth.begin(), node.halfwidth.end());
             skip_children = (max_halfwidth < theta * std::sqrt(sqdist));
         }
 
-        double result_sum = 0;
+        Float result_sum = 0;
         if (skip_children) {
             // Compute and add t-SNE force between point and current node.
-            const double div = 1.0 / (1.0 + sqdist);
-            double mult = node.number * div;
+            const Float div = static_cast<Float>(1) / (static_cast<Float>(1) + sqdist);
+            Float mult = node.number * div;
             result_sum += mult;
             mult *= div;
 

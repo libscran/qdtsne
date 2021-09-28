@@ -25,7 +25,7 @@ protected:
     }
 
     std::vector<double> X;
-    qdtsne::NeighborList<int> neighbors;
+    qdtsne::NeighborList<int, double> neighbors;
 };
 
 TEST_P(TsneTester, Initialization) {

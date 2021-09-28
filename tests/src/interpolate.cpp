@@ -91,7 +91,7 @@ protected:
     int N;
     int intervals;
     std::vector<double> Y;
-    qdtsne::interpolate::coords<ndim> mins, maxs, step;
+    qdtsne::interpolate::coords<ndim, double> mins, maxs, step;
 };
 
 TEST_P(InterpolateTester, ExactGrid) {

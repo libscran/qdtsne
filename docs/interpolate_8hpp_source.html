@@ -241,96 +241,98 @@ $(function() {
 <div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span><span class="preprocessor">#ifdef _OPENMP</span></div>
 <div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span><span class="preprocessor">    #pragma omp parallel for</span></div>
 <div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; indices.size(); ++i) {</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        <span class="keyword">auto</span> current = unhash&lt;ndim&gt;(h, mins, step, intervals);</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        Float* curcollected = collected.data() + nvalues * i;</div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        curcollected[ndim] = tree.compute_non_edge_forces(current.data(), theta, curcollected);</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    }</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span> </div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    <span class="comment">// Third pass to precompute the interpolating structures. </span></div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span>(ndim != 2) {</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;interpolation is not yet supported for ndim != 2&quot;</span>);</div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    }</div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <span class="keyword">constexpr</span> <span class="keywordtype">int</span> ncorners = (1 &lt;&lt; ndim);</div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <span class="keywordtype">size_t</span> blocksize = ncorners * nvalues;</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    std::vector&lt;Float&gt; interpolants(blocksize * has_zero.size());</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; y : has_zero) {</div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        <span class="keyword">auto</span> current = unhash&lt;ndim&gt;(y.first, intervals);</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        <span class="comment">// Finding the other points in the same box, by traversing the corners.</span></div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        std::array&lt;size_t, ncorners&gt; others; </div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        others[0] = waypoints[hash&lt;ndim&gt;(current, intervals)];</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        ++current[0];</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        others[1] = waypoints[hash&lt;ndim&gt;(current, intervals)];</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        ++current[1];</div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        others[3] = waypoints[hash&lt;ndim&gt;(current, intervals)];</div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        --current[0];</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        others[2] = waypoints[hash&lt;ndim&gt;(current, intervals)];</div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        <span class="comment">// Computing the slopes and intercepts.</span></div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> d = 0; d &lt;= ndim; ++d) {</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>            std::array&lt;Float, ncorners&gt; obs;</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> o = 0; o &lt; others.size(); ++o) {</div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>                obs[o] = collected[nvalues * others[o] + d];</div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>            }</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>            Float slope0 = (obs[1] - obs[0]) / step[0];</div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>            Float intercept0 = obs[0];</div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>            Float slope1 = (obs[3] - obs[2]) / step[0];</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>            Float intercept1 = obs[2];</div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>            <span class="keywordtype">size_t</span> offset = y.second * blocksize + d * (1 &lt;&lt; ndim);</div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>            interpolants[offset + 0] = (slope1 - slope0) / step[1]; <span class="comment">// slope of the slope.</span></div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>            interpolants[offset + 1] = slope0; <span class="comment">// intercept of the slope.</span></div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>            interpolants[offset + 2] = (intercept1 - intercept0) / step[1]; <span class="comment">// slope of the intercept.</span></div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>            interpolants[offset + 3] = intercept0; <span class="comment">// intercept of the intercept.</span></div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>        }</div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    }</div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span> </div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    <span class="comment">// Final pass for the actual interpolation. </span></div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span><span class="preprocessor">#ifndef _OPENMP    </span></div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    Float output_sum = 0;</div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; N; ++i) {</div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        <span class="keyword">auto</span> copy = Y + i * ndim;</div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        <span class="keyword">auto</span> current = encode&lt;ndim&gt;(copy, mins, step, intervals);</div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>        std::array&lt;Float, ndim&gt; delta;</div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> d = 0; d &lt; ndim; ++d, ++copy) {</div>
-<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>            delta[d] = *copy - (current[d] * step[d] + mins[d]);</div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>        }</div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span> </div>
-<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        <span class="keywordtype">size_t</span> h = hash&lt;ndim&gt;(current, intervals);</div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>        <span class="keywordtype">size_t</span> counter = has_zero[h]; <span class="comment">// this had better not miss!</span></div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>        Float current_sum = 0;</div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span> </div>
-<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> d = 0; d &lt;= ndim; ++d) {</div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>            <span class="keywordtype">size_t</span> offset = counter * blocksize + d * ncorners;</div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>            Float slope = interpolants[offset] * delta[1] + interpolants[offset + 1];</div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>            Float intercept = interpolants[offset + 2] * delta[1] + interpolants[offset + 3];</div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>            <span class="keyword">auto</span>&amp; output = (d == ndim ? current_sum : neg[i * ndim + d]);</div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>            output = slope * delta[0] + intercept;</div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>        }</div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span> </div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span><span class="preprocessor">#ifdef _OPENMP</span></div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>        omp_buffer[i] = current_sum;</div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>        output_sum += current_sum;</div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    }</div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span> </div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span><span class="preprocessor">#ifdef _OPENMP</span></div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    <span class="keywordflow">return</span> std::accumulate(omp_buffer.begin(), omp_buffer.end(), <span class="keyword">static_cast&lt;</span>Float<span class="keyword">&gt;</span>(0));</div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    <span class="keywordflow">return</span> output_sum;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        <span class="keyword">auto</span> h = indices[i];</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        <span class="keyword">auto</span> current = unhash&lt;ndim&gt;(h, mins, step, intervals);</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        Float* curcollected = collected.data() + nvalues * i;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        curcollected[ndim] = tree.compute_non_edge_forces(current.data(), theta, curcollected);</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    }</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    <span class="comment">// Third pass to precompute the interpolating structures. </span></div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span>(ndim != 2) {</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;interpolation is not yet supported for ndim != 2&quot;</span>);</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    }</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>    <span class="keyword">constexpr</span> <span class="keywordtype">int</span> ncorners = (1 &lt;&lt; ndim);</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <span class="keywordtype">size_t</span> blocksize = ncorners * nvalues;</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    std::vector&lt;Float&gt; interpolants(blocksize * has_zero.size());</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; y : has_zero) {</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <span class="keyword">auto</span> current = unhash&lt;ndim&gt;(y.first, intervals);</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span> </div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <span class="comment">// Finding the other points in the same box, by traversing the corners.</span></div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        std::array&lt;size_t, ncorners&gt; others; </div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        others[0] = waypoints[hash&lt;ndim&gt;(current, intervals)];</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        ++current[0];</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        others[1] = waypoints[hash&lt;ndim&gt;(current, intervals)];</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        ++current[1];</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        others[3] = waypoints[hash&lt;ndim&gt;(current, intervals)];</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        --current[0];</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        others[2] = waypoints[hash&lt;ndim&gt;(current, intervals)];</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <span class="comment">// Computing the slopes and intercepts.</span></div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> d = 0; d &lt;= ndim; ++d) {</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>            std::array&lt;Float, ncorners&gt; obs;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> o = 0; o &lt; others.size(); ++o) {</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>                obs[o] = collected[nvalues * others[o] + d];</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>            }</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span> </div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>            Float slope0 = (obs[1] - obs[0]) / step[0];</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>            Float intercept0 = obs[0];</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>            Float slope1 = (obs[3] - obs[2]) / step[0];</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>            Float intercept1 = obs[2];</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span> </div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>            <span class="keywordtype">size_t</span> offset = y.second * blocksize + d * (1 &lt;&lt; ndim);</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>            interpolants[offset + 0] = (slope1 - slope0) / step[1]; <span class="comment">// slope of the slope.</span></div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>            interpolants[offset + 1] = slope0; <span class="comment">// intercept of the slope.</span></div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>            interpolants[offset + 2] = (intercept1 - intercept0) / step[1]; <span class="comment">// slope of the intercept.</span></div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>            interpolants[offset + 3] = intercept0; <span class="comment">// intercept of the intercept.</span></div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>        }</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    }</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span> </div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    <span class="comment">// Final pass for the actual interpolation. </span></div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span><span class="preprocessor">#ifndef _OPENMP</span></div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    Float output_sum = 0;</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span><span class="preprocessor">    #pragma omp parallel for</span></div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; N; ++i) {</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>        <span class="keyword">auto</span> copy = Y + i * ndim;</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>        <span class="keyword">auto</span> current = encode&lt;ndim&gt;(copy, mins, step, intervals);</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>        std::array&lt;Float, ndim&gt; delta;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> d = 0; d &lt; ndim; ++d, ++copy) {</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>            delta[d] = *copy - (current[d] * step[d] + mins[d]);</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        }</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span> </div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>        <span class="keywordtype">size_t</span> h = hash&lt;ndim&gt;(current, intervals);</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>        <span class="keywordtype">size_t</span> counter = has_zero[h]; <span class="comment">// this had better not miss!</span></div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>        Float current_sum = 0;</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span> </div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> d = 0; d &lt;= ndim; ++d) {</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>            <span class="keywordtype">size_t</span> offset = counter * blocksize + d * ncorners;</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>            Float slope = interpolants[offset] * delta[1] + interpolants[offset + 1];</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>            Float intercept = interpolants[offset + 2] * delta[1] + interpolants[offset + 3];</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>            <span class="keyword">auto</span>&amp; output = (d == ndim ? current_sum : neg[i * ndim + d]);</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>            output = slope * delta[0] + intercept;</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>        }</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span> </div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span><span class="preprocessor">#ifdef _OPENMP</span></div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>        omp_buffer[i] = current_sum;</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>        output_sum += current_sum;</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    }</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span> </div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span><span class="preprocessor">#ifdef _OPENMP</span></div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    Float output_sum = std::accumulate(omp_buffer.begin(), omp_buffer.end(), <span class="keyword">static_cast&lt;</span>Float<span class="keyword">&gt;</span>(0));</div>
 <div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>}</div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span> </div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span> </div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    <span class="keywordflow">return</span> output_sum;</div>
 <div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>}</div>
 <div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span> </div>
 <div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>}</div>
 <div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span> </div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>}</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span> </div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="autils_8hpp_html"><div class="ttname"><a href="utils_8hpp.html">utils.hpp</a></div><div class="ttdoc">Utilities for running t-SNE.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

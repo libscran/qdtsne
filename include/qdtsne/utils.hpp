@@ -38,7 +38,7 @@ using NeighborList = std::vector<std::vector<std::pair<Index, Float> > >;
  * @return `Y` is filled with random draws from a standard normal distribution. 
  */
 template<int ndim = 2, typename Float = double>
-void initialize_random(double* Y, size_t N, int seed = 42) {
+void initialize_random(Float* Y, size_t N, int seed = 42) {
     std::mt19937_64 rng(seed);
 
     size_t total = N * ndim;

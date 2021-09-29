@@ -342,7 +342,7 @@ public:
         std::vector<Float> omp_buffer;
 #endif
 
-        SPTree<ndim> tree;
+        SPTree<ndim, Float> tree;
 
         int iter = 0;
         /**

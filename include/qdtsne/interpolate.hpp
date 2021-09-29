@@ -168,6 +168,7 @@ Float compute_non_edge_forces(
 #ifdef _OPENMP
     #pragma omp parallel for
     for (size_t i = 0; i < indices.size(); ++i) {
+        auto h = indices[i];
         auto current = unhash<ndim>(h, mins, step, intervals);
         Float* curcollected = collected.data() + nvalues * i;
         curcollected[ndim] = tree.compute_non_edge_forces(current.data(), theta, curcollected);
@@ -216,9 +217,10 @@ Float compute_non_edge_forces(
     }
 
     // Final pass for the actual interpolation. 
-#ifndef _OPENMP    
+#ifndef _OPENMP
     Float output_sum = 0;
 #endif
+    #pragma omp parallel for
     for (size_t i = 0; i < N; ++i) {
         auto copy = Y + i * ndim;
         auto current = encode<ndim>(copy, mins, step, intervals);
@@ -247,10 +249,10 @@ Float compute_non_edge_forces(
     }
 
 #ifdef _OPENMP
-    return std::accumulate(omp_buffer.begin(), omp_buffer.end(), static_cast<Float>(0));
-#else
-    return output_sum;
+    Float output_sum = std::accumulate(omp_buffer.begin(), omp_buffer.end(), static_cast<Float>(0));
 #endif
+
+    return output_sum;
 }
 
 }

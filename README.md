@@ -92,7 +92,7 @@ We have introduced an extra `max_depth` parameter that bounds the depth of the q
 All nodes at the maximum depth are designated as leaf nodes; if multiple observations are present, they are aggregated into the center of mass for that node.
 This provides an upper bound on the runtime of the force calculation for each observation, e.g., a maximum depth of 7 means that there can be no more than 16384 leaf nodes 
 
-We have also added an `interpolation` parameter that causes the algorithm to use interpolation to compute the repulsive forces.
+We have also added an `interpolation` parameter that instructs the library to use interpolation to compute the repulsive forces.
 Specifically, it divides up the bounding box for the current embedding into a grid of length equal to `interpolation` in each dimension.
 We compute the repulsive forces at each grid point and then perform linear interpolation to obtain the force at each point inside the grid.
 
@@ -101,6 +101,9 @@ Some timings with the `gallery/speedtest.cpp` code indicate that the improvement
 - Without any approximation, the iterations take 114 ± 1 seconds.
 - With `max_depth = 7`, the iterations take 85 ± 2 seonds.
 - With `max_depth = 7` and `interpolation = 100`, the iterations take 46 ± 1 seconds.
+
+And of course, users can enable OpenMP to throw more threads at the problem.
+With 4 threads and `max_depth` and `interpolation` set as above, the iterations go down to 23 seconds.
 
 ## References
 

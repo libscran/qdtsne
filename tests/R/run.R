@@ -3,6 +3,9 @@ library(Rcpp)
 if (!file.exists("qdtsne")) {
     file.symlink("../../include/qdtsne", "qdtsne")
 }
+if (!file.exists("aarand")) {
+    file.symlink("../../build/_deps/aarand-src/include/aarand", "aarand")
+}
 sourceCpp("test.cpp")
 
 # Generating some data.

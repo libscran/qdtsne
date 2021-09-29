@@ -10,6 +10,13 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
+    - name: Get latest CMake
+      uses: lukka/get-cmake@latest
+
+    - name: Drag in dependencies 
+      if: ${{ matrix.config.cov == false }}
+      run: cmake -S . -B build -DBUILD_TESTING=OFF
+
     - name: Install packages
       shell: Rscript {0}
       run: |

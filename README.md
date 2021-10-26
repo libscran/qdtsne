@@ -88,22 +88,27 @@ If you are instead supplying your own neighbor search, this dependency can be el
 
 ## Approximations for speed
 
+The Barnes-Hut implementation (inherited from the 2014 paper) speeds up the algorithm by approximating the repulsive forces.
+Specifically, the algorithm consolidates a group of distant points into a single center of mass, avoiding the need to calculate forces between individual points. 
+The definition of "distant" is determined by the `theta` parameter, where larger values sacrifice accuracy for speed.
+However, it must be said that the default `theta` is already appropriate in most settings; further increases may result in a noticeable deterioration in the visualization.
+
 We have introduced an extra `max_depth` parameter that bounds the depth of the quad trees used for the Barnes-Hut force calculations.
 All nodes at the maximum depth are designated as leaf nodes; if multiple observations are present, they are aggregated into the center of mass for that node.
-This provides an upper bound on the runtime of the force calculation for each observation, e.g., a maximum depth of 7 means that there can be no more than 16384 leaf nodes 
+This provides an upper bound on the runtime of the force calculation for each observation, e.g., a maximum depth of 7 means that there can be no more than 16384 leaf nodes.
+Some timings with `gallery/speedtest.cpp` suggest that a moderate improvement in run-time is possible;
+without any approximation, the iterations take 114 ± 1 seconds, while with `max_depth = 7`, the iterations take 85 ± 2 seconds.
 
-We have also added an `interpolation` parameter that instructs the library to use interpolation to compute the repulsive forces.
+We have also added an `interpolation` parameter that instructs the library to interpolate the repulsive forces for each observations.
 Specifically, it divides up the bounding box for the current embedding into a grid of length equal to `interpolation` in each dimension.
-We compute the repulsive forces at each grid point and then perform linear interpolation to obtain the force at each point inside the grid.
+We compute the repulsive forces at each grid point and perform linear interpolation to obtain the force at each point inside the grid.
+This offers a large speed-up when the number of observations is much greater than the number of possible grid points.
+We suggest using a grid resolution of 200 to ensure that artificial "edge effects" from interpolation are not visible.
+(This implies that the dataset must have more than 40000 observations for the interpolation to provide any speed benefit.)
 
-Some timings with the `gallery/speedtest.cpp` code indicate that the improvements can be considerable:
-
-- Without any approximation, the iterations take 114 ± 1 seconds.
-- With `max_depth = 7`, the iterations take 85 ± 2 seonds.
-- With `max_depth = 7` and `interpolation = 100`, the iterations take 46 ± 1 seconds.
-
-And of course, users can enable OpenMP to throw more threads at the problem.
-With 4 threads and `max_depth` and `interpolation` set as above, the iterations go down to 23 seconds.
+Of course, users can enable OpenMP to throw more threads at the problem.
+With 4 threads and `max_depth` set as above, the iterations go down to 27 seconds.
+The results are agnostic to the choice of parallelization, i.e., you can get the same results with or without using OpenMP.
 
 ## References
 

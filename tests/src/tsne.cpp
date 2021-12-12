@@ -100,6 +100,7 @@ TEST_P(TsneTester, Runner) {
 
     auto status = thing.run(neighbors, Y.data());
     EXPECT_NE(old, Y); // there was some effect...
+    EXPECT_EQ(status.nobs(), N); 
     EXPECT_EQ(status.iteration(), 1000); // actually ran through the specified iterations
 
     // Check that coordinates are zero-mean.

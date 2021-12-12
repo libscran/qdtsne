@@ -319,23 +319,18 @@ public:
          */
         Status(NeighborList<Index, Float> nn, int maxdepth) : 
             neighbors(std::move(nn)),
-            N(neighbors.size()),
-            dY(N * ndim), 
-            uY(N * ndim), 
-            gains(N * ndim, 1.0), 
-            pos_f(N * ndim), 
-            neg_f(N * ndim), 
-            tree(N, maxdepth)
+            dY(neighbors.size() * ndim), 
+            uY(neighbors.size() * ndim), 
+            gains(neighbors.size() * ndim, 1.0), 
+            pos_f(neighbors.size() * ndim), 
+            neg_f(neighbors.size() * ndim), 
+            tree(neighbors.size(), maxdepth)
 #ifdef _OPENMP
-            , omp_buffer(N)
+            , omp_buffer(neighbors.size())
 #endif
-        {
-            neighbors.reserve(N);
-            return;
-        }
+        {}
 
         NeighborList<Index, Float> neighbors; 
-        const size_t N;
         std::vector<Float> dY, uY, gains, pos_f, neg_f;
 
 #ifdef _OPENMP
@@ -354,6 +349,13 @@ public:
          */
         int iteration() const {
             return iter;
+        }
+
+        /**
+         * @return The number of observations in the dataset.
+         */
+        size_t nobs() const {
+            return neighbors.size();
         }
     };
 

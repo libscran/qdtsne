@@ -115,6 +115,8 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a673dd037719d1b1824da29e20fd1618d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utils_8hpp.html#a673dd037719d1b1824da29e20fd1618d">qdtsne::perplexity_to_k</a> (double perplexity)</td></tr>
+<tr class="separator:a673dd037719d1b1824da29e20fd1618d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac440bd84565b633afd95352c01ff235"><td class="memTemplParams" colspan="2">template&lt;int ndim = 2, typename Float  = double&gt; </td></tr>
 <tr class="memitem:aac440bd84565b633afd95352c01ff235"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="utils_8hpp.html#aac440bd84565b633afd95352c01ff235">qdtsne::initialize_random</a> (Float *Y, size_t N, int seed=42)</td></tr>
 <tr class="separator:aac440bd84565b633afd95352c01ff235"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -246,6 +248,40 @@ template&lt;int ndim = 2, typename Float  = double&gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A vector of length <code>N * ndim</code> containing random draws from a standard normal distribution. </dd></dl>
+
+</div>
+</div>
+<a id="a673dd037719d1b1824da29e20fd1618d" name="a673dd037719d1b1824da29e20fd1618d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a673dd037719d1b1824da29e20fd1618d">&#9670;&nbsp;</a></span>perplexity_to_k()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int qdtsne::perplexity_to_k </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>perplexity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p >Determines the appropriate number of neighbors, given a perplexity value. Useful when the neighbor search is conducted outside of the <code>Tsne</code> class.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Perplexity</td><td>to use in the t-SNE algorithm. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Number of nearest neighbors to find. </dd></dl>
 
 </div>
 </div>

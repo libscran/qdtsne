@@ -637,7 +637,7 @@ public:
      */
     template<class Algorithm>
     auto initialize(const Algorithm* searcher) { 
-        const int K = std::ceil(perplexity * 3);
+        const int K = perplexity_to_k(perplexity);
         size_t N = searcher->nobs();
         if (K >= N) {
             throw std::runtime_error("number of observations should be greater than 3 * perplexity");

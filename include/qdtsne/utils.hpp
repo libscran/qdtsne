@@ -24,6 +24,17 @@ template<typename Index, typename Float>
 using NeighborList = std::vector<std::vector<std::pair<Index, Float> > >;
 
 /**
+ * Determines the appropriate number of neighbors, given a perplexity value.
+ * Useful when the neighbor search is conducted outside of the `Tsne` class.
+ *
+ * @param Perplexity to use in the t-SNE algorithm.
+ * @return Number of nearest neighbors to find.
+ */
+inline int perplexity_to_k(double perplexity) {
+    return std::ceil(perplexity * 3);
+}
+
+/**
  * Initializes the starting locations of each observation in the embedding.
  * We do so using our own implementation of the Box-Muller transform,
  * to avoid problems with differences in the distribution functions across C++ standard library implementations.

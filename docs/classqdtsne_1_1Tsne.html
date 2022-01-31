@@ -746,7 +746,7 @@ template&lt;int ndim = 2, typename Float  = double&gt; </div>
   </dd>
 </dl>
 <p>The default is to use a large value, which means that the tree's depth is unbounded for most practical applications. This aims to be consistent with the original implementation of the BH search, but with some protection against duplicate points that would otherwise result in infinite recursion during tree construction. If users are confident that their data contains no duplicates, they can set the depth to arbitrarily large values.</p>
-<p >This option only affects <code><a class="el" href="classqdtsne_1_1Tsne.html#a90a9f9cf6ed48a8449ad372057464528">run()</a></code> methods and is not used during <code><a class="el" href="classqdtsne_1_1Tsne.html#a8e74b496ef8be5ad02153abdbb88ac11">initialize()</a></code>.</p>
+<p >This option affects <code><a class="el" href="classqdtsne_1_1Tsne.html#a8e74b496ef8be5ad02153abdbb88ac11">initialize()</a></code> methods and all <code><a class="el" href="classqdtsne_1_1Tsne.html#a90a9f9cf6ed48a8449ad372057464528">run()</a></code> methods that do not accept a <code><a class="el" href="structqdtsne_1_1Tsne_1_1Status.html" title="Current status of the t-SNE iterations.">Status</a></code> object.</p>
 <dl class="section return"><dt>Returns</dt><dd>A reference to this <code><a class="el" href="classqdtsne_1_1Tsne.html" title="Implements the t-SNE algorithm.">Tsne</a></code> object. </dd></dl>
 
 </div>
@@ -856,6 +856,7 @@ template&lt;int ndim = 2, typename Float  = double&gt; </div>
   </dd>
 </dl>
 <p>This option affects all <code><a class="el" href="classqdtsne_1_1Tsne.html#a90a9f9cf6ed48a8449ad372057464528">run()</a></code> methods. It will also affect <code><a class="el" href="classqdtsne_1_1Tsne.html#a8e74b496ef8be5ad02153abdbb88ac11">initialize()</a></code> methods that do not use precomputed neighbor search results. If <code><a class="el" href="classqdtsne_1_1Tsne.html#a8e74b496ef8be5ad02153abdbb88ac11">initialize()</a></code> is called separately from <code><a class="el" href="classqdtsne_1_1Tsne.html#a90a9f9cf6ed48a8449ad372057464528">run()</a></code>, the caller should ensure that the same perplexity value is set in both calls.</p>
+<p >This option affects all methods except if precomputed neighbor search results are supplied <em>and</em> <code><a class="el" href="classqdtsne_1_1Tsne.html#a40b182c19df82d6fc6ce6d20b9179ffd">set_infer_perplexity()</a></code> is <code>true</code>. In such cases, the perplexity is inferred from the number of neighbors per observation in the supplied search results.</p>
 <dl class="section return"><dt>Returns</dt><dd>A reference to this <code><a class="el" href="classqdtsne_1_1Tsne.html" title="Implements the t-SNE algorithm.">Tsne</a></code> object. </dd></dl>
 
 </div>

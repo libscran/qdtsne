@@ -140,7 +140,7 @@ public:
         /**
          * See `set_max_depth()`.
          */
-        static constexpr int max_depth = std::numeric_limits<int>::max();
+        static constexpr int max_depth = 20;
 
         /**
          * See `set_interpolation()`.
@@ -166,6 +166,8 @@ public:
     /**
      * @param m Maximum number of iterations to perform.
      *
+     * This option only affects `run()` methods and is not used during `initialize()`.
+     *
      * @return A reference to this `Tsne` object.
      */
     Tsne& set_max_iter(int m = Defaults::max_iter) {
@@ -182,6 +184,9 @@ public:
      * This aims to speed up the optimization and to avoid local minima by effectively smoothing the updates.
      * The starting momentum is usually smaller than the final momentum,
      * to give a chance for the points to improve their organization before encouraging iteration to a specific local minima.
+     *
+     * This option only affects `run()` methods and is not used during `initialize()`.
+     *
      */
     Tsne& set_mom_switch_iter(int m = Defaults::mom_switch_iter) {
         mom_switch_iter = m;
@@ -190,6 +195,8 @@ public:
 
     /**
      * @param s Starting momentum, to be used in the early iterations before the momentum switch.
+     *
+     * This option only affects `run()` methods and is not used during `initialize()`.
      *
      * @return A reference to this `Tsne` object.
      */
@@ -200,6 +207,8 @@ public:
 
     /**
      * @param f Final momentum, to be used in the later iterations after the momentum switch.
+     *
+     * This option only affects `run()` methods and is not used during `initialize()`.
      *
      * @return A reference to this `Tsne` object.
      */
@@ -216,6 +225,9 @@ public:
      * In the early exaggeration phase, the probabilities are multiplied by `m`.
      * This forces the algorithm to minimize the distances between neighbors, creating an embedding containing tight, well-separated clusters of neighboring cells.
      * Because there is so much empty space, these clusters have an opportunity to move around to find better global positions before the phase ends and they are forced to settle down.
+     *
+     * This option only affects `run()` methods and is not used during `initialize()`.
+     *
      */
     Tsne& set_stop_lying_iter(int s = Defaults::stop_lying_iter) {
         stop_lying_iter = s;
@@ -225,6 +237,8 @@ public:
     /** 
      * @param e The learning rate, used to scale the updates.
      * Larger values yield larger updates that speed up convergence to a local minima at the cost of stability.
+     *
+     * This option only affects `run()` methods and is not used during `initialize()`.
      *
      * @return A reference to this `Tsne` object.
      */
@@ -247,6 +261,10 @@ public:
      * @param p Perplexity, which determines the balance between local and global structure.
      * Higher perplexities will focus on global structure, at the cost of increased runtime and decreased local resolution.
      *
+     * This option affects all `run()` methods.
+     * It will also affect `initialize()` methods that do not use precomputed neighbor search results.
+     * If `initialize()` is called separately from `run()`, the caller should ensure that the same perplexity value is set in both calls.
+     *
      * @return A reference to this `Tsne` object.
      */
     Tsne& set_perplexity(Float p = Defaults::perplexity) {
@@ -259,6 +277,9 @@ public:
      * In such cases, the value in `set_perplexity()` is ignored.
      * The perplexity is instead defined from the `NeighborList` as the number of nearest neighbors per observation divided by 3.
      *
+     * This option only affects `run()` and `initialize()` methods that use precomputed neighbor search results.
+     * All other methods will not respond to this option.
+     *
      * @return A reference to this `Tsne` object.
      */
     Tsne& set_infer_perplexity(Float i = Defaults::infer_perplexity) {
@@ -269,6 +290,8 @@ public:
     /** 
      * @param t Level of the approximation to use in the Barnes-Hut tree calculation of repulsive forces.
      * Lower values increase accuracy at the cost of computational time.
+     *
+     * This option only affects `run()` methods and is not used during `initialize()`.
      *
      * @return A reference to this `Tsne` object.
      */
@@ -281,7 +304,13 @@ public:
      * @param m Maximum depth of the Barnes-Hut tree.
      * Larger values improve the quality of the approximation for the repulsive force calculation, at the cost of computational time.
      * A value of 7 is a good compromise for most applications.
-     * The default is a very large value, which means that the tree's depth is practically unbounded unless otherwise specified.
+     *
+     * The default is to use a large value, which means that the tree's depth is unbounded for most practical applications.
+     * This aims to be consistent with the original implementation of the BH search,
+     * but with some protection against duplicate points that would otherwise result in infinite recursion during tree construction.
+     * If users are confident that their data contains no duplicates, they can set the depth to arbitrarily large values.
+     *
+     * This option only affects `run()` methods and is not used during `initialize()`.
      *
      * @return A reference to this `Tsne` object.
      */
@@ -295,6 +324,8 @@ public:
      * Larger values improve the resolution of the grid (and the quality of the approximation) at the cost of computational time.
      * A value of 100 is a good compromise for most applications.
      * If set to 0, no interpolation is performed.
+     *
+     * This option only affects `run()` methods and is not used during `initialize()`.
      *
      * @return A reference to this `Tsne` object.
      */

@@ -265,6 +265,9 @@ public:
      * It will also affect `initialize()` methods that do not use precomputed neighbor search results.
      * If `initialize()` is called separately from `run()`, the caller should ensure that the same perplexity value is set in both calls.
      *
+     * This option affects all methods except if precomputed neighbor search results are supplied _and_ `set_infer_perplexity()` is `true`.
+     * In such cases, the perplexity is inferred from the number of neighbors per observation in the supplied search results.
+     *
      * @return A reference to this `Tsne` object.
      */
     Tsne& set_perplexity(Float p = Defaults::perplexity) {
@@ -310,7 +313,7 @@ public:
      * but with some protection against duplicate points that would otherwise result in infinite recursion during tree construction.
      * If users are confident that their data contains no duplicates, they can set the depth to arbitrarily large values.
      *
-     * This option only affects `run()` methods and is not used during `initialize()`.
+     * This option affects `initialize()` methods and all `run()` methods that do not accept a `Status` object.
      *
      * @return A reference to this `Tsne` object.
      */

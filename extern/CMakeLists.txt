@@ -3,7 +3,7 @@ include(FetchContent)
 FetchContent_Declare(
   knncolle 
   GIT_REPOSITORY https://github.com/LTLA/knncolle
-  GIT_TAG ea57cbd4a0ea5574caefd6cd358f232a3813e639
+  GIT_TAG c5a1776ebf10641d9bf8715e89cb2d965b06e899
 )
 
 FetchContent_MakeAvailable(knncolle)

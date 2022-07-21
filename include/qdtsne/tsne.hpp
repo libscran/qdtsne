@@ -146,6 +146,11 @@ public:
          * See `set_interpolation()`.
          */
         static constexpr int interpolation = 0;
+
+        /**
+         * See `set_num_threads()`.
+         */
+        static constexpr int num_threads = 1;
     };
 
 private:
@@ -161,6 +166,7 @@ private:
     Float exaggeration_factor = Defaults::exaggeration_factor;
     int max_depth = Defaults::max_depth;
     int interpolation = Defaults::interpolation;
+    int nthreads = Defaults::num_threads;
 
 public:
     /**
@@ -337,6 +343,15 @@ public:
         return *this;
     }
 
+    /**
+     * @param n Number of threads to use.
+     * @return A reference to this `Tsne` object.
+     */
+    Tsne& set_num_threads(int n = Defaults::num_threads) {
+        nthreads = n;
+        return *this;
+    }
+
 public:
     /**
      * @brief Current status of the t-SNE iterations.
@@ -351,25 +366,22 @@ public:
         /**
          * @cond
          */
-        Status(NeighborList<Index, Float> nn, int maxdepth) : 
+        Status(NeighborList<Index, Float> nn, int maxdepth, int nthreads) : 
             neighbors(std::move(nn)),
             dY(neighbors.size() * ndim), 
             uY(neighbors.size() * ndim), 
             gains(neighbors.size() * ndim, 1.0), 
             pos_f(neighbors.size() * ndim), 
             neg_f(neighbors.size() * ndim), 
-            tree(neighbors.size(), maxdepth)
-#ifdef _OPENMP
-            , omp_buffer(neighbors.size())
-#endif
+            tree(neighbors.size(), maxdepth),
+            parallel_buffer(nthreads > 1 ? neighbors.size() : 0)
         {}
 
         NeighborList<Index, Float> neighbors; 
         std::vector<Float> dY, uY, gains, pos_f, neg_f;
 
-#ifdef _OPENMP
-        std::vector<Float> omp_buffer;
-#endif
+        // Buffer to hold parallel-computed results prior to reduction.
+        std::vector<Float> parallel_buffer;
 
         SPTree<ndim, Float> tree;
 
@@ -418,12 +430,12 @@ public:
 private:
     template<typename Index = int>
     auto initialize_internal(NeighborList<Index, Float> nn, Float perp) {
-        Status<typename std::remove_const<Index>::type> status(std::move(nn), max_depth);
+        Status<typename std::remove_const<Index>::type> status(std::move(nn), max_depth, nthreads);
 
 #ifdef PROGRESS_PRINTER
         PROGRESS_PRINTER("qdtsne::Tsne::initialize", "Computing neighbor probabilities")
 #endif
-        compute_gaussian_perplexity(status.neighbors, perp);
+        compute_gaussian_perplexity(status.neighbors, perp, nthreads);
 
 #ifdef PROGRESS_PRINTER
         PROGRESS_PRINTER("qdtsne::Tsne::initialize", "Symmetrizing the matrix")
@@ -539,6 +551,40 @@ private:
     }
 
 private:
+    Float compute_gradient_sum(size_t N, SPTree<ndim, Float>& tree,  std::vector<Float>& neg_f, std::vector<Float>& buffer) const {
+#if defined(_OPENMP) || defined(QDTSNE_CUSTOM_PARALLEL)
+        if (nthreads > 1) {
+            // Don't use reduction methods, otherwise we get numeric imprecision
+            // issues (and stochastic results) based on the order of summation.
+
+#ifndef QDTSNE_CUSTOM_PARALLEL
+            #pragma omp parallel for num_threads(nthreads)
+            for (size_t n = 0; n < N; ++n) {
+#else
+            QDTSNE_CUSTOM_PARALLEL(N, [&](size_t first_, size_t last_) -> void {
+            for (size_t n = first_; n < last_; ++n) {
+#endif                
+
+                buffer[n] = tree.compute_non_edge_forces(n, theta, neg_f.data() + n * ndim);
+
+#ifndef QDTSNE_CUSTOM_PARALLEL
+            }
+#else
+            }
+            }, nthreads);
+#endif
+
+            return std::accumulate(buffer.begin(), buffer.end(), static_cast<Float>(0));
+        }
+#endif
+
+        Float sum_Q = 0;
+        for (size_t n = 0; n < N; ++n) {
+            sum_Q += tree.compute_non_edge_forces(n, theta, neg_f.data() + n * ndim);
+        }
+        return sum_Q;
+    }
+
     template<typename Index>
     void compute_gradient(Status<Index>& status, const Float* Y, Float multiplier) {
         auto& tree = status.tree;
@@ -552,31 +598,21 @@ private:
 
         Float sum_Q = 0;
         if (interpolation) {
-            sum_Q = interpolate::compute_non_edge_forces(
+            Interpolator<ndim, Float> inter;
+            inter.set_num_threads(nthreads);
+            sum_Q = inter.compute_non_edge_forces(
                 tree, 
                 N, 
                 Y, 
                 theta, 
                 neg_f.data(), 
-                interpolation
-#ifdef _OPENMP
-                , status.omp_buffer
-#endif
+                interpolation,
+                nthreads,
+                status.parallel_buffer
             );
 
         } else {
-#ifdef _OPENMP
-            // Don't use reduction methods to ensure that we sum in a consistent order.
-            #pragma omp parallel for
-            for (size_t n = 0; n < N; ++n) {
-                status.omp_buffer[n] = status.tree.compute_non_edge_forces(n, theta, neg_f.data() + n * ndim);
-            }
-            sum_Q = std::accumulate(status.omp_buffer.begin(), status.omp_buffer.end(), static_cast<Float>(0));
-#else
-            for (size_t n = 0; n < N; ++n) {
-                sum_Q += status.tree.compute_non_edge_forces(n, theta, neg_f.data() + n * ndim);
-            }
-#endif
+            sum_Q = compute_gradient_sum(N, tree, neg_f, status.parallel_buffer);
         }
 
         // Compute final t-SNE gradient
@@ -591,8 +627,14 @@ private:
         auto& pos_f = status.pos_f;
         std::fill(pos_f.begin(), pos_f.end(), 0);
 
+#ifndef QDTSNE_CUSTOM_PARALLEL
         #pragma omp parallel for 
         for (size_t n = 0; n < neighbors.size(); ++n) {
+#else
+        QDTSNE_CUSTOM_PARALLEL(N, [&](size_t first_, size_t last_) -> void {
+        for (size_t n = first_; n < last_; ++n) {
+#endif
+
             const auto& current = neighbors[n];
             const Float* self = Y + n * ndim;
             Float* pos_out = pos_f.data() + n * ndim;
@@ -609,7 +651,13 @@ private:
                     pos_out[d] += mult * (self[d] - neighbor[d]);
                 }
             }
+
+#ifndef QDTSNE_CUSTOM_PARALLEL
         }
+#else
+        }
+        }, nthreads);
+#endif
 
         return;
     }
@@ -682,10 +730,22 @@ public:
 #endif
         NeighborList<decltype(searcher->nobs()), Float> neighbors(N);
 
+#ifndef QDTSNE_CUSTOM_PARALLEL
         #pragma omp parallel for
         for (size_t i = 0; i < N; ++i) {
+#else
+        QDTSNE_CUSTOM_PARALLEL(N, [&](size_t first_, size_t last_) -> void {
+        for (size_t i = first_; i < last_; ++i) {
+#endif
+
             neighbors[i] = searcher->find_nearest_neighbors(i, K);
+
+#ifndef QDTSNE_CUSTOM_PARALLEL
         }
+#else
+        }
+        }, nthreads);
+#endif
 
         return initialize_internal(std::move(neighbors), perplexity);
     }

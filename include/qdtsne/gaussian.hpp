@@ -9,7 +9,7 @@
 namespace qdtsne {
 
 template<typename Index, typename Float = double>
-void compute_gaussian_perplexity(NeighborList<Index, Float>& neighbors, Float perplexity) {
+void compute_gaussian_perplexity(NeighborList<Index, Float>& neighbors, Float perplexity, int nthreads) {
     constexpr Float max_value = std::numeric_limits<Float>::max();
     constexpr Float tol = 1e-5;
 
@@ -17,14 +17,23 @@ void compute_gaussian_perplexity(NeighborList<Index, Float>& neighbors, Float pe
     const size_t K = (N ? neighbors[0].size() : 0);
     const Float log_perplexity = std::log(perplexity);
 
-    #pragma omp parallel
+#ifndef QDTSNE_CUSTOM_PARALLEL
+    #pragma omp parallel num_threads(nthreads)
     {
+#else
+    QDTSNE_CUSTOM_PARALLEL(N, [&](size_t first_, size_t last_) -> void {
+#endif
         std::vector<Float> squared_delta_dist(K);
         std::vector<Float> quad_delta_dist(K);
         std::vector<Float> output(K);
 
+#ifndef QDTSNE_CUSTOM_PARALLEL
         #pragma omp for 
         for (size_t n = 0; n < N; ++n){
+#else
+        for (size_t n = first_; n < last_; ++n) {
+#endif
+
             Float beta = 1.0;
             Float min_beta = 0, max_beta = max_value;
             Float sum_P = 0;
@@ -95,8 +104,14 @@ void compute_gaussian_perplexity(NeighborList<Index, Float>& neighbors, Float pe
                 nIt->second = o / sum_P;
                 ++nIt;
             }
+
+#ifndef QDTSNE_CUSTOM_PARALLEL
         }
     }
+#else
+        }
+    }, nthreads);
+#endif
 
     return;
 }

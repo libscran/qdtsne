@@ -607,7 +607,6 @@ private:
                 theta, 
                 neg_f.data(), 
                 interpolation,
-                nthreads,
                 status.parallel_buffer
             );
 
@@ -628,7 +627,7 @@ private:
         std::fill(pos_f.begin(), pos_f.end(), 0);
 
 #ifndef QDTSNE_CUSTOM_PARALLEL
-        #pragma omp parallel for 
+        #pragma omp parallel for num_threads(nthreads)
         for (size_t n = 0; n < neighbors.size(); ++n) {
 #else
         QDTSNE_CUSTOM_PARALLEL(N, [&](size_t first_, size_t last_) -> void {
@@ -731,7 +730,7 @@ public:
         NeighborList<decltype(searcher->nobs()), Float> neighbors(N);
 
 #ifndef QDTSNE_CUSTOM_PARALLEL
-        #pragma omp parallel for
+        #pragma omp parallel for num_threads(nthreads)
         for (size_t i = 0; i < N; ++i) {
 #else
         QDTSNE_CUSTOM_PARALLEL(N, [&](size_t first_, size_t last_) -> void {

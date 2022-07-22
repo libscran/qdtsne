@@ -34,7 +34,8 @@ TEST_P(GaussianTest, Gaussian) {
     double P = std::get<3>(PARAM);
     assemble(N, D, K);
 
-    qdtsne::compute_gaussian_perplexity(neighbors, P);
+    auto copy = neighbors;
+    qdtsne::compute_gaussian_perplexity(neighbors, P, 1);
     const double expected = std::log(P);
 
     // Checking that the entropy is within range.
@@ -49,6 +50,12 @@ TEST_P(GaussianTest, Gaussian) {
         
         EXPECT_TRUE(std::abs(expected - entropy) < 1e-5);
         EXPECT_TRUE(std::abs(sum - 1) < 1e-8);
+    }
+
+    // Same result in parallel.
+    qdtsne::compute_gaussian_perplexity(copy, P, 3);
+    for (size_t i = 0; i < N; ++i) {
+        EXPECT_EQ(neighbors[i], copy[i]);
     }
 }
 

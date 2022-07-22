@@ -59,7 +59,7 @@ public:
     }
 
 public:
-    template<int d>
+    template<int d = 0>
     static void populate_corners(std::unordered_map<size_t, size_t>& collected, std::array<size_t, ndim> current, int intervals, int shifted = 0) {
         if constexpr(d == ndim - 1) {
             auto fill = [&](const std::array<size_t, ndim>& x) -> void {
@@ -196,7 +196,7 @@ public:
         const std::unordered_map<size_t, size_t>& has_zero,
         const std::vector<Float>& interpolants,
         size_t blocksize,
-        std::vector<Float>& neg,
+        Float* neg,
         int intervals,
         std::vector<Float>& parallel_buffer
     ) const {
@@ -221,7 +221,7 @@ public:
                     has_zero, 
                     interpolants, 
                     blocksize, 
-                    neg.data() + offset,
+                    neg + offset,
                     intervals
                 );
 
@@ -244,7 +244,7 @@ public:
                 has_zero, 
                 interpolants, 
                 blocksize, 
-                neg.data() + offset,
+                neg + offset,
                 intervals
             );
         }
@@ -300,7 +300,7 @@ public:
             }
 
             if (redo) {
-                populate_corners<ndim>(waypoints, current, intervals);
+                populate_corners(waypoints, current, intervals);
             }
         }
 
@@ -370,6 +370,7 @@ public:
             step,
             has_zero,
             interpolants,
+            blocksize,
             neg,
             intervals,
             parallel_buffer

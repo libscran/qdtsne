@@ -111,6 +111,12 @@ TEST_P(TsneTester, Runner) {
         }
         EXPECT_TRUE(std::abs(total/N) < 1e-10);
     }
+
+    // Same results when run in parallel.
+    thing.set_num_threads(3);
+    auto copy = old;
+    auto pstatus = thing.run(neighbors, copy.data());
+    EXPECT_EQ(copy, Y);
 }
 
 TEST_P(TsneTester, StopStart) {

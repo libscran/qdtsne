@@ -630,7 +630,7 @@ private:
         #pragma omp parallel for num_threads(nthreads)
         for (size_t n = 0; n < neighbors.size(); ++n) {
 #else
-        QDTSNE_CUSTOM_PARALLEL(N, [&](size_t first_, size_t last_) -> void {
+        QDTSNE_CUSTOM_PARALLEL(neighbors.size(), [&](size_t first_, size_t last_) -> void {
         for (size_t n = first_; n < last_; ++n) {
 #endif
 

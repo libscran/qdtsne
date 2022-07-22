@@ -1,5 +1,10 @@
 #include <gtest/gtest.h>
 
+#ifdef CUSTOM_PARALLEL_TEST
+// must be before any qdtsne includes.
+#include "custom_parallel.h"
+#endif
+
 #include "knncolle/knncolle.hpp"
 #include "qdtsne/tsne.hpp"
 #include "qdtsne/utils.hpp"

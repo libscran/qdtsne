@@ -228,6 +228,7 @@ public:
 #ifndef QDTSNE_CUSTOM_PARALLEL
             }
 #else
+            }
             }, nthreads);
 #endif
 

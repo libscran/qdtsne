@@ -124,9 +124,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a90a9f9cf6ed48a8449ad372057464528"><td class="memTemplParams" colspan="2">template&lt;typename Index  = int, typename Dist  = Float&gt; </td></tr>
 <tr class="memitem:a90a9f9cf6ed48a8449ad372057464528"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classqdtsne_1_1Tsne.html#a90a9f9cf6ed48a8449ad372057464528">run</a> (<a class="el" href="utils_8hpp.html#a705e394d4929f075451d5d1967ad590c">NeighborList</a>&lt; Index, Float &gt; nn, Float *Y)</td></tr>
 <tr class="separator:a90a9f9cf6ed48a8449ad372057464528"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6186c0ca17d49476f490072449d8b36"><td class="memTemplParams" colspan="2">template&lt;typename Index  = int&gt; </td></tr>
-<tr class="memitem:ad6186c0ca17d49476f490072449d8b36"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classqdtsne_1_1Tsne.html#ad6186c0ca17d49476f490072449d8b36">run</a> (<a class="el" href="structqdtsne_1_1Tsne_1_1Status.html">Status</a>&lt; Index &gt; &amp;status, Float *Y)</td></tr>
-<tr class="separator:ad6186c0ca17d49476f490072449d8b36"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79e18e584f88dc92bf88040ff25b0302"><td class="memTemplParams" colspan="2">template&lt;typename Input  = Float&gt; </td></tr>
 <tr class="memitem:a79e18e584f88dc92bf88040ff25b0302"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classqdtsne_1_1Tsne.html#a79e18e584f88dc92bf88040ff25b0302">initialize</a> (const Input *input, size_t D, size_t N)</td></tr>
 <tr class="separator:a79e18e584f88dc92bf88040ff25b0302"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -306,7 +303,7 @@ template&lt;typename Index  = int&gt; </div>
 </div>
 </div>
 <a id="a3d4e648de18a8f3063f754216b9354f9" name="a3d4e648de18a8f3063f754216b9354f9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3d4e648de18a8f3063f754216b9354f9">&#9670;&nbsp;</a></span>run() <span class="overload">[1/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d4e648de18a8f3063f754216b9354f9">&#9670;&nbsp;</a></span>run() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -360,7 +357,7 @@ template&lt;class Algorithm &gt; </div>
 </div>
 </div>
 <a id="a6daf7934f0119b67b3dc6ac642bdfbd7" name="a6daf7934f0119b67b3dc6ac642bdfbd7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6daf7934f0119b67b3dc6ac642bdfbd7">&#9670;&nbsp;</a></span>run() <span class="overload">[2/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a6daf7934f0119b67b3dc6ac642bdfbd7">&#9670;&nbsp;</a></span>run() <span class="overload">[2/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -428,7 +425,7 @@ template&lt;typename Input  = Float&gt; </div>
 </div>
 </div>
 <a id="a90a9f9cf6ed48a8449ad372057464528" name="a90a9f9cf6ed48a8449ad372057464528"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a90a9f9cf6ed48a8449ad372057464528">&#9670;&nbsp;</a></span>run() <span class="overload">[3/4]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a90a9f9cf6ed48a8449ad372057464528">&#9670;&nbsp;</a></span>run() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -480,60 +477,6 @@ template&lt;typename Index  = int, typename Dist  = Float&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A <code><a class="el" href="structqdtsne_1_1Tsne_1_1Status.html" title="Current status of the t-SNE iterations.">Status</a></code> object containing the final state of the algorithm after all requested iterations are finished.</dd></dl>
 <p>If <code><a class="el" href="classqdtsne_1_1Tsne.html#a40b182c19df82d6fc6ce6d20b9179ffd">set_infer_perplexity()</a></code> is set to <code>true</code>, the perplexity is determined from <code>nn</code> and the value in <code><a class="el" href="classqdtsne_1_1Tsne.html#a506e7e8dbfa46987df102acb6d42d3c2">set_perplexity()</a></code> is ignored. </p>
-
-</div>
-</div>
-<a id="ad6186c0ca17d49476f490072449d8b36" name="ad6186c0ca17d49476f490072449d8b36"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad6186c0ca17d49476f490072449d8b36">&#9670;&nbsp;</a></span>run() <span class="overload">[4/4]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;int ndim = 2, typename Float  = double&gt; </div>
-<div class="memtemplate">
-template&lt;typename Index  = int&gt; </div>
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="classqdtsne_1_1Tsne.html">qdtsne::Tsne</a>&lt; ndim, Float &gt;::run </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structqdtsne_1_1Tsne_1_1Status.html">Status</a>&lt; Index &gt; &amp;&#160;</td>
-          <td class="paramname"><em>status</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Float *&#160;</td>
-          <td class="paramname"><em>Y</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">status</td><td>The current status of the algorithm, generated either from <code><a class="el" href="classqdtsne_1_1Tsne.html#a8e74b496ef8be5ad02153abdbb88ac11">initialize()</a></code> or from a previous <code><a class="el" href="classqdtsne_1_1Tsne.html#a90a9f9cf6ed48a8449ad372057464528">run()</a></code> call. </td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">Y</td><td>Pointer to a 2D array with number of rows and columns equal to <code>ndim</code> and <code>nn_index.size()</code>, respectively. The array is treated as column-major where each column corresponds to an observation. On input, this should contain the initial locations of each observation; on output, it is updated to the final t-SNE locations.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">Index</td><td>Integer type for the neighbor indices.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>A <code><a class="el" href="structqdtsne_1_1Tsne_1_1Status.html" title="Current status of the t-SNE iterations.">Status</a></code> object containing the final state of the algorithm after applying iterations. </dd></dl>
 
 </div>
 </div>

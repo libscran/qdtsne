@@ -84,8 +84,14 @@ $(function() {
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a8a12ff535bf2a393aa5a3d03177e315f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structqdtsne_1_1Tsne_1_1Status.html#a8a12ff535bf2a393aa5a3d03177e315f">iteration</a> () const</td></tr>
 <tr class="separator:a8a12ff535bf2a393aa5a3d03177e315f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a179c4503d290490cdc7a77bddbb72e2e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structqdtsne_1_1Tsne_1_1Status.html#a179c4503d290490cdc7a77bddbb72e2e">max_iter</a> () const</td></tr>
+<tr class="separator:a179c4503d290490cdc7a77bddbb72e2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7494af37014d7e8e2b9f871c9a039653"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structqdtsne_1_1Tsne_1_1Status.html#a7494af37014d7e8e2b9f871c9a039653">nobs</a> () const</td></tr>
 <tr class="separator:a7494af37014d7e8e2b9f871c9a039653"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb11ee4f3f794dbadee88a3595ecbcbf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structqdtsne_1_1Tsne_1_1Status.html#acb11ee4f3f794dbadee88a3595ecbcbf">run</a> (Float *Y, int limit)</td></tr>
+<tr class="separator:acb11ee4f3f794dbadee88a3595ecbcbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bcf511ee7f0e0b587162213e3aece1f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structqdtsne_1_1Tsne_1_1Status.html#a4bcf511ee7f0e0b587162213e3aece1f">run</a> (Float *Y)</td></tr>
+<tr class="separator:a4bcf511ee7f0e0b587162213e3aece1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;int ndim = 2, typename Float = double&gt;<br />
@@ -129,6 +135,36 @@ template&lt;typename Index &gt; </div>
 
 </div>
 </div>
+<a id="a179c4503d290490cdc7a77bddbb72e2e" name="a179c4503d290490cdc7a77bddbb72e2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a179c4503d290490cdc7a77bddbb72e2e">&#9670;&nbsp;</a></span>max_iter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int ndim = 2, typename Float  = double&gt; </div>
+<div class="memtemplate">
+template&lt;typename Index &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="classqdtsne_1_1Tsne.html">qdtsne::Tsne</a>&lt; ndim, Float &gt;::Status&lt; Index &gt;::max_iter </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The maximum number of iterations. This can be modified to <code><a class="el" href="structqdtsne_1_1Tsne_1_1Status.html#acb11ee4f3f794dbadee88a3595ecbcbf">run()</a></code> the algorithm for more iterations. </dd></dl>
+
+</div>
+</div>
 <a id="a7494af37014d7e8e2b9f871c9a039653" name="a7494af37014d7e8e2b9f871c9a039653"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7494af37014d7e8e2b9f871c9a039653">&#9670;&nbsp;</a></span>nobs()</h2>
 
@@ -156,6 +192,91 @@ template&lt;typename Index &gt; </div>
 </table>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The number of observations in the dataset. </dd></dl>
+
+</div>
+</div>
+<a id="a4bcf511ee7f0e0b587162213e3aece1f" name="a4bcf511ee7f0e0b587162213e3aece1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bcf511ee7f0e0b587162213e3aece1f">&#9670;&nbsp;</a></span>run() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int ndim = 2, typename Float  = double&gt; </div>
+<div class="memtemplate">
+template&lt;typename Index &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classqdtsne_1_1Tsne.html">qdtsne::Tsne</a>&lt; ndim, Float &gt;::Status&lt; Index &gt;::run </td>
+          <td>(</td>
+          <td class="paramtype">Float *&#160;</td>
+          <td class="paramname"><em>Y</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p >Run the algorithm to the maximum number of iterations. If <code><a class="el" href="structqdtsne_1_1Tsne_1_1Status.html#acb11ee4f3f794dbadee88a3595ecbcbf">run()</a></code> has already been invoked with an iteration limit, this method will only perform the remaining iterations required for <code><a class="el" href="structqdtsne_1_1Tsne_1_1Status.html#a8a12ff535bf2a393aa5a3d03177e315f">iteration()</a></code> to reach <code><a class="el" href="structqdtsne_1_1Tsne_1_1Status.html#a179c4503d290490cdc7a77bddbb72e2e">max_iter()</a></code>. If <code><a class="el" href="structqdtsne_1_1Tsne_1_1Status.html#a8a12ff535bf2a393aa5a3d03177e315f">iteration()</a></code> is already greater than <code><a class="el" href="structqdtsne_1_1Tsne_1_1Status.html#a179c4503d290490cdc7a77bddbb72e2e">max_iter()</a></code>, this method is a no-op.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">Y</td><td>Pointer to a 2D array with number of rows and columns equal to <code>ndim</code> and <code>nn.size()</code>, respectively. The array is treated as column-major where each column corresponds to an observation. On input, this should contain the initial location of each observation; on output, it is updated to the t-SNE location at the specified number of iterations. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="acb11ee4f3f794dbadee88a3595ecbcbf" name="acb11ee4f3f794dbadee88a3595ecbcbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb11ee4f3f794dbadee88a3595ecbcbf">&#9670;&nbsp;</a></span>run() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int ndim = 2, typename Float  = double&gt; </div>
+<div class="memtemplate">
+template&lt;typename Index &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classqdtsne_1_1Tsne.html">qdtsne::Tsne</a>&lt; ndim, Float &gt;::Status&lt; Index &gt;::run </td>
+          <td>(</td>
+          <td class="paramtype">Float *&#160;</td>
+          <td class="paramname"><em>Y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>limit</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p >Run the algorithm to the specified number of iterations. This can be invoked repeatedly with increasing <code>limit</code> to run the algorithm incrementally.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">Y</td><td>Pointer to a 2D array with number of rows and columns equal to <code>ndim</code> and <code>nn.size()</code>, respectively. The array is treated as column-major where each column corresponds to an observation. On input, this should contain the initial location of each observation; on output, it is updated to the t-SNE location at the specified number of iterations. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">limit</td><td>Number of iterations to run up to. The actual number of iterations performed will be the difference between <code>limit</code> and <code><a class="el" href="structqdtsne_1_1Tsne_1_1Status.html#a8a12ff535bf2a393aa5a3d03177e315f">iteration()</a></code>, i.e., <code><a class="el" href="structqdtsne_1_1Tsne_1_1Status.html#a8a12ff535bf2a393aa5a3d03177e315f">iteration()</a></code> will be equal to <code>limit</code> on completion. <code>limit</code> may be greater than <code><a class="el" href="structqdtsne_1_1Tsne_1_1Status.html#a179c4503d290490cdc7a77bddbb72e2e">max_iter()</a></code>, to run the algorithm for more iterations than specified during construction of this <code><a class="el" href="structqdtsne_1_1Tsne_1_1Status.html" title="Current status of the t-SNE iterations.">Status</a></code> object. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

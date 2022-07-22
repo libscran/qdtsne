@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['perplexity_5fto_5fk_0',['perplexity_to_k',['../utils_8hpp.html#a673dd037719d1b1824da29e20fd1618d',1,'qdtsne']]]
+  ['nobs_0',['nobs',['../structqdtsne_1_1Tsne_1_1Status.html#a7494af37014d7e8e2b9f871c9a039653',1,'qdtsne::Tsne::Status']]]
 ];

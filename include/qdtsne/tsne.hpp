@@ -156,17 +156,22 @@ public:
 private:
     Float perplexity = Defaults::perplexity;
     bool infer_perplexity = Defaults::infer_perplexity;
-    Float theta = Defaults::theta;
-    int max_iter = Defaults::max_iter;
-    int stop_lying_iter = Defaults::stop_lying_iter;
-    int mom_switch_iter = Defaults::mom_switch_iter;
-    Float start_momentum = Defaults::start_momentum;
-    Float final_momentum = Defaults::final_momentum;
-    Float eta = Defaults::eta;
-    Float exaggeration_factor = Defaults::exaggeration_factor;
-    int max_depth = Defaults::max_depth;
-    int interpolation = Defaults::interpolation;
-    int nthreads = Defaults::num_threads;
+
+    struct IterationParameters {
+        Float theta = Defaults::theta;
+        int max_iter = Defaults::max_iter;
+        int stop_lying_iter = Defaults::stop_lying_iter;
+        int mom_switch_iter = Defaults::mom_switch_iter;
+        Float start_momentum = Defaults::start_momentum;
+        Float final_momentum = Defaults::final_momentum;
+        Float eta = Defaults::eta;
+        Float exaggeration_factor = Defaults::exaggeration_factor;
+        int max_depth = Defaults::max_depth;
+        int interpolation = Defaults::interpolation;
+        int nthreads = Defaults::num_threads;
+    };
+
+    IterationParameters iparams;
 
 public:
     /**
@@ -177,7 +182,7 @@ public:
      * @return A reference to this `Tsne` object.
      */
     Tsne& set_max_iter(int m = Defaults::max_iter) {
-        max_iter = m;
+        iparams.max_iter = m;
         return *this;
     }
 
@@ -195,7 +200,7 @@ public:
      *
      */
     Tsne& set_mom_switch_iter(int m = Defaults::mom_switch_iter) {
-        mom_switch_iter = m;
+        iparams.mom_switch_iter = m;
         return *this;
     }
 
@@ -207,7 +212,7 @@ public:
      * @return A reference to this `Tsne` object.
      */
     Tsne& set_start_momentum(Float s = Defaults::start_momentum) {
-        start_momentum = s;
+        iparams.start_momentum = s;
         return *this;
     }
 
@@ -219,7 +224,7 @@ public:
      * @return A reference to this `Tsne` object.
      */
     Tsne& set_final_momentum(Float f = Defaults::final_momentum) {
-        final_momentum = f;
+        iparams.final_momentum = f;
         return *this;
     }
 
@@ -236,7 +241,7 @@ public:
      *
      */
     Tsne& set_stop_lying_iter(int s = Defaults::stop_lying_iter) {
-        stop_lying_iter = s;
+        iparams.stop_lying_iter = s;
         return *this;
     }
 
@@ -249,7 +254,7 @@ public:
      * @return A reference to this `Tsne` object.
      */
     Tsne& set_eta(Float e = Defaults::eta) {
-        eta = e;
+        iparams.eta = e;
         return *this;
     }
 
@@ -259,7 +264,7 @@ public:
      * @return A reference to this `Tsne` object.
      */
     Tsne& set_exaggeration_factor(Float e = Defaults::eta) {
-        exaggeration_factor = e;
+        iparams.exaggeration_factor = e;
         return *this;
     }
 
@@ -305,7 +310,7 @@ public:
      * @return A reference to this `Tsne` object.
      */
     Tsne& set_theta(Float t = Defaults::theta) {
-        theta = t;
+        iparams.theta = t;
         return *this;
     }
 
@@ -324,7 +329,7 @@ public:
      * @return A reference to this `Tsne` object.
      */
     Tsne& set_max_depth(int m = Defaults::max_depth) {
-        max_depth = m;
+        iparams.max_depth = m;
         return *this;
     }
 
@@ -339,7 +344,7 @@ public:
      * @return A reference to this `Tsne` object.
      */
     Tsne& set_interpolation(int i = Defaults::interpolation) {
-        interpolation = i;
+        iparams.interpolation = i;
         return *this;
     }
 
@@ -348,7 +353,7 @@ public:
      * @return A reference to this `Tsne` object.
      */
     Tsne& set_num_threads(int n = Defaults::num_threads) {
-        nthreads = n;
+        iparams.nthreads = n;
         return *this;
     }
 
@@ -366,15 +371,16 @@ public:
         /**
          * @cond
          */
-        Status(NeighborList<Index, Float> nn, int maxdepth, int nthreads) : 
+        Status(NeighborList<Index, Float> nn, IterationParameters p) :
             neighbors(std::move(nn)),
             dY(neighbors.size() * ndim), 
             uY(neighbors.size() * ndim), 
             gains(neighbors.size() * ndim, 1.0), 
             pos_f(neighbors.size() * ndim), 
             neg_f(neighbors.size() * ndim), 
-            tree(neighbors.size(), maxdepth),
-            parallel_buffer(nthreads > 1 ? neighbors.size() : 0)
+            tree(neighbors.size(), p.max_depth),
+            parallel_buffer(p.nthreads > 1 ? neighbors.size() : 0),
+            iparams(p)
         {}
 
         NeighborList<Index, Float> neighbors; 
@@ -385,11 +391,13 @@ public:
 
         SPTree<ndim, Float> tree;
 
+        IterationParameters iparams;
         int iter = 0;
         /**
          * @endcond
          */
 
+    public:
         /**
          * @return The number of iterations performed on this object so far.
          */
@@ -398,10 +406,212 @@ public:
         }
 
         /**
+         * @return The maximum number of iterations. 
+         * This can be modified to `run()` the algorithm for more iterations.
+         */
+        int max_iter() const {
+            return iparams.max_iter;
+        }
+
+        /**
          * @return The number of observations in the dataset.
          */
         size_t nobs() const {
             return neighbors.size();
+        }
+
+    public:
+        /**
+         * Run the algorithm to the specified number of iterations.
+         * This can be invoked repeatedly with increasing `limit` to run the algorithm incrementally.
+         *
+         * @param[in, out] Y Pointer to a 2D array with number of rows and columns equal to `ndim` and `nn.size()`, respectively.
+         * The array is treated as column-major where each column corresponds to an observation.
+         * On input, this should contain the initial location of each observation; on output, it is updated to the t-SNE location at the specified number of iterations.
+         * @param limit Number of iterations to run up to.
+         * The actual number of iterations performed will be the difference between `limit` and `iteration()`, i.e., `iteration()` will be equal to `limit` on completion.
+         * `limit` may be greater than `max_iter()`, to run the algorithm for more iterations than specified during construction of this `Status` object.
+         */
+        void run(Float* Y, int limit) {
+            Float multiplier = (iter < iparams.stop_lying_iter ? iparams.exaggeration_factor : 1);
+            Float momentum = (iter < iparams.mom_switch_iter ? iparams.start_momentum : iparams.final_momentum);
+
+            for(; iter < limit; ++iter) {
+                // Stop lying about the P-values after a while, and switch momentum
+                if (iter == iparams.stop_lying_iter) {
+                    multiplier = 1;
+                }
+                if (iter == iparams.mom_switch_iter) {
+                    momentum = iparams.final_momentum;
+                }
+
+                iterate(Y, multiplier, momentum);
+            }
+        }
+
+        /**
+         * Run the algorithm to the maximum number of iterations.
+         * If `run()` has already been invoked with an iteration limit, this method will only perform the remaining iterations required for `iteration()` to reach `max_iter()`.
+         * If `iteration()` is already greater than `max_iter()`, this method is a no-op.
+         *
+         * @param[in, out] Y Pointer to a 2D array with number of rows and columns equal to `ndim` and `nn.size()`, respectively.
+         * The array is treated as column-major where each column corresponds to an observation.
+         * On input, this should contain the initial location of each observation; on output, it is updated to the t-SNE location at the specified number of iterations.
+         */
+        void run(Float* Y) {
+            run(Y, iparams.max_iter);
+        }
+
+    private:
+        static Float sign(Float x) { 
+            constexpr Float zero = 0;
+            constexpr Float one = 1;
+            return (x == zero ? zero : (x < zero ? -one : one));
+        }
+
+        void iterate(Float* Y, Float multiplier, Float momentum) {
+            compute_gradient(Y, multiplier);
+
+            // Update gains
+            for (size_t i = 0; i < gains.size(); ++i) {
+                Float& g = gains[i];
+                constexpr Float lower_bound = 0.01;
+                constexpr Float to_add = 0.2;
+                constexpr Float to_mult = 0.8;
+                g = std::max(lower_bound, sign(dY[i]) != sign(uY[i]) ? (g + to_add) : (g * to_mult));
+            }
+
+            // Perform gradient update (with momentum and gains)
+            for (size_t i = 0; i < gains.size(); ++i) {
+                uY[i] = momentum * uY[i] - iparams.eta * gains[i] * dY[i];
+                Y[i] += uY[i];
+            }
+
+            // Make solution zero-mean
+            size_t N = nobs();
+            for (int d = 0; d < ndim; ++d) {
+                auto start = Y + d;
+
+                // Compute means from column-major coordinates.
+                Float sum = 0;
+                for (size_t i = 0; i < N; ++i, start += ndim) {
+                    sum += *start;
+                }
+                sum /= N;
+
+                start = Y + d;
+                for (size_t i = 0; i < N; ++i, start += ndim) {
+                    *start -= sum;
+                }
+            }
+
+            return;
+        }
+
+    private:
+        Float compute_non_edge_forces() {
+            size_t N = nobs();
+
+#if defined(_OPENMP) || defined(QDTSNE_CUSTOM_PARALLEL)
+            if (iparams.nthreads > 1) {
+                // Don't use reduction methods, otherwise we get numeric imprecision
+                // issues (and stochastic results) based on the order of summation.
+
+#ifndef QDTSNE_CUSTOM_PARALLEL
+                #pragma omp parallel for num_threads(iparams.nthreads)
+                for (size_t n = 0; n < N; ++n) {
+#else
+                QDTSNE_CUSTOM_PARALLEL(N, [&](size_t first_, size_t last_) -> void {
+                for (size_t n = first_; n < last_; ++n) {
+#endif                
+
+                    parallel_buffer[n] = tree.compute_non_edge_forces(n, iparams.theta, neg_f.data() + n * ndim);
+
+#ifndef QDTSNE_CUSTOM_PARALLEL
+                }
+#else
+                }
+                }, iparams.nthreads);
+#endif
+
+                return std::accumulate(parallel_buffer.begin(), parallel_buffer.end(), static_cast<Float>(0));
+            }
+#endif
+
+            Float sum_Q = 0;
+            for (size_t n = 0; n < N; ++n) {
+                sum_Q += tree.compute_non_edge_forces(n, iparams.theta, neg_f.data() + n * ndim);
+            }
+            return sum_Q;
+        }
+
+        void compute_gradient(const Float* Y, Float multiplier) {
+            tree.set(Y);
+            compute_edge_forces(Y, multiplier);
+
+            size_t N = nobs();
+            std::fill(neg_f.begin(), neg_f.end(), 0);
+
+            Float sum_Q = 0;
+            if (iparams.interpolation) {
+                Interpolator<ndim, Float> inter;
+                inter.set_num_threads(iparams.nthreads);
+                sum_Q = inter.compute_non_edge_forces(
+                    tree, 
+                    N, 
+                    Y, 
+                    iparams.theta, 
+                    neg_f.data(), 
+                    iparams.interpolation,
+                    parallel_buffer
+                );
+
+            } else {
+                sum_Q = compute_non_edge_forces();
+            }
+
+            // Compute final t-SNE gradient
+            for (size_t i = 0; i < N * ndim; ++i) {
+                dY[i] = pos_f[i] - (neg_f[i] / sum_Q);
+            }
+        }
+
+        void compute_edge_forces(const Float* Y, Float multiplier) {
+            std::fill(pos_f.begin(), pos_f.end(), 0);
+
+#ifndef QDTSNE_CUSTOM_PARALLEL
+            #pragma omp parallel for num_threads(iparams.nthreads)
+            for (size_t n = 0; n < neighbors.size(); ++n) {
+#else
+            QDTSNE_CUSTOM_PARALLEL(neighbors.size(), [&](size_t first_, size_t last_) -> void {
+            for (size_t n = first_; n < last_; ++n) {
+#endif
+
+                const auto& current = neighbors[n];
+                const Float* self = Y + n * ndim;
+                Float* pos_out = pos_f.data() + n * ndim;
+
+                for (const auto& x : current) {
+                    Float sqdist = 0; 
+                    const Float* neighbor = Y + x.first * ndim;
+                    for (int d = 0; d < ndim; ++d) {
+                        sqdist += (self[d] - neighbor[d]) * (self[d] - neighbor[d]);
+                    }
+
+                    const Float mult = multiplier * x.second / (static_cast<Float>(1) + sqdist);
+                    for (int d = 0; d < ndim; ++d) {
+                        pos_out[d] += mult * (self[d] - neighbor[d]);
+                    }
+                }
+
+#ifndef QDTSNE_CUSTOM_PARALLEL
+            }
+#else
+            }
+            }, iparams.nthreads);
+#endif
+
+            return;
         }
     };
 
@@ -429,20 +639,10 @@ public:
 
 private:
     template<typename Index = int>
-    auto initialize_internal(NeighborList<Index, Float> nn, Float perp) {
-        Status<typename std::remove_const<Index>::type> status(std::move(nn), max_depth, nthreads);
-
-#ifdef PROGRESS_PRINTER
-        PROGRESS_PRINTER("qdtsne::Tsne::initialize", "Computing neighbor probabilities")
-#endif
-        compute_gaussian_perplexity(status.neighbors, perp, nthreads);
-
-#ifdef PROGRESS_PRINTER
-        PROGRESS_PRINTER("qdtsne::Tsne::initialize", "Symmetrizing the matrix")
-#endif
-        symmetrize_matrix(status.neighbors);
-
-        return status;
+    Status<Index> initialize_internal(NeighborList<Index, Float> nn, Float perp) {
+        compute_gaussian_perplexity(nn, perp, iparams.nthreads);
+        symmetrize_matrix(nn);
+        return Status<Index>(std::move(nn), iparams);
     }
 
 public:
@@ -463,202 +663,8 @@ public:
     template<typename Index = int, typename Dist = Float>
     auto run(NeighborList<Index, Float> nn, Float* Y) {
         auto status = initialize(std::move(nn));
-        run(status, Y);
+        status.run(Y);
         return status;
-    }
-
-    /**
-     * @param status The current status of the algorithm, generated either from `initialize()` or from a previous `run()` call.
-     * @param[in, out] Y Pointer to a 2D array with number of rows and columns equal to `ndim` and `nn_index.size()`, respectively.
-     * The array is treated as column-major where each column corresponds to an observation.
-     * On input, this should contain the initial locations of each observation; on output, it is updated to the final t-SNE locations.
-     *
-     * @tparam Index Integer type for the neighbor indices.
-     *
-     * @return A `Status` object containing the final state of the algorithm after applying iterations.
-     */
-    template<typename Index = int>
-    void run(Status<Index>& status, Float* Y) {
-        int& iter = status.iter;
-        Float multiplier = (iter < stop_lying_iter ? exaggeration_factor : 1);
-        Float momentum = (iter < mom_switch_iter ? start_momentum : final_momentum);
-
-        for(; iter < max_iter; ++iter) {
-            // Stop lying about the P-values after a while, and switch momentum
-            if (iter == stop_lying_iter) {
-                multiplier = 1;
-            }
-            if (iter == mom_switch_iter) {
-                momentum = final_momentum;
-            }
-
-            iterate(status, Y, multiplier, momentum);
-        }
-
-        return;
-    }
-
-private:
-    static Float sign(Float x) { 
-        constexpr Float zero = 0;
-        constexpr Float one = 1;
-        return (x == zero ? zero : (x < zero ? -one : one));
-    }
-
-    template<typename Index>
-    void iterate(Status<Index>& status,  Float* Y, Float multiplier, Float momentum) {
-        compute_gradient(status, Y, multiplier);
-
-        auto& gains = status.gains;
-        auto& dY = status.dY;
-        auto& uY = status.uY;
-        auto& col_P = status.neighbors;
-
-        // Update gains
-        for (size_t i = 0; i < gains.size(); ++i) {
-            Float& g = gains[i];
-            constexpr Float lower_bound = 0.01;
-            constexpr Float to_add = 0.2;
-            constexpr Float to_mult = 0.8;
-            g = std::max(lower_bound, sign(dY[i]) != sign(uY[i]) ? (g + to_add) : (g * to_mult));
-        }
-
-        // Perform gradient update (with momentum and gains)
-        for (size_t i = 0; i < gains.size(); ++i) {
-            uY[i] = momentum * uY[i] - eta * gains[i] * dY[i];
-            Y[i] += uY[i];
-        }
-
-        // Make solution zero-mean
-        for (int d = 0; d < ndim; ++d) {
-            auto start = Y + d;
-            size_t N = col_P.size();
-
-            // Compute means from column-major coordinates.
-            Float sum = 0;
-            for (size_t i = 0; i < N; ++i, start += ndim) {
-                sum += *start;
-            }
-            sum /= N;
-
-            start = Y + d;
-            for (size_t i = 0; i < N; ++i, start += ndim) {
-                *start -= sum;
-            }
-        }
-
-        return;
-    }
-
-private:
-    Float compute_gradient_sum(size_t N, SPTree<ndim, Float>& tree,  std::vector<Float>& neg_f, std::vector<Float>& buffer) const {
-#if defined(_OPENMP) || defined(QDTSNE_CUSTOM_PARALLEL)
-        if (nthreads > 1) {
-            // Don't use reduction methods, otherwise we get numeric imprecision
-            // issues (and stochastic results) based on the order of summation.
-
-#ifndef QDTSNE_CUSTOM_PARALLEL
-            #pragma omp parallel for num_threads(nthreads)
-            for (size_t n = 0; n < N; ++n) {
-#else
-            QDTSNE_CUSTOM_PARALLEL(N, [&](size_t first_, size_t last_) -> void {
-            for (size_t n = first_; n < last_; ++n) {
-#endif                
-
-                buffer[n] = tree.compute_non_edge_forces(n, theta, neg_f.data() + n * ndim);
-
-#ifndef QDTSNE_CUSTOM_PARALLEL
-            }
-#else
-            }
-            }, nthreads);
-#endif
-
-            return std::accumulate(buffer.begin(), buffer.end(), static_cast<Float>(0));
-        }
-#endif
-
-        Float sum_Q = 0;
-        for (size_t n = 0; n < N; ++n) {
-            sum_Q += tree.compute_non_edge_forces(n, theta, neg_f.data() + n * ndim);
-        }
-        return sum_Q;
-    }
-
-    template<typename Index>
-    void compute_gradient(Status<Index>& status, const Float* Y, Float multiplier) {
-        auto& tree = status.tree;
-        tree.set(Y);
-
-        compute_edge_forces(status, Y, multiplier);
-
-        size_t N = status.neighbors.size();
-        auto& neg_f = status.neg_f;
-        std::fill(neg_f.begin(), neg_f.end(), 0);
-
-        Float sum_Q = 0;
-        if (interpolation) {
-            Interpolator<ndim, Float> inter;
-            inter.set_num_threads(nthreads);
-            sum_Q = inter.compute_non_edge_forces(
-                tree, 
-                N, 
-                Y, 
-                theta, 
-                neg_f.data(), 
-                interpolation,
-                status.parallel_buffer
-            );
-
-        } else {
-            sum_Q = compute_gradient_sum(N, tree, neg_f, status.parallel_buffer);
-        }
-
-        // Compute final t-SNE gradient
-        for (size_t i = 0; i < N * ndim; ++i) {
-            status.dY[i] = status.pos_f[i] - (neg_f[i] / sum_Q);
-        }
-    }
-
-    template<typename Index>
-    void compute_edge_forces(Status<Index>& status, const Float* Y, Float multiplier) {
-        const auto& neighbors = status.neighbors;
-        auto& pos_f = status.pos_f;
-        std::fill(pos_f.begin(), pos_f.end(), 0);
-
-#ifndef QDTSNE_CUSTOM_PARALLEL
-        #pragma omp parallel for num_threads(nthreads)
-        for (size_t n = 0; n < neighbors.size(); ++n) {
-#else
-        QDTSNE_CUSTOM_PARALLEL(neighbors.size(), [&](size_t first_, size_t last_) -> void {
-        for (size_t n = first_; n < last_; ++n) {
-#endif
-
-            const auto& current = neighbors[n];
-            const Float* self = Y + n * ndim;
-            Float* pos_out = pos_f.data() + n * ndim;
-
-            for (const auto& x : current) {
-                Float sqdist = 0; 
-                const Float* neighbor = Y + x.first * ndim;
-                for (int d = 0; d < ndim; ++d) {
-                    sqdist += (self[d] - neighbor[d]) * (self[d] - neighbor[d]);
-                }
-
-                const Float mult = multiplier * x.second / (static_cast<Float>(1) + sqdist);
-                for (int d = 0; d < ndim; ++d) {
-                    pos_out[d] += mult * (self[d] - neighbor[d]);
-                }
-            }
-
-#ifndef QDTSNE_CUSTOM_PARALLEL
-        }
-#else
-        }
-        }, nthreads);
-#endif
-
-        return;
     }
 
 public:
@@ -679,9 +685,6 @@ public:
      */
     template<typename Input = Float>
     auto initialize(const Input* input, size_t D, size_t N) { 
-#ifdef PROGRESS_PRINTER
-        PROGRESS_PRINTER("qdtsne::Tsne::initialize", "Constructing neighbor search indices")
-#endif
         knncolle::VpTreeEuclidean<> searcher(D, N, input); 
         return initialize(&searcher);
     }
@@ -702,7 +705,7 @@ public:
     template<typename Input = Float>
     auto run(const Input* input, size_t D, size_t N, Float* Y) {
         auto status = initialize(input, D, N);
-        run(status, Y);
+        status.run(Y);
         return status;
     }
 #endif
@@ -724,13 +727,10 @@ public:
             throw std::runtime_error("number of observations should be greater than 3 * perplexity");
         }
 
-#ifdef PROGRESS_PRINTER
-        PROGRESS_PRINTER("qdtsne::Tsne::initialize", "Searching for nearest neighbors")
-#endif
         NeighborList<decltype(searcher->nobs()), Float> neighbors(N);
 
 #ifndef QDTSNE_CUSTOM_PARALLEL
-        #pragma omp parallel for num_threads(nthreads)
+        #pragma omp parallel for num_threads(iparams.nthreads)
         for (size_t i = 0; i < N; ++i) {
 #else
         QDTSNE_CUSTOM_PARALLEL(N, [&](size_t first_, size_t last_) -> void {
@@ -743,7 +743,7 @@ public:
         }
 #else
         }
-        }, nthreads);
+        }, iparams.nthreads);
 #endif
 
         return initialize_internal(std::move(neighbors), perplexity);
@@ -762,7 +762,7 @@ public:
     template<class Algorithm> 
     auto run(const Algorithm* searcher, Float* Y) {
         auto status = initialize(searcher);
-        run(status, Y);
+        status.run(Y);
         return status;
     }
 };

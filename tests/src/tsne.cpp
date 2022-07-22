@@ -138,8 +138,8 @@ TEST_P(TsneTester, StopStart) {
     auto ref = thing.run(neighbors, Y.data());
 
     auto status = thing.initialize(neighbors);
-    thing.set_max_iter(500).run(status, copy.data());
-    thing.set_max_iter(1000).run(status, copy.data());
+    status.run(copy.data(), 500);
+    status.run(copy.data(), 1000);
 
     EXPECT_EQ(copy, Y);
 }

@@ -27,13 +27,33 @@ target_link_libraries(
     qdtsne
 )
 
+# Test the custom parallelization capability.
+add_executable(
+    cuspartest 
+    src/tsne.cpp
+)
+
+target_link_libraries(
+    cuspartest
+    gtest_main
+    knncolle
+    qdtsne
+)
+
+target_compile_definitions(cuspartest PRIVATE CUSTOM_PARALLEL_TEST=1)
+
 set(CODE_COVERAGE "Enable coverage testing" OFF)
 if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(libtest PRIVATE -O0 -g --coverage)
     target_link_options(libtest PRIVATE --coverage)
 endif()
 
+set(USE_OPENMP OFF CACHE BOOL "Compile with OpenMP support")
+if (USE_OPENMP)
+    find_package(OpenMP)
+    target_link_libraries(libtest OpenMP::OpenMP_CXX)
+endif()
+
 include(GoogleTest)
 gtest_discover_tests(libtest)
-
-add_test(NAME qdtsne_tests COMMAND libtest)
+gtest_discover_tests(cuspartest)

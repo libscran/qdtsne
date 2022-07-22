@@ -1,5 +1,10 @@
 #include <gtest/gtest.h>
 
+#ifdef CUSTOM_PARALLEL_TEST
+// must be before any qdtsne includes.
+#include "custom_parallel.h"
+#endif
+
 #include "knncolle/knncolle.hpp"
 #include "qdtsne/tsne.hpp"
 #include "qdtsne/utils.hpp"
@@ -111,6 +116,12 @@ TEST_P(TsneTester, Runner) {
         }
         EXPECT_TRUE(std::abs(total/N) < 1e-10);
     }
+
+    // Same results when run in parallel.
+    thing.set_num_threads(3);
+    auto copy = old;
+    auto pstatus = thing.run(neighbors, copy.data());
+    EXPECT_EQ(copy, Y);
 }
 
 TEST_P(TsneTester, StopStart) {

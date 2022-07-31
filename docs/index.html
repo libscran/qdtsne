@@ -95,9 +95,8 @@ $(function() {
 </div><!-- fragment --><p >You can also stop and start the algorithm:</p>
 <div class="fragment"><div class="line"><a class="code hl_class" href="classqdtsne_1_1Tsne.html">qdtsne::Tsne</a> thing;</div>
 <div class="line"><span class="keyword">auto</span> ref = thing.<a class="code hl_function" href="classqdtsne_1_1Tsne.html#a8e74b496ef8be5ad02153abdbb88ac11">initialize</a>(data.data(), D, N);</div>
-<div class="line">thing.<a class="code hl_function" href="classqdtsne_1_1Tsne.html#a90a9f9cf6ed48a8449ad372057464528">run</a>(ref, Y.data());</div>
-<div class="line">thing.<a class="code hl_function" href="classqdtsne_1_1Tsne.html#a1ada1a41bf0c2f87a091bfa416e321e8">set_max_iter</a>(1100).<a class="code hl_function" href="classqdtsne_1_1Tsne.html#a90a9f9cf6ed48a8449ad372057464528">run</a>(ref, Y.data()); <span class="comment">// run for more iterations</span></div>
-<div class="ttc" id="aclassqdtsne_1_1Tsne_html_a1ada1a41bf0c2f87a091bfa416e321e8"><div class="ttname"><a href="classqdtsne_1_1Tsne.html#a1ada1a41bf0c2f87a091bfa416e321e8">qdtsne::Tsne::set_max_iter</a></div><div class="ttdeci">Tsne &amp; set_max_iter(int m=Defaults::max_iter)</div><div class="ttdef"><b>Definition:</b> tsne.hpp:184</div></div>
+<div class="line">ref.run(Y.data(), 200); <span class="comment">// run up to 200 iterations</span></div>
+<div class="line">ref.run(Y.data(), 500); <span class="comment">// run up to 500 iterations</span></div>
 <div class="ttc" id="aclassqdtsne_1_1Tsne_html_a8e74b496ef8be5ad02153abdbb88ac11"><div class="ttname"><a href="classqdtsne_1_1Tsne.html#a8e74b496ef8be5ad02153abdbb88ac11">qdtsne::Tsne::initialize</a></div><div class="ttdeci">auto initialize(NeighborList&lt; Index, Float &gt; nn)</div><div class="ttdef"><b>Definition:</b> tsne.hpp:630</div></div>
 </div><!-- fragment --><p >See the <a href="https://ltla.github.io/qdtsne/">reference documentation</a> for more details.</p>
 <h1>Building projects</h1>

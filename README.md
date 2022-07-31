@@ -47,8 +47,8 @@ You can also stop and start the algorithm:
 ```cpp
 qdtsne::Tsne thing;
 auto ref = thing.initialize(data.data(), D, N);
-thing.run(ref, Y.data());
-thing.set_max_iter(1100).run(ref, Y.data()); // run for more iterations
+ref.run(Y.data(), 200); // run up to 200 iterations
+ref.run(Y.data(), 500); // run up to 500 iterations
 ```
 
 See the [reference documentation](https://ltla.github.io/qdtsne/) for more details.

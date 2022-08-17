@@ -200,7 +200,6 @@ public:
         int intervals,
         std::vector<Float>& parallel_buffer
     ) const {
-        Float output_sum = 0;
 
 #if defined(_OPENMP) || defined(QDTSNE_CUSTOM_PARALLEL)
         if (nthreads > 1) {
@@ -232,9 +231,11 @@ public:
             }, nthreads);
 #endif
 
-            return output_sum;
+            return std::accumulate(parallel_buffer.begin(), parallel_buffer.end(), static_cast<Float>(0));
         }
 #endif
+
+        Float output_sum = 0;
 
         for (size_t i = 0; i < N; ++i) {
             auto offset = i * ndim;
@@ -249,6 +250,7 @@ public:
                 intervals
             );
         }
+
         return output_sum;
     }
 

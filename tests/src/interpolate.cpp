@@ -117,7 +117,8 @@ TEST_P(InterpolateTest, ExactGrid) {
     std::vector<double> neg(grid_npts * ndim);
     std::vector<double> buffer;
     qdtsne::Interpolator<> inter;
-    inter.compute_non_edge_forces(tree, grid_npts, grid.data(), 0.1, neg.data(), intervals, buffer);
+    auto sum = inter.compute_non_edge_forces(tree, grid_npts, grid.data(), 0.1, neg.data(), intervals, buffer);
+    EXPECT_TRUE(sum > 0);
 
     for (int i = 0; i <= intervals; ++i) {
         for (int j = 0; j <= intervals; ++j) {
@@ -134,8 +135,9 @@ TEST_P(InterpolateTest, ExactGrid) {
     inter.set_num_threads(3);
     buffer.resize(grid_npts);
     std::vector<double> pneg(neg.size());
-    inter.compute_non_edge_forces(tree, grid_npts, grid.data(), 0.1, pneg.data(), intervals, buffer);
+    auto psum = inter.compute_non_edge_forces(tree, grid_npts, grid.data(), 0.1, pneg.data(), intervals, buffer);
     EXPECT_EQ(pneg, neg);
+    EXPECT_EQ(psum, sum);
 }
 
 TEST_P(InterpolateTest, MidGrid) {
@@ -166,7 +168,8 @@ TEST_P(InterpolateTest, MidGrid) {
     std::vector<double> neg(grid.size());
     std::vector<double> buffer;
     qdtsne::Interpolator<> inter;
-    inter.compute_non_edge_forces(tree, grid_npts, grid.data(), 0.1, neg.data(), intervals, buffer);
+    auto sum = inter.compute_non_edge_forces(tree, grid_npts, grid.data(), 0.1, neg.data(), intervals, buffer);
+    EXPECT_TRUE(sum > 0);
 
     for (int i = 0; i < intervals; ++i) {
         for (int j = 0; j < intervals; ++j) {
@@ -211,8 +214,9 @@ TEST_P(InterpolateTest, MidGrid) {
     inter.set_num_threads(3);
     buffer.resize(grid_npts);
     std::vector<double> pneg(neg.size());
-    inter.compute_non_edge_forces(tree, grid_npts, grid.data(), 0.1, pneg.data(), intervals, buffer);
+    auto psum = inter.compute_non_edge_forces(tree, grid_npts, grid.data(), 0.1, pneg.data(), intervals, buffer);
     EXPECT_EQ(pneg, neg);
+    EXPECT_EQ(psum, sum);
 }
 
 INSTANTIATE_TEST_CASE_P(

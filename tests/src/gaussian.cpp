@@ -69,3 +69,41 @@ INSTANTIATE_TEST_CASE_P(
         ::testing::Values(10.0, 20.0, 30.0) // perplexity
     )
 );
+
+TEST(GaussianTest, Overflow) {
+    {
+        qdtsne::NeighborList<int, float> neighbors(1);
+        auto& first = neighbors.front();
+
+        // Lots of ties causes the beta search to overflow.
+        for (size_t i = 0; i < 90; ++i) {
+            first.emplace_back(i, 1);
+        }
+
+        qdtsne::compute_gaussian_perplexity(neighbors, static_cast<float>(30), 1);
+
+        // Expect finite probabilities.
+        for (auto& x : neighbors.front()) {
+            EXPECT_EQ(x.second, neighbors.front().front().second);
+        }
+    }
+
+    {
+        qdtsne::NeighborList<int, float> neighbors(1);
+        auto& first = neighbors.front();
+
+        first.emplace_back(0, 1);
+        for (size_t i = 1; i < 90; ++i) {
+            first.emplace_back(i, 1.0000001);
+        }
+
+        // Really cranking down the perplexity (and thus forcing the beta
+        // search to try to get an unreachable entropy).
+        qdtsne::compute_gaussian_perplexity(neighbors, static_cast<float>(1), 1);
+
+        EXPECT_TRUE(first.front().second > 0);
+        for (size_t i = 1; i < 90; ++i) {
+            EXPECT_EQ(first[i].second, 0);
+        }
+    }
+}

@@ -45,11 +45,15 @@ void compute_gaussian_perplexity(NeighborList<Index, Float>& neighbors, Float pe
             // effect on the entropy or even the final probabilities because it
             // just scales all probabilities up/down (and they need to be
             // normalized anyway, so any scaling effect just cancels out).
-            const Float first = current[0].second * current[0].second;
+            const Float first2 = current[0].second * current[0].second;
             for (int m = 1; m < K; ++m) {
-                squared_delta_dist[m] = current[m].second * current[m].second - first;
+                // We do an explicit cast here, avoids differences in float vs
+                // double intermediate precision that could causes negative
+                // squares in the presence of tied distances.
+                squared_delta_dist[m] = static_cast<Float>(current[m].second * current[m].second) - first2; 
                 quad_delta_dist[m] = squared_delta_dist[m] * squared_delta_dist[m];
             }
+
             output[0] = 1;  
 
             for (int iter = 0; iter < 200; ++iter) {
@@ -95,6 +99,14 @@ void compute_gaussian_perplexity(NeighborList<Index, Float>& neighbors, Float pe
                         max_beta = beta;
                         beta = (beta + min_beta) / static_cast<Float>(2);
                     }
+                }
+
+                if (std::isinf(beta)) {
+                    // Avoid propagation of NaNs via Inf * 0. 
+                    for (int m = 1; m < K; ++m) {
+                        output[m] = (squared_delta_dist[m] == 0);
+                    }
+                    break;
                 }
             }
 

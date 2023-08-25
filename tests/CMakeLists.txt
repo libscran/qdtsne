@@ -10,6 +10,8 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
+include(GoogleTest)
+
 add_executable(
     libtest 
     src/sptree.cpp
@@ -27,33 +29,48 @@ target_link_libraries(
     qdtsne
 )
 
-# Test the custom parallelization capability.
+# Add coverage.
+option(CODE_COVERAGE "Enable coverage testing" OFF)
+if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    set(DO_CODE_COVERAGE ON)
+else()
+    set(DO_CODE_COVERAGE OFF)
+endif()
+
+macro(add_common_properties target)
+if(DO_CODE_COVERAGE)
+    target_compile_options(${target} PRIVATE -O0 -g --coverage)
+    target_link_options(${target} PRIVATE --coverage)
+endif()
+
+gtest_discover_tests(${target})
+endmacro()
+
+add_common_properties(libtest)
+
+# Create targets to test parallelization.
+macro(create_partest target)
+
 add_executable(
-    cuspartest 
+    ${target}
     src/tsne.cpp
 )
 
 target_link_libraries(
-    cuspartest
+    ${target} 
     gtest_main
-    knncolle
     qdtsne
 )
 
+endmacro()
+
+create_partest(cuspartest)
 target_compile_definitions(cuspartest PRIVATE CUSTOM_PARALLEL_TEST=1)
+add_common_properties(cuspartest)
 
-set(CODE_COVERAGE "Enable coverage testing" OFF)
-if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    target_compile_options(libtest PRIVATE -O0 -g --coverage)
-    target_link_options(libtest PRIVATE --coverage)
+find_package(OpenMP)
+if (OpenMP_FOUND)
+    create_partest(omptest)
+    target_link_libraries(omptest OpenMP::OpenMP_CXX)
+    add_common_properties(cuspartest)
 endif()
-
-set(USE_OPENMP OFF CACHE BOOL "Compile with OpenMP support")
-if (USE_OPENMP)
-    find_package(OpenMP)
-    target_link_libraries(libtest OpenMP::OpenMP_CXX)
-endif()
-
-include(GoogleTest)
-gtest_discover_tests(libtest)
-gtest_discover_tests(cuspartest)

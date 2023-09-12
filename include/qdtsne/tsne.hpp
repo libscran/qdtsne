@@ -674,7 +674,7 @@ public:
      * 
      * @param[in] input Pointer to a 2D array containing the input high-dimensional data, with number of rows and columns equal to `D` and `N`, respectively.
      * The array is treated as column-major where each row corresponds to a dimension and each column corresponds to an observation.
-     * @param D Number of dimensions.
+     * @param D Number of input dimensions.
      * @param N Number of observations.
      *
      * @return A `Status` object containing various pre-computed structures required for the iterations in `run()`.
@@ -694,7 +694,7 @@ public:
      * 
      * @param[in] input Pointer to a 2D array containing the input high-dimensional data, with number of rows and columns equal to `D` and `N`, respectively.
      * The array is treated as column-major where each row corresponds to a dimension and each column corresponds to an observation.
-     * @param D Number of dimensions.
+     * @param D Number of input dimensions.
      * @param N Number of observations.
      * @param[in, out] Y Pointer to a 2D array with number of rows and columns equal to `ndim` and `nn_index.size()`, respectively.
      * The array is treated as column-major where each column corresponds to an observation.

@@ -27,7 +27,7 @@ using NeighborList = std::vector<std::vector<std::pair<Index, Float> > >;
  * Determines the appropriate number of neighbors, given a perplexity value.
  * Useful when the neighbor search is conducted outside of the `Tsne` class.
  *
- * @param Perplexity to use in the t-SNE algorithm.
+ * @param perplexity Perplexity to use in the t-SNE algorithm.
  * @return Number of nearest neighbors to find.
  */
 inline int perplexity_to_k(double perplexity) {
@@ -39,14 +39,13 @@ inline int perplexity_to_k(double perplexity) {
  * We do so using our own implementation of the Box-Muller transform,
  * to avoid problems with differences in the distribution functions across C++ standard library implementations.
  *
- * @tparam ndim Number of dimensions.
+ * @tparam ndim Number of embedding dimensions.
  * @tparam Float Floating-point type to use for the calculations.
  *
  * @param[out] Y Pointer to a 2D array with number of rows and columns equal to `ndim` and N`, respectively.
+ * On output, `Y` is filled with random draws from a standard normal distribution. 
  * @param N Number of observations.
  * @param seed Seed for the random number generator.
- *
- * @return `Y` is filled with random draws from a standard normal distribution. 
  */
 template<int ndim = 2, typename Float = double>
 void initialize_random(Float* Y, size_t N, int seed = 42) {
@@ -77,7 +76,7 @@ void initialize_random(Float* Y, size_t N, int seed = 42) {
 /**
  * Creates the initial locations of each observation in the embedding. 
  *
- * @tparam ndim Number of dimensions.
+ * @tparam ndim Number of embedding dimensions.
  * @tparam Float Floating-point type to use for the calculations.
  *
  * @param N Number of observations.

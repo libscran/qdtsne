@@ -14,4 +14,10 @@
 #include "tsne.hpp"
 #include "utils.hpp"
 
+/**
+ * @namespace qdtsne
+ * @brief Quick and dirty t-SNE functions.
+ */
+namespace qdtsne {}
+
 #endif

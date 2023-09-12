@@ -82,7 +82,7 @@ $(function() {
 <p >Using this library is as simple as including the header file in your source code:</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="qdtsne_8hpp.html">qdtsne/qdtsne.hpp</a>&quot;</span></div>
 <div class="line"> </div>
-<div class="line"><span class="keyword">auto</span> Y = qdtsne::initialize_random(N); <span class="comment">// initial coordinates</span></div>
+<div class="line"><span class="keyword">auto</span> Y = <a class="code hl_function" href="namespaceqdtsne.html#aac440bd84565b633afd95352c01ff235">qdtsne::initialize_random</a>(N); <span class="comment">// initial coordinates</span></div>
 <div class="line"> </div>
 <div class="line"><span class="comment">/* Assuming `data` contains high-dimensional data in column-major format,</span></div>
 <div class="line"><span class="comment"> * i.e., each column is a observation and each row is a dimension.</span></div>
@@ -93,6 +93,7 @@ $(function() {
 <div class="line"><span class="keyword">auto</span> ref = thing.<a class="code hl_function" href="classqdtsne_1_1Tsne.html#a90a9f9cf6ed48a8449ad372057464528">run</a>(data.data(), D, N, Y.data());</div>
 <div class="ttc" id="aclassqdtsne_1_1Tsne_html"><div class="ttname"><a href="classqdtsne_1_1Tsne.html">qdtsne::Tsne</a></div><div class="ttdoc">Implements the t-SNE algorithm.</div><div class="ttdef"><b>Definition:</b> tsne.hpp:84</div></div>
 <div class="ttc" id="aclassqdtsne_1_1Tsne_html_a90a9f9cf6ed48a8449ad372057464528"><div class="ttname"><a href="classqdtsne_1_1Tsne.html#a90a9f9cf6ed48a8449ad372057464528">qdtsne::Tsne::run</a></div><div class="ttdeci">auto run(NeighborList&lt; Index, Float &gt; nn, Float *Y)</div><div class="ttdef"><b>Definition:</b> tsne.hpp:664</div></div>
+<div class="ttc" id="anamespaceqdtsne_html_aac440bd84565b633afd95352c01ff235"><div class="ttname"><a href="namespaceqdtsne.html#aac440bd84565b633afd95352c01ff235">qdtsne::initialize_random</a></div><div class="ttdeci">void initialize_random(Float *Y, size_t N, int seed=42)</div><div class="ttdef"><b>Definition:</b> utils.hpp:51</div></div>
 <div class="ttc" id="aqdtsne_8hpp_html"><div class="ttname"><a href="qdtsne_8hpp.html">qdtsne.hpp</a></div><div class="ttdoc">Umbrella header for all qdtsne files.</div></div>
 </div><!-- fragment --><p >You can change the parameters with the relevant setters:</p>
 <div class="fragment"><div class="line">thing.<a class="code hl_function" href="classqdtsne_1_1Tsne.html#a506e7e8dbfa46987df102acb6d42d3c2">set_perplexity</a>(10).<a class="code hl_function" href="classqdtsne_1_1Tsne.html#ae5b668da0dadbbdceeb19594b8e5897d">set_mom_switch_iter</a>(100);</div>

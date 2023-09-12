@@ -71,7 +71,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>qdtsne</b></li><li class="navelem"><a class="el" href="classqdtsne_1_1Tsne.html">Tsne</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceqdtsne.html">qdtsne</a></li><li class="navelem"><a class="el" href="classqdtsne_1_1Tsne.html">Tsne</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -126,10 +126,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac98fea3e14997a602aae209393494b0a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classqdtsne_1_1Tsne.html">Tsne</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classqdtsne_1_1Tsne.html#ac98fea3e14997a602aae209393494b0a">set_num_threads</a> (int n=<a class="el" href="structqdtsne_1_1Tsne_1_1Defaults.html#a98929084b6ee4545739ae47a1910a359">Defaults::num_threads</a>)</td></tr>
 <tr class="separator:ac98fea3e14997a602aae209393494b0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e74b496ef8be5ad02153abdbb88ac11"><td class="memTemplParams" colspan="2">template&lt;typename Index  = int&gt; </td></tr>
-<tr class="memitem:a8e74b496ef8be5ad02153abdbb88ac11"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classqdtsne_1_1Tsne.html#a8e74b496ef8be5ad02153abdbb88ac11">initialize</a> (<a class="el" href="utils_8hpp.html#a705e394d4929f075451d5d1967ad590c">NeighborList</a>&lt; Index, Float &gt; nn)</td></tr>
+<tr class="memitem:a8e74b496ef8be5ad02153abdbb88ac11"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classqdtsne_1_1Tsne.html#a8e74b496ef8be5ad02153abdbb88ac11">initialize</a> (<a class="el" href="namespaceqdtsne.html#a705e394d4929f075451d5d1967ad590c">NeighborList</a>&lt; Index, Float &gt; nn)</td></tr>
 <tr class="separator:a8e74b496ef8be5ad02153abdbb88ac11"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a90a9f9cf6ed48a8449ad372057464528"><td class="memTemplParams" colspan="2">template&lt;typename Index  = int, typename Dist  = Float&gt; </td></tr>
-<tr class="memitem:a90a9f9cf6ed48a8449ad372057464528"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classqdtsne_1_1Tsne.html#a90a9f9cf6ed48a8449ad372057464528">run</a> (<a class="el" href="utils_8hpp.html#a705e394d4929f075451d5d1967ad590c">NeighborList</a>&lt; Index, Float &gt; nn, Float *Y)</td></tr>
+<tr class="memitem:a90a9f9cf6ed48a8449ad372057464528"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classqdtsne_1_1Tsne.html#a90a9f9cf6ed48a8449ad372057464528">run</a> (<a class="el" href="namespaceqdtsne.html#a705e394d4929f075451d5d1967ad590c">NeighborList</a>&lt; Index, Float &gt; nn, Float *Y)</td></tr>
 <tr class="separator:a90a9f9cf6ed48a8449ad372057464528"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79e18e584f88dc92bf88040ff25b0302"><td class="memTemplParams" colspan="2">template&lt;typename Input  = Float&gt; </td></tr>
 <tr class="memitem:a79e18e584f88dc92bf88040ff25b0302"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classqdtsne_1_1Tsne.html#a79e18e584f88dc92bf88040ff25b0302">initialize</a> (const Input *input, size_t D, size_t N)</td></tr>
@@ -255,7 +255,7 @@ template&lt;typename Input  = Float&gt; </div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">input</td><td>Pointer to a 2D array containing the input high-dimensional data, with number of rows and columns equal to <code>D</code> and <code>N</code>, respectively. The array is treated as column-major where each row corresponds to a dimension and each column corresponds to an observation. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">D</td><td>Number of dimensions. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">D</td><td>Number of input dimensions. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">N</td><td>Number of observations.</td></tr>
   </table>
   </dd>
@@ -281,7 +281,7 @@ template&lt;typename Index  = int&gt; </div>
         <tr>
           <td class="memname">auto <a class="el" href="classqdtsne_1_1Tsne.html">qdtsne::Tsne</a>&lt; ndim, Float &gt;::initialize </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="utils_8hpp.html#a705e394d4929f075451d5d1967ad590c">NeighborList</a>&lt; Index, Float &gt;&#160;</td>
+          <td class="paramtype"><a class="el" href="namespaceqdtsne.html#a705e394d4929f075451d5d1967ad590c">NeighborList</a>&lt; Index, Float &gt;&#160;</td>
           <td class="paramname"><em>nn</em></td><td>)</td>
           <td></td>
         </tr>
@@ -421,7 +421,7 @@ template&lt;typename Input  = Float&gt; </div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">input</td><td>Pointer to a 2D array containing the input high-dimensional data, with number of rows and columns equal to <code>D</code> and <code>N</code>, respectively. The array is treated as column-major where each row corresponds to a dimension and each column corresponds to an observation. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">D</td><td>Number of dimensions. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">D</td><td>Number of input dimensions. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">N</td><td>Number of observations. </td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">Y</td><td>Pointer to a 2D array with number of rows and columns equal to <code>ndim</code> and <code>nn_index.size()</code>, respectively. The array is treated as column-major where each column corresponds to an observation. On input, this should contain the initial locations of each observation; on output, it is updated to the final t-SNE locations.</td></tr>
   </table>
@@ -447,7 +447,7 @@ template&lt;typename Index  = int, typename Dist  = Float&gt; </div>
         <tr>
           <td class="memname">auto <a class="el" href="classqdtsne_1_1Tsne.html">qdtsne::Tsne</a>&lt; ndim, Float &gt;::run </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="utils_8hpp.html#a705e394d4929f075451d5d1967ad590c">NeighborList</a>&lt; Index, Float &gt;&#160;</td>
+          <td class="paramtype"><a class="el" href="namespaceqdtsne.html#a705e394d4929f075451d5d1967ad590c">NeighborList</a>&lt; Index, Float &gt;&#160;</td>
           <td class="paramname"><em>nn</em>, </td>
         </tr>
         <tr>

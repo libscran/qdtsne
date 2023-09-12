@@ -1,8 +1,4 @@
 <map id="qdtsne/utils.hpp" name="qdtsne/utils.hpp">
-<area shape="rect" id="node1" title="Utilities for running t&#45;SNE." alt="" coords="277,5,390,31"/>
-<area shape="rect" id="node2" href="$gaussian_8hpp_source.html" title=" " alt="" coords="5,79,147,104"/>
-<area shape="rect" id="node4" href="$qdtsne_8hpp.html" title="Umbrella header for all qdtsne files." alt="" coords="327,225,455,251"/>
-<area shape="rect" id="node5" href="$interpolate_8hpp_source.html" title=" " alt="" coords="171,79,320,104"/>
-<area shape="rect" id="node6" href="$symmetrize_8hpp_source.html" title=" " alt="" coords="344,79,499,104"/>
-<area shape="rect" id="node3" href="$tsne_8hpp.html" title="Implements the t&#45;SNE algorithm." alt="" coords="276,152,391,177"/>
+<area shape="rect" id="node1" title="Utilities for running t&#45;SNE." alt="" coords="13,5,126,31"/>
+<area shape="rect" id="node2" href="$qdtsne_8hpp.html" title="Umbrella header for all qdtsne files." alt="" coords="5,79,133,104"/>
 </map>

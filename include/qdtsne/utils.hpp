@@ -14,16 +14,6 @@
 namespace qdtsne {
 
 /**
- * A vector of length equal to the number of observations,
- * where each entry contains the indices of and distances to that observation's nearest neighbors.
- *
- * @tparam Index Integer type to use for the indices.
- * @tparam Float Floating-point type to use for the calculations.
- */
-template<typename Index, typename Float>
-using NeighborList = std::vector<std::vector<std::pair<Index, Float> > >;
-
-/**
  * Determines the appropriate number of neighbors, given a perplexity value.
  * Useful when the neighbor search is conducted outside of the `Tsne` class.
  *

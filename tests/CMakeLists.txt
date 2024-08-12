@@ -14,12 +14,12 @@ include(GoogleTest)
 
 add_executable(
     libtest 
-    src/sptree.cpp
-    src/tsne.cpp
-    src/interpolate.cpp
+    #src/sptree.cpp
+    #src/tsne.cpp
+    #src/interpolate.cpp
     src/gaussian.cpp
-    src/symmetrize.cpp
-    src/utils.cpp
+    #src/symmetrize.cpp
+    #src/utils.cpp
 )
 
 target_link_libraries(
@@ -38,6 +38,8 @@ else()
 endif()
 
 macro(add_common_properties target)
+    target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic -Werror)
+
     if(DO_CODE_COVERAGE)
         target_compile_options(${target} PRIVATE -O0 -g --coverage)
         target_link_options(${target} PRIVATE --coverage)

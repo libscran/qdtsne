@@ -132,7 +132,9 @@ TEST_P(SPTreeTester, CheckTree2) {
 
         // Checking that the locations are correct.
         const auto& locations = tree.get_locations();
+        EXPECT_EQ(locations.size(), N);
         for (size_t n = 0; n < N; ++n) {
+            EXPECT_GT(locations[n], 0);
             const auto& locale = store[locations[n]];
             EXPECT_TRUE(locale.is_leaf);
 
@@ -161,30 +163,39 @@ TEST_P(SPTreeTester, CheckTree2) {
         }
     }
 
-    // Checking against a reference, if the tree is exact.
-    bool exact = true;
-    for (const auto& s : tree.get_store()) {
+    // Checking against a reference, if the tree is not truncated.
+    bool no_truncate = true;
+    const auto& store = tree.get_store();
+    for (const auto& s : store) {
         if (s.is_leaf && s.number > 1) {
-            exact = false;
+            no_truncate = false;
             break;
         }
     }
     
     if (maxd == 20) {
-        EXPECT_TRUE(exact);
+        EXPECT_TRUE(no_truncate);
     }
     
-    if (exact){ 
+    if (no_truncate) { 
         std::vector<double> neg_f(2);
         std::vector<double> neg_f_ref(2);
 
-        for (int i = 0; i < std::min((int)N, 10); ++i) {
-            double no_theta = tree.compute_non_edge_forces(i, 0, neg_f.data());
+        int top = std::min((int)N, 20); // computing just the top set for simplicity.
+        for (int i = 0; i < top; ++i) {
+            double no_theta = tree.compute_non_edge_forces(i, 0, neg_f.data()); // set theta=0 for exact calculation.
             double ref = reference_non_edge_forces(Y.data() + i * ndim, Y.data(), N, neg_f_ref.data());
 
             EXPECT_FLOAT_EQ(neg_f_ref[0], neg_f[0]);
             EXPECT_FLOAT_EQ(neg_f_ref[1], neg_f[1]);
             EXPECT_FLOAT_EQ(no_theta, ref);
+        }
+
+        // Checking that every point is represented by a leaf.
+        const auto& locations = tree.get_locations();
+        for (auto l : locations) {
+            EXPECT_TRUE(store[l].is_leaf);
+            EXPECT_EQ(store[l].number, 1);
         }
     }
 }

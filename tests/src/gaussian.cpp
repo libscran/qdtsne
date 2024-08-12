@@ -29,7 +29,19 @@ TEST_P(GaussianTest, Gaussian) {
     double P = std::get<1>(PARAM);
 
     auto index = knncolle::VptreeBuilder().build_unique(knncolle::SimpleMatrix(D, N, X.data()));
-    auto neighbors = knncolle::find_nearest_neighbors(*index, K, /* num_threads = */ 1);
+    qdtsne::NeighborList<int, double> neighbors(N);
+    {
+        std::vector<int> indices;
+        std::vector<double> distances;
+        auto searcher = index->initialize();
+        for (int i = 0; i < N; ++i) {
+            searcher->search(i, K, &indices, &distances);
+            int actual_k = indices.size();
+            for (int k = 0; k < actual_k; ++k) {
+                neighbors[i].emplace_back(indices[k], distances[k]);
+            }
+        }
+    }
 
     auto copy = neighbors;
     qdtsne::internal::compute_gaussian_perplexity(neighbors, P, 1);
@@ -39,9 +51,9 @@ TEST_P(GaussianTest, Gaussian) {
     for (int i = 0; i < N; ++i) {
         double entropy = 0;
         double sum = 0;
-        for (const auto& x : neighbors[i].second) {
-            entropy += x * std::log(x);
-            sum += x;
+        for (const auto& x : neighbors[i]) {
+            entropy += x.second * std::log(x.second);
+            sum += x.second;
         }
         entropy *= -1;
         
@@ -67,41 +79,38 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST(GaussianTest, Overflow) {
     {
-        knncolle::NeighborList<int, float> neighbors(1);
+        qdtsne::NeighborList<int, float> neighbors(1);
         auto& first = neighbors.front();
 
         // Lots of ties causes the beta search to overflow.
         for (size_t i = 0; i < 90; ++i) {
-            first.first.emplace_back(i);
-            first.second.emplace_back(1);
+            first.emplace_back(i, 1);
         }
 
         qdtsne::internal::compute_gaussian_perplexity(neighbors, static_cast<float>(30), 1);
 
         // Expect finite probabilities.
-        for (auto& x : neighbors.front().second) {
-            EXPECT_EQ(x, neighbors.front().second.front());
+        for (auto& x : neighbors.front()) {
+            EXPECT_EQ(x.second, neighbors.front().front().second);
         }
     }
 
     {
-        knncolle::NeighborList<int, float> neighbors(1);
+        qdtsne::NeighborList<int, float> neighbors(1);
         auto& first = neighbors.front();
 
-        first.first.emplace_back(0);
-        first.second.emplace_back(1);
+        first.emplace_back(0, 1);
         for (size_t i = 1; i < 90; ++i) {
-            first.first.emplace_back(i);
-            first.second.emplace_back(1.0000001);
+            first.emplace_back(i, 1.0000001);
         }
 
         // Really cranking down the perplexity (and thus forcing the beta
         // search to try to get an unreachable entropy).
         qdtsne::internal::compute_gaussian_perplexity(neighbors, static_cast<float>(1), 1);
 
-        EXPECT_TRUE(first.second.front() > 0);
+        EXPECT_TRUE(first.front().second > 0);
         for (size_t i = 1; i < 90; ++i) {
-            EXPECT_EQ(first.second[i], 0);
+            EXPECT_EQ(first[i].second, 0);
         }
     }
 }

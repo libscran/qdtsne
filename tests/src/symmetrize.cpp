@@ -7,67 +7,86 @@
 #include <random>
 #include <cmath>
 
-class SymmetrizeTest : public ::testing::TestWithParam<std::tuple<int, int> > {
-protected:
-    template<class Param>
-    auto generate_neighbors (Param p) { 
-        size_t nobs = std::get<0>(p);
-        int k = std::get<1>(p);
-        int ndim = 5;
+class SymmetrizeTest : public ::testing::TestWithParam<std::tuple<int, int> > {};
 
+TEST_P(SymmetrizeTest, Combining) {
+    auto p = GetParam();
+    size_t nobs = std::get<0>(p);
+    int k = std::get<1>(p);
+
+    qdtsne::NeighborList<int, double> stored(nobs);
+    {
         std::mt19937_64 rng(nobs * k); // for some variety
         std::normal_distribution<> dist(0, 1);
 
+        int ndim = 5;
         std::vector<double> data(nobs * ndim);
-        for (int r = 0; r < data.size(); ++r) {
-            data[r] = dist(rng);
+        for (auto& d : data) {
+            d = dist(rng);
         }
 
-        qdtsne::NeighborList<int, double> stored(nobs);
-        knncolle::VpTreeEuclidean<> searcher(ndim, nobs, data.data());
+        auto index = knncolle::VptreeBuilder().build_unique(knncolle::SimpleMatrix<int, int, double>(ndim, nobs, data.data()));
+        auto searcher = index->initialize();
+        std::vector<int> indices;
+        std::vector<double> distances;
         for (size_t i = 0; i < nobs; ++i) {
-            stored[i] = searcher.find_nearest_neighbors(i, k);
-            for (auto& x : stored.back()) {
-                x.second = std::exp(-x.second);
+            searcher->search(i, k, &indices, &distances);
+
+            auto& current = stored[i];
+            int actual_k = indices.size();
+            for (int x = 0; x < actual_k; ++x) {
+                current.emplace_back(indices[x], std::exp(-distances[x]));
             }
         }
-
-        return stored;
     }
-};
 
-template<class Searched>
-void slow_symmetrization(const Searched& original, const Searched& combined) {
     std::map<std::pair<int, int>, double> probs;
-
-    // Filling 'probs'.
     double total = 0;
-    for (size_t i = 0; i < original.size(); ++i) {
-        const auto& y = original[i];
-        for (const auto& z : y) {
-            EXPECT_NE(z.first, i);
-            std::pair<int, int> target(z.first, i);
-            std::pair<int, int> alt(i, z.first);
+    {
+        for (size_t i = 0; i < nobs; ++i) {
+            const auto& y = stored[i];
+            for (const auto& z : y) {
+                EXPECT_NE(z.first, i);
+                std::pair<int, int> target(z.first, i);
+                std::pair<int, int> alt(i, z.first);
 
-            // If it was already added, it would be when the first index is
-            // less than the second, as those would be added at a prior 'i'.
-            auto it = probs.find(target);
-            if (it != probs.end()) {
-                it->second += z.second;
-                probs[alt] = it->second;
-            } else {
-                probs[target] = z.second;
-                probs[alt] = z.second;
+                // If it was already added, it would be when the first index is
+                // less than the second, as those would be added at a prior 'i'.
+                auto it = probs.find(target);
+                if (it != probs.end()) {
+                    it->second += z.second;
+                    probs[alt] = it->second;
+                } else {
+                    probs[target] = z.second;
+                    probs[alt] = z.second;
+                }
+
+                total += z.second;
             }
-
-            total += z.second;
         }
     }
 
-    // Comparing to the combined results.
+    // Checking that the number of edges actually increases after symmetrization.
+    size_t total_before = 0;
+    for (size_t i = 0; i < nobs; ++i) {
+        const auto& svec = stored[i];
+        total_before += svec.size();
+    }
+
+    qdtsne::internal::symmetrize_matrix(stored);
+    EXPECT_EQ(stored.size(), nobs);
+
+    size_t total_after = 0;
+    for (size_t i = 0; i < stored.size(); ++i) {
+        const auto& svec = stored[i];
+        total_after += svec.size();
+    }
+    EXPECT_LT(total_before, total_after);
+
+    // Checking the probabilities are as expected.
     std::map<std::pair<int, int>, int> found;
-    for (size_t i = 0; i < combined.size(); ++i) {
-        const auto& y = combined[i];
+    for (size_t i = 0; i < nobs; ++i) {
+        const auto& y = stored[i];
         for (const auto& z : y) {
             std::pair<int, int> target(i, z.first);
             auto it = probs.find(target);
@@ -80,25 +99,6 @@ void slow_symmetrization(const Searched& original, const Searched& combined) {
     }
 
     EXPECT_EQ(probs.size(), found.size());
-}
-
-TEST_P(SymmetrizeTest, Combining) {
-    auto stored = generate_neighbors(GetParam());
-
-    auto copy = stored;
-    qdtsne::symmetrize_matrix(copy);
-    slow_symmetrization(stored, copy);
-
-    // Comparing the number of edges.
-    size_t total_s = 0, total_c = 0;
-    for (size_t i = 0; i < stored.size(); ++i) {
-        const auto& cvec = copy[i];
-        total_c += cvec.size();
-        const auto& svec = stored[i];
-        total_s += svec.size();
-    }
-
-    EXPECT_TRUE(total_c > total_s);
 }
 
 INSTANTIATE_TEST_SUITE_P(

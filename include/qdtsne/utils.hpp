@@ -9,9 +9,21 @@
 
 #include <random>
 #include <cmath>
+#include <vector>
+
 #include "aarand/aarand.hpp"
 
 namespace qdtsne {
+
+/**
+ * A vector of length equal to the number of observations,
+ * where each entry contains the indices of and distances to that observation's nearest neighbors.
+ *
+ * @tparam Index_ Integer type to use for the indices.
+ * @tparam Float_ Floating-point type to use for the calculations.
+ */
+template<typename Index_, typename Float_>
+using NeighborList = std::vector<std::vector<std::pair<Index_, Float_> > >;
 
 /**
  * Determines the appropriate number of neighbors, given a perplexity value.

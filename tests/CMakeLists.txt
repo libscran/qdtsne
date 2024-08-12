@@ -18,8 +18,8 @@ add_executable(
     #src/tsne.cpp
     #src/interpolate.cpp
     src/gaussian.cpp
-    #src/symmetrize.cpp
-    #src/utils.cpp
+    src/symmetrize.cpp
+    src/utils.cpp
 )
 
 target_link_libraries(

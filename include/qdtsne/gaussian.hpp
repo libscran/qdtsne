@@ -1,8 +1,6 @@
 #ifndef QDTSNE_GAUSSIAN_HPP
 #define QDTSNE_GAUSSIAN_HPP
 
-#include "knncolle/knncolle.hpp"
-
 #include <cmath>
 #include <limits>
 #include <vector>
@@ -16,7 +14,7 @@ namespace qdtsne {
 namespace internal {
 
 template<typename Index_, typename Float_>
-void compute_gaussian_perplexity(knncolle::NeighborList<Index_, Float_>& neighbors, Float_ perplexity, [[maybe_unused]] int nthreads) {
+void compute_gaussian_perplexity(NeighborList<Index_, Float_>& neighbors, Float_ perplexity, [[maybe_unused]] int nthreads) {
     constexpr Float_ max_value = std::numeric_limits<Float_>::max();
     constexpr Float_ tol = 1e-5;
 
@@ -46,7 +44,7 @@ void compute_gaussian_perplexity(knncolle::NeighborList<Index_, Float_>& neighbo
 #endif
 
             auto& current = neighbors[n];
-            const int K = current.first.size();
+            const int K = current.size();
             if (K) {
                 squared_delta_dist.resize(K);
                 quad_delta_dist.resize(K);
@@ -57,15 +55,17 @@ void compute_gaussian_perplexity(knncolle::NeighborList<Index_, Float_>& neighbo
                 // effect on the entropy or even the final probabilities because it
                 // just scales all probabilities up/down (and they need to be
                 // normalized anyway, so any scaling effect just cancels out).
-                const Float_ first2 = current.second[0] * current.second[0];
+                const Float_ first = current[0].second;
+                const Float_ first2 = first * first;
 
 #ifdef _OPENMP
                 #pragma omp simd
 #endif
                 for (int m = 1; m < K; ++m) {
-                    Float_ dist = current.second[m];
-                    squared_delta_dist[m] = dist * dist - first2; 
-                    quad_delta_dist[m] = squared_delta_dist[m] * squared_delta_dist[m];
+                    Float_ dist = current[m].second;
+                    Float_ squared_delta_dist_raw = dist * dist - first2; 
+                    squared_delta_dist[m] = squared_delta_dist_raw;
+                    quad_delta_dist[m] = squared_delta_dist_raw * squared_delta_dist_raw;
                 }
 
                 Float_ beta = 1.0;
@@ -141,7 +141,7 @@ void compute_gaussian_perplexity(knncolle::NeighborList<Index_, Float_>& neighbo
                 #pragma omp simd
 #endif
                 for (int m = 0; m < K; ++m) {
-                    current.second[m] = output[m] / sum_P;
+                    current[m].second = output[m] / sum_P;
                 }
             }
 

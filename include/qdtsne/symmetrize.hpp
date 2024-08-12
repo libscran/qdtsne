@@ -1,31 +1,35 @@
 #ifndef QDTSNE_SYMMETRIZE_HPP
 #define QDTSNE_SYMMETRIZE_HPP
 
-#include "utils.hpp"
 #include <vector>
 #include <algorithm>
 
+#include "utils.hpp"
+
 namespace qdtsne {
 
-template<typename Index, typename Float>
-void symmetrize_matrix(NeighborList<Index, Float>& x) {
-    std::vector<size_t> last(x.size());
-    std::vector<size_t> original(x.size());
+namespace internal {
 
-    Float total = 0;
-    for (size_t i = 0; i < x.size(); ++i) {
+template<typename Index_, typename Float_>
+void symmetrize_matrix(NeighborList<Index_, Float_>& x) {
+    size_t num_points = x.size();
+    std::vector<size_t> last(num_points);
+    std::vector<size_t> original(num_points);
+
+    Float_ total = 0;
+    for (size_t i = 0; i < num_points; ++i) {
         auto& current = x[i];
         std::sort(current.begin(), current.end()); // sorting by ID, see below.
-        original[i] = current.size();
 
+        original[i] = current.size();
         for (auto& y : current) {
             total += y.second;
         }
     }
 
-    for (size_t first = 0; first < x.size(); ++first) {
+    for (size_t first = 0; first < num_points; ++first) {
         auto& current = x[first];
-        const Index desired = first;
+        const Index_ desired = first;
 
         // Looping through the neighbors and searching for self in each
         // neighbor's neighbors. Assuming that the each neighbor list is sorted
@@ -46,7 +50,7 @@ void symmetrize_matrix(NeighborList<Index, Float>& x) {
                     // Adding the probabilities - but if desired > y.first,
                     // then this would have already been done when y.first was
                     // 'desired'. So we skip this to avoid adding it twice.
-                    Float combined = y.second + target[curlast].second;
+                    Float_ combined = y.second + target[curlast].second;
                     y.second = combined;
                     target[curlast].second = combined;
                 }
@@ -57,7 +61,7 @@ void symmetrize_matrix(NeighborList<Index, Float>& x) {
     }
 
     // Divide the result by twice the total, so that it all sums to unity.
-    total *= static_cast<Float>(2);
+    total *= static_cast<Float_>(2);
     for (auto& current : x) {
         for (auto& y : current) {
             y.second /= total;
@@ -69,6 +73,8 @@ void symmetrize_matrix(NeighborList<Index, Float>& x) {
     }
 
     return;
+}
+
 }
 
 }

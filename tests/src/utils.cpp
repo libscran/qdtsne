@@ -31,7 +31,7 @@ TEST_P(InitTester, Normality) {
     }
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     InitTests,
     InitTester,
     ::testing::Combine(

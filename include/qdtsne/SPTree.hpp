@@ -158,8 +158,8 @@ public:
                 } 
 
                 if (my_store[child_loc].is_leaf && depth < my_maxdepth) {
-                    // Converting the leaf child into a non-leaf node, and
-                    // shifting its center of mass to become a child of itself.
+                    // Converting the leaf child into a non-leaf node. This is done
+                    // by making a copy of itself and using that as its grandchild.
                     size_t grandchild_loc = my_store.size();
 
                     // Push the entire Node! Don't emplace_back() with the

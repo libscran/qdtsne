@@ -94,7 +94,8 @@ void compute_gaussian_perplexity(NeighborList<Index_, Float_>& neighbors, Float_
                     }
 
                     // Attempt a Newton-Raphson search first. Note to self: derivative was a bit
-                    // painful but falls out easily enough, use R's D() to provide it to yourself.
+                    // painful but pops out nicely enough, use R's D() to prove it to yourself
+                    // in the simple case of K = 2:
                     // > D(expression((b*c*exp(-b*c) + b*d*exp(-b*d)) / (exp(-b*c) + exp(-b*d)) + log(exp(-b*c) + exp(-b*d))), name="b")
                     bool nr_ok = false;
 #ifndef QDTSNE_BETA_BINARY_SEARCH_ONLY

@@ -14,7 +14,7 @@ include(GoogleTest)
 
 add_executable(
     libtest 
-    #src/sptree.cpp
+    src/SPTree.cpp
     #src/tsne.cpp
     #src/interpolate.cpp
     src/gaussian.cpp

@@ -1,67 +1,13 @@
 #include <gtest/gtest.h>
 
-#include "qdtsne/sptree.hpp"
 #include <random>
+#include <vector>
+
+#include "qdtsne/SPTree.hpp"
 
 class SPTreeTester : public ::testing::TestWithParam<std::tuple<int, int> > {
 protected:
     static constexpr int ndim = 2;
-
-    void assemble(int n) {
-        Y.resize(n * ndim);
-
-        std::mt19937_64 rng(42);
-        std::normal_distribution<> dist(0, 1);
-        for (auto& y : Y) {
-            y = dist(rng);
-        }
-    }
-
-    std::vector<double> Y;
-
-protected:
-    template<class V, class W>
-    void validate_tree(const V& store, const W& locations, const double* data, size_t N, int maxdepth) {
-        std::vector<int> covered(store.size());
-        int leaf_count = 0;
-
-        validate_store(0, store, covered, leaf_count, maxdepth);
-        for (auto c : covered) {
-            EXPECT_EQ(c, 1); // checking that we hit every node of the tree.
-        }
-
-        EXPECT_EQ(N, leaf_count); // checking that the counts match up.
-
-        for (size_t n = 0; n < N; ++n) {
-            // Checking all points are within range of the global thing.
-            for (int d = 0; d < ndim; ++d) {
-                double pos = data[n * ndim + d];
-                EXPECT_TRUE(pos < store[0].midpoint[d] + store[0].halfwidth[d]);
-                EXPECT_TRUE(pos > store[0].midpoint[d] - store[0].halfwidth[d]);
-            }
-        }
-
-
-        // Checking that the locations are correct.
-        for (size_t n = 0; n < N; ++n) {
-            const auto& locale = store[locations[n]];
-            EXPECT_TRUE(locale.is_leaf);
-
-            if (locale.number == 1) {
-                for (int d = 0; d < ndim; ++d) {
-                    EXPECT_EQ(data[n * ndim + d], locale.center_of_mass[d]);
-                }
-            } else {
-                for (int d = 0; d < ndim; ++d) {
-                    double pos = data[n * ndim + d];
-                    EXPECT_TRUE(pos < locale.midpoint[d] + locale.halfwidth[d]);
-                    EXPECT_TRUE(pos > locale.midpoint[d] - locale.halfwidth[d]);
-                }
-            }
-        }
-
-        return;
-    }
 
     template<class V>
     void validate_store(int position, const V& store, std::vector<int>& covered, int& leaf_count, int maxdepth, int depth = 0) {
@@ -152,14 +98,57 @@ protected:
 TEST_P(SPTreeTester, CheckTree2) {
     auto param = GetParam();
     size_t N = std::get<0>(param);
-    assemble(N);
-
     size_t maxd = std::get<1>(param);
-    qdtsne::SPTree<2> tree(N, maxd);
+
+    std::vector<double> Y(N * ndim);
+    {
+        std::mt19937_64 rng(N + maxd);
+        std::normal_distribution<> dist(0, 1);
+        for (auto& y : Y) {
+            y = dist(rng);
+        }
+    }
+
+    qdtsne::internal::SPTree<2, double> tree(N, maxd);
     tree.set(Y.data());
 
-    // Validating the tree.
-    validate_tree(tree.get_store(), tree.get_locations(), Y.data(), N, maxd);
+    {
+        const auto& store = tree.get_store();
+
+        // Checking all points are within the root's box.
+        for (size_t n = 0; n < N; ++n) {
+            for (int d = 0; d < ndim; ++d) {
+                double pos = Y[n * ndim + d];
+                EXPECT_TRUE(pos < store[0].midpoint[d] + store[0].halfwidth[d]);
+                EXPECT_TRUE(pos > store[0].midpoint[d] - store[0].halfwidth[d]);
+            }
+        }
+
+        std::vector<int> covered(store.size());
+        int leaf_count = 0;
+        validate_store(0, store, covered, leaf_count, maxd);
+        EXPECT_EQ(covered, std::vector<int>(covered.size(), 1)); // checking that we hit every node of the tree.
+        EXPECT_EQ(N, leaf_count); // checking that the counts match up.
+
+        // Checking that the locations are correct.
+        const auto& locations = tree.get_locations();
+        for (size_t n = 0; n < N; ++n) {
+            const auto& locale = store[locations[n]];
+            EXPECT_TRUE(locale.is_leaf);
+
+            if (locale.number == 1) {
+                for (int d = 0; d < ndim; ++d) {
+                    EXPECT_EQ(Y[n * ndim + d], locale.center_of_mass[d]);
+                }
+            } else {
+                for (int d = 0; d < ndim; ++d) {
+                    double pos = Y[n * ndim + d];
+                    EXPECT_TRUE(pos < locale.midpoint[d] + locale.halfwidth[d]);
+                    EXPECT_TRUE(pos > locale.midpoint[d] - locale.halfwidth[d]);
+                }
+            }
+        }
+    }
 
     // Cursory initial check for the edge forces 
     for (int i = 0; i < std::min((int)N, 10); ++i) {
@@ -167,7 +156,7 @@ TEST_P(SPTreeTester, CheckTree2) {
         auto output = tree.compute_non_edge_forces(i, 0.5, neg_f.data());
 
         EXPECT_TRUE(output > 0);
-        for (int d = 0; d < neg_f.size(); ++d) {
+        for (size_t d = 0; d < neg_f.size(); ++d) {
             EXPECT_TRUE(neg_f[d] != 0);
         }
     }
@@ -200,7 +189,7 @@ TEST_P(SPTreeTester, CheckTree2) {
     }
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     SPTree,
     SPTreeTester,
     ::testing::Combine(

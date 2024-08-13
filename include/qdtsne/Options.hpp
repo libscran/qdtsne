@@ -18,14 +18,14 @@ struct Options {
      * Higher perplexities will focus on global structure, at the cost of increased runtime and decreased local resolution.
      *
      * This option affects all methods except if precomputed neighbor search results are supplied _and_ `set_infer_perplexity()` is `true`.
-     * In such cases, the perplexity is inferred from the number of neighbors per observation in the supplied search results.
+     * In such cases, the perplexity is inferred from the number of neighbors per point in the supplied search results.
      */
     double perplexity = 30;
 
     /**
      * Whether to infer the perplexity in `initialize()` methods that accept a `NeighborList` object.
      * In such cases, the value in `Options::perplexity` is ignored.
-     * The perplexity is instead defined from the `NeighborList` as the number of nearest neighbors per observation divided by 3.
+     * The perplexity is instead defined from the `NeighborList` as the number of nearest neighbors per point divided by 3.
      */
     bool infer_perplexity = true;
 
@@ -81,14 +81,21 @@ struct Options {
     double exaggeration_factor = 12;
 
     /**
-     * @param m Maximum depth of the Barnes-Hut tree.
-     * Larger values improve the quality of the approximation for the repulsive force calculation, at the cost of computational time.
-     * A value of 7 is a good compromise for most applications.
+     * Maximum depth of the Barnes-Hut tree.
+     * A maximum depth of \f$m\f$ is equivalent to the following procedure:
+     *
+     * 1. Define the bounding box/hypercube for our dataset and partition it along each dimension into \f$2^m\f$ intervals, forming a high-dimensional grid.
+     * 2. In each grid cell, move all data points in that cell to the cell's center of mass.
+     * 3. Construct a standard Barnes-Hut tree (without any maximum depth limits) on this modified dataset.
+     * 4. Use the tree to compute repulsive forces for each (unmodified) point from the original dataset.
+     *
+     * The approximation is based on ignoring the distribution within each grid cell, which is probably acceptable for very small intervals.
+     * Smaller values reduce computational time by limiting the depth of the recursion, at the cost of approximation quality for the repulsive force calculation.
+     * A value of 7 to 10 seems to be a good compromise for most applications.
      *
      * The default is to use a large value, which means that the tree's depth is unbounded for most practical applications.
      * This aims to be consistent with the original implementation of the BH search,
-     * but with some protection against duplicate points that would otherwise result in infinite recursion during tree construction.
-     * If users are confident that their data contains no duplicates, they can set the depth to arbitrarily large values.
+     * but with some protection against near-duplicate points that would otherwise result in unnecessary recursion.
      */
     int max_depth = 20;
 

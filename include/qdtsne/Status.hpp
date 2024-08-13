@@ -41,6 +41,7 @@
 
 #include "SPTree.hpp"
 #include "Options.hpp"
+#include "utils.hpp"
 
 /**
  * @file Status.hpp
@@ -72,10 +73,13 @@ public:
         my_gains(my_neighbors.size() * ndim_, 1.0), 
         my_pos_f(my_neighbors.size() * ndim_), 
         my_neg_f(my_neighbors.size() * ndim_), 
-        my_tree(my_neighbors.size(), p.max_depth),
-        my_parallel_buffer(options.num_threads > 1 ? my_neighbors.size() : 0),
+        my_tree(my_neighbors.size(), options.max_depth),
         my_options(std::move(options))
-    {}
+    {
+        if (options.num_threads > 1) {
+            my_parallel_buffer.resize(my_neighbors.size());
+        }
+    }
     /**
      * @endcond
      */
@@ -84,18 +88,18 @@ private:
     NeighborList<Index_, Float_> my_neighbors; 
     std::vector<Float_> my_dY, my_uY, my_gains, my_pos_f, my_neg_f;
 
-    SPTree<ndim, Float_> my_tree;
-    std::vector<Float> my_parallel_buffer; // Buffer to hold parallel-computed results prior to reduction.
+    internal::SPTree<ndim_, Float_> my_tree;
+    std::vector<Float_> my_parallel_buffer; // Buffer to hold parallel-computed results prior to reduction.
 
     Options my_options;
-    int iter = 0;
+    int my_iter = 0;
 
 public:
     /**
      * @return The number of iterations performed on this object so far.
      */
     int iteration() const {
-        return iter;
+        return my_iter;
     }
 
     /**
@@ -103,39 +107,51 @@ public:
      * This can be modified to `run()` the algorithm for more iterations.
      */
     int max_iterations() const {
-        return options.max_iterations;
+        return my_options.max_iterations;
     }
 
     /**
      * @return The number of observations in the dataset.
      */
     size_t num_observations() const {
-        return neighbors.size();
+        return my_neighbors.size();
     }
+
+#ifndef NDEBUG
+    /**
+     * @cond
+     */
+    const auto& get_neighbors() const {
+        return my_neighbors;
+    }
+    /**
+     * @endcond
+     */
+#endif
 
 public:
     /**
      * Run the algorithm to the specified number of iterations.
      * This can be invoked repeatedly with increasing `limit` to run the algorithm incrementally.
      *
-     * @param[in, out] Y Pointer to a 2D array with number of rows and columns equal to `ndim` and `nn.size()`, respectively.
-     * The array is treated as column-major where each column corresponds to an observation.
+     * @param[in, out] Y Pointer to a array containing a column-major matrix with number of rows and columns equal to `ndim_` and `num_observations()`, respectively.
+     * Each row corresponds to a dimension of the embedding while each column corresponds to an observation.
      * On input, this should contain the initial location of each observation; on output, it is updated to the t-SNE location at the specified number of iterations.
      * @param limit Number of iterations to run up to.
      * The actual number of iterations performed will be the difference between `limit` and `iteration()`, i.e., `iteration()` will be equal to `limit` on completion.
      * `limit` may be greater than `max_iterations()`, to run the algorithm for more iterations than specified during construction of this `Status` object.
      */
     void run(Float_* Y, int limit) {
-        Float_ multiplier = (iter < options.stop_lying_iter ? options.exaggeration_factor : 1);
-        Float_ momentum = (iter < options.mom_switch_iter ? options.start_momentum : options.final_momentum);
+        Float_ multiplier = (my_iter < my_options.stop_lying_iter ? my_options.exaggeration_factor : 1);
+        Float_ momentum = (my_iter < my_options.mom_switch_iter ? my_options.start_momentum : my_options.final_momentum);
 
-        for(; iter < limit; ++iter) {
+        for(; my_iter < limit; ++my_iter) {
             // Stop lying about the P-values after a while, and switch momentum
-            if (iter == options.stop_lying_iter) {
+            if (my_iter == my_options.stop_lying_iter) {
                 multiplier = 1;
             }
-            if (iter == options.mom_switch_iter) {
-                momentum = options.final_momentum;
+            if (my_iter == my_options.mom_switch_iter) {
+                momentum = my_options.final_momentum;
             }
 
             iterate(Y, multiplier, momentum);
@@ -147,12 +163,12 @@ public:
      * If `run()` has already been invoked with an iteration limit, this method will only perform the remaining iterations required for `iteration()` to reach `max_iter()`.
      * If `iteration()` is already greater than `max_iter()`, this method is a no-op.
      *
-     * @param[in, out] Y Pointer to a 2D array with number of rows and columns equal to `ndim` and `nn.size()`, respectively.
-     * The array is treated as column-major where each column corresponds to an observation.
+     * @param[in, out] Y Pointer to a array containing a column-major matrix with number of rows and columns equal to `ndim_` and `num_observations()`, respectively.
+     * Each row corresponds to a dimension of the embedding while each column corresponds to an observation.
      * On input, this should contain the initial location of each observation; on output, it is updated to the t-SNE location at the specified number of iterations.
      */
     void run(Float_* Y) {
-        run(Y, options.max_iterations);
+        run(Y, my_options.max_iterations);
     }
 
 private:
@@ -166,34 +182,41 @@ private:
         compute_gradient(Y, multiplier);
 
         // Update gains
-        for (size_t i = 0; i < gains.size(); ++i) {
-            Float_& g = gains[i];
+        size_t ngains = my_gains.size(); 
+#ifdef _OPENMP
+        #pragma omp simd
+#endif
+        for (size_t i = 0; i < ngains; ++i) {
+            Float_& g = my_gains[i];
             constexpr Float_ lower_bound = 0.01;
             constexpr Float_ to_add = 0.2;
             constexpr Float_ to_mult = 0.8;
-            g = std::max(lower_bound, sign(dY[i]) != sign(uY[i]) ? (g + to_add) : (g * to_mult));
+            g = std::max(lower_bound, sign(my_dY[i]) != sign(my_uY[i]) ? (g + to_add) : (g * to_mult));
         }
 
         // Perform gradient update (with momentum and gains)
-        for (size_t i = 0; i < gains.size(); ++i) {
-            uY[i] = momentum * uY[i] - options.eta * gains[i] * dY[i];
-            Y[i] += uY[i];
+#ifdef _OPENMP
+        #pragma omp simd
+#endif
+        for (size_t i = 0; i < ngains; ++i) {
+            my_uY[i] = momentum * my_uY[i] - my_options.eta * my_gains[i] * my_dY[i];
+            Y[i] += my_uY[i];
         }
 
         // Make solution zero-mean
         size_t N = num_observations();
-        for (int d = 0; d < ndim; ++d) {
+        for (int d = 0; d < ndim_; ++d) {
             auto start = Y + d;
 
             // Compute means from column-major coordinates.
             Float_ sum = 0;
-            for (size_t i = 0; i < N; ++i, start += ndim) {
+            for (size_t i = 0; i < N; ++i, start += ndim_) {
                 sum += *start;
             }
             sum /= N;
 
             start = Y + d;
-            for (size_t i = 0; i < N; ++i, start += ndim) {
+            for (size_t i = 0; i < N; ++i, start += ndim_) {
                 *start -= sum;
             }
         }
@@ -206,13 +229,13 @@ private:
         size_t N = num_observations();
 
 #if defined(_OPENMP) || defined(QDTSNE_CUSTOM_PARALLEL)
-        if (options.num_threads > 1) {
+        if (my_options.num_threads > 1) {
             // Don't use reduction methods, otherwise we get numeric imprecision
             // issues (and stochastic results) based on the order of summation.
 
 #ifndef QDTSNE_CUSTOM_PARALLEL
 #ifdef _OPENMP
-            #pragma omp parallel num_threads(options.num_threads)
+            #pragma omp parallel num_threads(my_options.num_threads)
 #endif
             {
 #ifdef _OPENMP
@@ -224,49 +247,50 @@ private:
                 for (size_t n = first_; n < last_; ++n) {
 #endif                
 
-                    parallel_buffer[n] = tree.compute_non_edge_forces(n, options.theta, neg_f.data() + n * ndim);
+                    my_parallel_buffer[n] = my_tree.compute_non_edge_forces(n, my_options.theta, my_neg_f.data() + n * ndim_);
 
 #ifndef QDTSNE_CUSTOM_PARALLEL
                 }
             }
 #else
                 }
-            }, options.num_threads);
+            }, my_options.num_threads);
 #endif
 
-            return std::accumulate(parallel_buffer.begin(), parallel_buffer.end(), static_cast<Float_>(0));
+            return std::accumulate(my_parallel_buffer.begin(), my_parallel_buffer.end(), static_cast<Float_>(0));
         }
 #endif
 
         Float_ sum_Q = 0;
         for (size_t n = 0; n < N; ++n) {
-            sum_Q += tree.compute_non_edge_forces(n, options.theta, neg_f.data() + n * ndim);
+            sum_Q += my_tree.compute_non_edge_forces(n, my_options.theta, my_neg_f.data() + n * ndim_);
         }
         return sum_Q;
     }
 
     void compute_gradient(const Float_* Y, Float_ multiplier) {
-        tree.set(Y);
+        my_tree.set(Y);
         compute_edge_forces(Y, multiplier);
 
         size_t N = num_observations();
-        std::fill(neg_f.begin(), neg_f.end(), 0);
+        std::fill(my_neg_f.begin(), my_neg_f.end(), 0);
 
         Float_ sum_Q = compute_non_edge_forces();
 
         // Compute final t-SNE gradient
-        for (size_t i = 0; i < N * ndim; ++i) {
-            dY[i] = pos_f[i] - (neg_f[i] / sum_Q);
+        size_t ntotal = N * static_cast<size_t>(ndim_);
+        for (size_t i = 0; i < ntotal; ++i) {
+            my_dY[i] = my_pos_f[i] - (my_neg_f[i] / sum_Q);
         }
     }
 
     void compute_edge_forces(const Float_* Y, Float_ multiplier) {
-        std::fill(pos_f.begin(), pos_f.end(), 0);
+        std::fill(my_pos_f.begin(), my_pos_f.end(), 0);
         size_t N = num_observations();
 
 #ifndef QDTSNE_CUSTOM_PARALLEL
 #ifdef _OPENMP
-        #pragma omp parallel num_threads(options.num_threads)
+        #pragma omp parallel num_threads(my_options.num_threads)
 #endif
         {
 #ifdef _OPENMP
@@ -278,21 +302,21 @@ private:
             for (size_t n = first_; n < last_; ++n) {
 #endif
 
-                const auto& current = neighbors[n];
-                size_t offset = n * static_cast<size_t>(ndim); // cast to avoid overflow.
+                const auto& current = my_neighbors[n];
+                size_t offset = n * static_cast<size_t>(ndim_); // cast to avoid overflow.
                 const Float_* self = Y + offset;
-                Float_* pos_out = pos_f.data() + offset;
+                Float_* pos_out = my_pos_f.data() + offset;
 
                 for (const auto& x : current) {
                     Float_ sqdist = 0; 
                     const Float_* neighbor = Y + static_cast<size_t>(x.first) * ndim_; // cast to avoid overflow.
-                    for (int d = 0; d < ndim; ++d) {
+                    for (int d = 0; d < ndim_; ++d) {
                         Float_ delta = self[d] - neighbor[d];
                         sqdist += delta * delta;
                     }
 
                     const Float_ mult = multiplier * x.second / (static_cast<Float_>(1) + sqdist);
-                    for (int d = 0; d < ndim; ++d) {
+                    for (int d = 0; d < ndim_; ++d) {
                         pos_out[d] += mult * (self[d] - neighbor[d]);
                     }
                 }
@@ -302,7 +326,7 @@ private:
         }
 #else
             }
-        }, options.num_threads);
+        }, my_options.num_threads);
 #endif
 
         return;

@@ -15,7 +15,7 @@ include(GoogleTest)
 add_executable(
     libtest 
     src/SPTree.cpp
-    #src/tsne.cpp
+    src/tsne.cpp
     src/gaussian.cpp
     src/symmetrize.cpp
     src/utils.cpp
@@ -71,5 +71,5 @@ find_package(OpenMP)
 if (OpenMP_FOUND)
     create_partest(omptest)
     target_link_libraries(omptest OpenMP::OpenMP_CXX)
-    add_common_properties(cuspartest)
+    add_common_properties(omptest)
 endif()

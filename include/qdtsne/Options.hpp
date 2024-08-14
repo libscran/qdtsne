@@ -31,12 +31,12 @@ struct Options {
 
     /**
      * Amount of approximation to use in the Barnes-Hut calculation of repulsive forces.
-     * This is defined as the minimum \f$d/s\f$ at which a group of points can be approximated by their center of mass,
-     * where \f$d\f$ is the distance from a point to the center of mass,
-     * and \f$s\f$ is the maximum width of the box containing all points in the group (i.e., the longest side across all dimensions).
+     * This is defined as the maximum \f$s/d\f$ at which a group of points can be approximated by their center of mass,
+     * where \f$s\f$ is the maximum width of the box containing all points in the group (i.e., the longest side across all dimensions)
+     * and \f$d\f$ is the distance from a point to the center of mass.
      * Lower values increase accuracy at the cost of computational time.
      */
-    double theta = 0.5;
+    double theta = 1;
 
     /**
      * Maximum number of iterations to perform.

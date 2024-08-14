@@ -7,9 +7,10 @@ mat <- matrix(rnorm(5000), ncol=10)
 library(FNN)
 res <- FNN::get.knn(mat, k=90) # this needs to be the default perplexity * 3.
 
+# Note that we can't use many iterations here, as divergence happens pretty quickly
+# due to some changes in the order of floating-point additions.
 library(Rtsne)
 
-# Note that we can't use many iterations here, as divergence happens pretty quickly.
 test_that("stats match up", {
     Y <- matrix(rnorm(nrow(mat) * 2), ncol=2)
     ref <- Rtsne_neighbors(res$nn.index, res$nn.dist, Y_init = Y, max_iter = 10, mom_switch_iter=250, stop_lying_iter=250)

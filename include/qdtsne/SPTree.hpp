@@ -262,7 +262,9 @@ private:
 
         // Compute once for the theta calculations. Note that we double it to obtain
         // the actual width, not the halfwidth. I suspect that the original sptree.cpp
-        // code was not correct as their 'width' was really a half width.
+        // code in Rtsne was not correct as their 'width' was really a half width.
+        // For us it doesn't matter as we double the default 'theta' to match their
+        // 'theta=0.5', so it all ends up being the same anyway.
         current.max_width = 2 * *std::max_element(current.halfwidth.begin(), current.halfwidth.end());
     }
 

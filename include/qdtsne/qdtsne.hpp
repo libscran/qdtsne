@@ -7,7 +7,9 @@
  * @brief Umbrella header for all **qdtsne** files.
  */
 
-#include "tsne.hpp"
+#include "Options.hpp"
+#include "initialize.hpp"
+#include "Status.hpp"
 #include "utils.hpp"
 
 /**

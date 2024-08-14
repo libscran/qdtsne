@@ -1,12 +1,4 @@
-# Building the function.
-library(Rcpp)
-if (!file.exists("qdtsne")) {
-    file.symlink("../../include/qdtsne", "qdtsne")
-}
-if (!file.exists("aarand")) {
-    file.symlink("../../build/_deps/aarand-src/include/aarand", "aarand")
-}
-sourceCpp("test.cpp")
+# library(testthat); library(qdtsne); source("test-run.R")
 
 # Generating some data.
 set.seed(10)
@@ -16,20 +8,18 @@ library(FNN)
 res <- FNN::get.knn(mat, k=90) # this needs to be the default perplexity * 3.
 
 library(Rtsne)
-library(testthat)
 
-# Note that we can't use many iterations here, as 
-# divergence happens pretty quickly.
+# Note that we can't use many iterations here, as divergence happens pretty quickly.
 test_that("stats match up", {
     Y <- matrix(rnorm(nrow(mat) * 2), ncol=2)
     ref <- Rtsne_neighbors(res$nn.index, res$nn.dist, Y_init = Y, max_iter = 10, mom_switch_iter=250, stop_lying_iter=250)
-    obs <- run_tsne(t(res$nn.index - 1L), t(res$nn.dist), Y, iter = 10, max_depth=100, mom_iter=250, lie_iter=250)
+    obs <- qdtsne:::run_tsne(t(res$nn.index - 1L), t(res$nn.dist), Y, iter = 10, max_depth=100, mom_iter=250, lie_iter=250)
     expect_equal(ref$Y, obs, tol=1e-6)
 })
 
 test_that("switch is done correctly", {
     Y <- matrix(rnorm(nrow(mat) * 2), ncol=2)
     ref <- Rtsne_neighbors(res$nn.index, res$nn.dist, Y_init = Y, max_iter = 10, mom_switch_iter=5, stop_lying_iter=5)
-    obs <- run_tsne(t(res$nn.index - 1L), t(res$nn.dist), Y, iter = 10, max_depth=100, mom_iter=5, lie_iter=5)
+    obs <- qdtsne:::run_tsne(t(res$nn.index - 1L), t(res$nn.dist), Y, iter = 10, max_depth=100, mom_iter=5, lie_iter=5)
     expect_equal(ref$Y, obs, tol=1e-6)
 })

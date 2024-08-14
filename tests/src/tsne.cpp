@@ -172,6 +172,41 @@ TEST_P(TsneTester, AltStart) {
     EXPECT_EQ(copy, Y);
 }
 
+TEST_P(TsneTester, LeafApproximation) {
+    int K = GetParam();
+
+    qdtsne::Options opt;
+    opt.perplexity = K / 3.0;
+    opt.max_depth = 4;
+    opt.leaf_approximation = true;
+    auto status = qdtsne::initialize<2>(ndim, nobs, X.data(), knncolle::VptreeBuilder(), opt);
+
+    auto Y = qdtsne::initialize_random<2>(nobs);
+    auto old = Y;
+
+    status.run(Y.data());
+    EXPECT_NE(old, Y); // there was some effect...
+    EXPECT_EQ(status.num_observations(), nobs); 
+    EXPECT_EQ(status.iteration(), 1000); // actually ran through the specified iterations
+
+    // Check that coordinates are zero-mean.
+    for (int d = 0; d < 2; ++d) {
+        double total = 0;
+        for (int i = 0; i < nobs; ++i){
+            total += Y[2*i + d];
+        }
+        EXPECT_TRUE(std::abs(total/nobs) < 1e-10);
+    }
+
+    // Same results when run in parallel.
+    opt.num_threads = 3;
+    auto pstatus = qdtsne::initialize<2>(ndim, nobs, X.data(), knncolle::VptreeBuilder(), opt);
+
+    auto copy = old;
+    pstatus.run(copy.data());
+    EXPECT_EQ(copy, Y);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     TsneTests,
     TsneTester,

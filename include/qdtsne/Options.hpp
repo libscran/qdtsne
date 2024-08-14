@@ -17,7 +17,7 @@ struct Options {
      * Perplexity value that determines the balance between local and global structure.
      * Higher perplexities will focus on global structure, at the cost of increased runtime and decreased local resolution.
      *
-     * This option affects all methods except if precomputed neighbor search results are supplied _and_ `set_infer_perplexity()` is `true`.
+     * This option affects all `initialize()` methods except if precomputed neighbor search results are supplied _and_ `Options::infer_perplexity = true`.
      * In such cases, the perplexity is inferred from the number of neighbors per point in the supplied search results.
      */
     double perplexity = 30;
@@ -30,7 +30,10 @@ struct Options {
     bool infer_perplexity = true;
 
     /**
-     * Level of the approximation to use in the Barnes-Hut tree calculation of repulsive forces.
+     * Amount of approximation to use in the Barnes-Hut calculation of repulsive forces.
+     * This is defined as the minimum \f$d/s\f$ at which a group of points can be approximated by their center of mass,
+     * where \f$d\f$ is the distance from a point to the center of mass,
+     * and \f$s\f$ is the maximum width of the box containing all points in the group (i.e., the longest side across all dimensions).
      * Lower values increase accuracy at the cost of computational time.
      */
     double theta = 0.5;
@@ -52,7 +55,7 @@ struct Options {
     /**
      * Number of iterations to perform before switching from the starting momentum to the final momentum.
      *
-     * The idea here is that the update to each point includes a small step in the direction of its previous update, i.e., there is some "momentum" from the previous update.
+     * The update to each point includes a small step in the direction of its previous update, i.e., there is some "momentum" from the previous update.
      * This aims to speed up the optimization and to avoid local minima by effectively smoothing the updates.
      * The starting momentum is usually smaller than the final momentum,
      * to give a chance for the points to improve their organization before encouraging iteration to a specific local minima.
@@ -81,23 +84,22 @@ struct Options {
     double exaggeration_factor = 12;
 
     /**
-     * Maximum depth of the Barnes-Hut tree.
-     * A maximum depth of \f$m\f$ is equivalent to the following procedure:
-     *
-     * 1. Define the bounding box/hypercube for our dataset and partition it along each dimension into \f$2^m\f$ intervals, forming a high-dimensional grid.
-     * 2. In each grid cell, move all data points in that cell to the cell's center of mass.
-     * 3. Construct a standard Barnes-Hut tree (without any maximum depth limits) on this modified dataset.
-     * 4. Use the tree to compute repulsive forces for each (unmodified) point from the original dataset.
-     *
-     * The approximation is based on ignoring the distribution within each grid cell, which is probably acceptable for very small intervals.
-     * Smaller values reduce computational time by limiting the depth of the recursion, at the cost of approximation quality for the repulsive force calculation.
-     * A value of 7 to 10 seems to be a good compromise for most applications.
+     * Maximum depth of the tree used in the Barnes-Hut approximation of the repulsive forces.
+     * This effectively replaces each point with the center of mass of the most fine-grained partition at the leaves of the tree.
+     * Setting this to a smaller value (e.g., 7 - 10) improves speed by bounding the depth of recursion, at the cost of some accuracy.
      *
      * The default is to use a large value, which means that the tree's depth is unbounded for most practical applications.
      * This aims to be consistent with the original implementation of the BH search,
      * but with some protection against near-duplicate points that would otherwise result in unnecessary recursion.
      */
     int max_depth = 20;
+
+    /**
+     * Whether to replace a point with the center of mass of its leaf node when computing the repulsive forces to all other points.
+     * This allows the repulsive forces to be computed once per leaf node and then re-used across all points in that leaf node.
+     * The effectiveness of this option depends on `Options::max_depth`, which needs to be small enough so that many leaf nodes have multiple assigned points.
+     */
+    bool leaf_approximation = false;
 
     /**
      * Number of threads to use.

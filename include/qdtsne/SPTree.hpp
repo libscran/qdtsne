@@ -70,7 +70,7 @@ public:
         std::array<size_t, nchildren> children;
         std::array<Float_, ndim_> midpoint, halfwidth;
         std::array<Float_, ndim_> center_of_mass;
-        Float_ max_halfwidth = 0;
+        Float_ max_width = 0;
 
         size_t number = 1;
 
@@ -260,8 +260,10 @@ private:
             }
         }
 
-        // Compute once for the theta calculations.
-        current.max_halfwidth = *std::max_element(current.halfwidth.begin(), current.halfwidth.end());
+        // Compute once for the theta calculations. Note that we double it to obtain
+        // the actual width, not the halfwidth. I suspect that the original sptree.cpp
+        // code was not correct as their 'width' was really a half width.
+        current.max_width = 2 * *std::max_element(current.halfwidth.begin(), current.halfwidth.end());
     }
 
     /***********************************
@@ -339,7 +341,7 @@ private:
 
         // Check whether we can use skip this node's children, either because
         // it's already a leaf or because we can use the BH approximation.
-        bool skip_children = node.is_leaf || (node.max_halfwidth < theta * std::sqrt(sqdist));
+        bool skip_children = node.is_leaf || (node.max_width < theta * std::sqrt(sqdist));
 
         Float_ result_sum = 0;
         if (skip_children) {
@@ -432,7 +434,7 @@ private:
         const auto& node = my_store[position];
         Float_ sqdist = compute_sqdist(point, node.center_of_mass);
 
-        bool skip_children = node.is_leaf || (node.max_halfwidth < theta * std::sqrt(sqdist));
+        bool skip_children = node.is_leaf || (node.max_width < theta * std::sqrt(sqdist));
 
         Float_ result_sum = 0;
         if (skip_children) {

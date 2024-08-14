@@ -94,6 +94,8 @@ private:
     Options my_options;
     int my_iter = 0;
 
+    typename decltype(my_tree)::LeafApproxWorkspace my_leaf_workspace;
+
 public:
     /**
      * @return The number of iterations performed on this object so far.
@@ -225,49 +227,6 @@ private:
     }
 
 private:
-    Float_ compute_non_edge_forces() {
-        size_t N = num_observations();
-
-#if defined(_OPENMP) || defined(QDTSNE_CUSTOM_PARALLEL)
-        if (my_options.num_threads > 1) {
-            // Don't use reduction methods, otherwise we get numeric imprecision
-            // issues (and stochastic results) based on the order of summation.
-
-#ifndef QDTSNE_CUSTOM_PARALLEL
-#ifdef _OPENMP
-            #pragma omp parallel num_threads(my_options.num_threads)
-#endif
-            {
-#ifdef _OPENMP
-                #pragma omp for
-#endif
-                for (size_t n = 0; n < N; ++n) {
-#else
-            QDTSNE_CUSTOM_PARALLEL(N, [&](size_t first_, size_t last_) -> void {
-                for (size_t n = first_; n < last_; ++n) {
-#endif                
-
-                    my_parallel_buffer[n] = my_tree.compute_non_edge_forces(n, my_options.theta, my_neg_f.data() + n * ndim_);
-
-#ifndef QDTSNE_CUSTOM_PARALLEL
-                }
-            }
-#else
-                }
-            }, my_options.num_threads);
-#endif
-
-            return std::accumulate(my_parallel_buffer.begin(), my_parallel_buffer.end(), static_cast<Float_>(0));
-        }
-#endif
-
-        Float_ sum_Q = 0;
-        for (size_t n = 0; n < N; ++n) {
-            sum_Q += my_tree.compute_non_edge_forces(n, my_options.theta, my_neg_f.data() + n * ndim_);
-        }
-        return sum_Q;
-    }
-
     void compute_gradient(const Float_* Y, Float_ multiplier) {
         my_tree.set(Y);
         compute_edge_forces(Y, multiplier);
@@ -330,6 +289,63 @@ private:
 #endif
 
         return;
+    }
+
+    Float_ compute_non_edge_forces() {
+        size_t N = num_observations();
+
+        if (my_options.leaf_approximation) {
+            my_tree.compute_non_edge_forces_for_leaves(my_options.theta, my_leaf_workspace, my_options.num_threads);
+        }
+
+#if defined(_OPENMP) || defined(QDTSNE_CUSTOM_PARALLEL)
+        if (my_options.num_threads > 1) {
+            // Don't use reduction methods, otherwise we get numeric imprecision
+            // issues (and stochastic results) based on the order of summation.
+
+#ifndef QDTSNE_CUSTOM_PARALLEL
+#ifdef _OPENMP
+            #pragma omp parallel num_threads(my_options.num_threads)
+#endif
+            {
+#ifdef _OPENMP
+                #pragma omp for
+#endif
+                for (size_t n = 0; n < N; ++n) {
+#else
+            QDTSNE_CUSTOM_PARALLEL(N, [&](size_t first_, size_t last_) -> void {
+                for (size_t n = first_; n < last_; ++n) {
+#endif                
+
+                    auto neg_ptr = my_neg_f.data() + n * static_cast<size_t>(ndim_); // cast to avoid overflow.
+                    if (my_options.leaf_approximation) {
+                        my_parallel_buffer[n] = my_tree.compute_non_edge_forces_from_leaves(n, neg_ptr, my_leaf_workspace);
+                    } else {
+                        my_parallel_buffer[n] = my_tree.compute_non_edge_forces(n, my_options.theta, neg_ptr);
+                    }
+
+#ifndef QDTSNE_CUSTOM_PARALLEL
+                }
+            }
+#else
+                }
+            }, my_options.num_threads);
+#endif
+
+            return std::accumulate(my_parallel_buffer.begin(), my_parallel_buffer.end(), static_cast<Float_>(0));
+        }
+#endif
+
+        Float_ sum_Q = 0;
+        for (size_t n = 0; n < N; ++n) {
+            auto neg_ptr = my_neg_f.data() + n * static_cast<size_t>(ndim_); // cast to avoid overflow.
+            if (my_options.leaf_approximation) {
+                sum_Q += my_tree.compute_non_edge_forces_from_leaves(n, neg_ptr, my_leaf_workspace);
+            } else {
+                sum_Q += my_tree.compute_non_edge_forces(n, my_options.theta, neg_ptr);
+            }
+        }
+        return sum_Q;
     }
 };
 

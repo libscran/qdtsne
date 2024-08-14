@@ -102,6 +102,9 @@ private:
 
     std::vector<size_t> my_first_assignment;
 
+    /****************************
+     *** Construction methods ***
+     ****************************/
 public:
     void set(const Float_* Y) {
         my_data = Y;
@@ -261,6 +264,41 @@ private:
         current.max_halfwidth = *std::max_element(current.halfwidth.begin(), current.halfwidth.end());
     }
 
+    /***********************************
+     *** Non-edge force calculations ***
+     ***********************************/
+private:
+    static Float_ compute_sqdist(const Float_* point, const std::array<Float_, ndim_>& center) {
+        Float_ sqdist = 0;
+        for (int d = 0; d < ndim_; ++d) {
+            Float_ delta = point[d] - center[d];
+            sqdist += delta * delta;
+        }
+        return sqdist;
+    }
+
+    static void add_non_edge_forces(const Float_* point, const std::array<Float_, ndim_>& center, Float_ sqdist, size_t count, Float_& result_sum, Float_* neg_f) {
+        const Float_ div = static_cast<Float_>(1) / (static_cast<Float_>(1) + sqdist);
+        Float_ mult = count * div;
+        result_sum += mult;
+        mult *= div;
+#ifdef _OPENMP
+        #pragma omp simd
+#endif
+        for (int d = 0; d < ndim_; ++d) {
+            neg_f[d] += mult * (point[d] - center[d]);
+        }
+    }
+
+    static void remove_self_from_center(const Float_* point, const std::array<Float_, ndim_>& center, Float_ count, std::array<Float_, ndim_>& temp) {
+#ifdef _OPENMP
+        #pragma omp simd
+#endif
+        for (int d = 0; d < ndim_; ++d) { 
+            temp[d] = (center[d] * count - point[d]) / (count - 1);
+        }
+    }
+
 public:
     Float_ compute_non_edge_forces(size_t index, Float_ theta, Float_* neg_f) const {
         Float_ result_sum = 0;
@@ -282,44 +320,31 @@ private:
         const auto& node = my_store[position];
 
         std::array<Float_, ndim_> temp;
-        const Float_ * center = node.center_of_mass.data();
+        auto center = &(node.center_of_mass);
         size_t count = node.number;
 
-        if (position == my_locations[index]) { // check if we're at the leaf node containing the 'index' point.
+        // Check if we're at the leaf node containing the 'index' point. We
+        // skip it if the leaf only contains that point, otherwise we remove
+        // the point from the center of mass for repulsive calculations.
+        if (position == my_locations[index]) {
             if (count == 1) {
-                return 0; // skipping node that only contains self.
+                return 0; 
             }
-
-            for (int d = 0; d < ndim_; ++d) { // removing self from the center of mass for the force calculations.
-                temp[d] = (node.center_of_mass[d] * count - point[d]) / (count - 1);
-            }
-            center = temp.data();
+            remove_self_from_center(point, *center, count, temp);
+            center = &temp;
             --count;
         }
 
-        // Compute squared distance between point and center-of-mass
-        Float_ sqdist = 0;
-        for (int d = 0; d < ndim_; ++d) {
-            Float_ delta = point[d] - center[d];
-            sqdist += delta * delta;
-        }
+        Float_ sqdist = compute_sqdist(point, *center);
 
-        // Check whether we can use this node as a "summary"
+        // Check whether we can use skip this node's children, either because
+        // it's already a leaf or because we can use the BH approximation.
         bool skip_children = node.is_leaf || (node.max_halfwidth < theta * std::sqrt(sqdist));
 
         Float_ result_sum = 0;
         if (skip_children) {
-            // Compute and add t-SNE force between point and current node.
-            const Float_ div = static_cast<Float_>(1) / (static_cast<Float_>(1) + sqdist);
-            Float_ mult = count * div;
-            result_sum += mult;
-            mult *= div;
-
-            for (int d = 0; d < ndim_; ++d) {
-                neg_f[d] += mult * (point[d] - center[d]);
-            }
+            add_non_edge_forces(point, *center, sqdist, count, result_sum, neg_f);
         } else {
-            // Recursively apply Barnes-Hut to children
             const auto& cur_children = node.children;
             for (int i = 0; i < Node::nchildren; ++i) {
                 if (cur_children[i]) {
@@ -330,6 +355,100 @@ private:
 
         return result_sum;
     }
+
+    /*************************************************************
+     *** Non-edge force calculations, using leaf approximation ***
+     *************************************************************/
+public:
+    struct LeafApproxWorkspace {
+        std::vector<std::array<Float_, ndim_> > leaf_neg_f;
+        std::vector<Float_> leaf_sums;
+    };
+
+    void compute_non_edge_forces_for_leaves(Float_ theta, LeafApproxWorkspace& workspace, [[maybe_unused]] int num_threads) const {
+        size_t nnodes = my_store.size();
+        workspace.leaf_neg_f.resize(nnodes);
+        workspace.leaf_sums.resize(nnodes);
+
+#ifndef QDTSNE_CUSTOM_PARALLEL
+#ifdef _OPENMP
+        #pragma omp parallel num_threads(num_threads)
+#endif
+        {
+#ifdef _OPENMP
+            #pragma omp for
+#endif
+            for (size_t n = 0; n < nnodes; ++n) {
+#else
+        QDTSNE_CUSTOM_PARALLEL(nnodes, [&](size_t first_, size_t last_) -> void {
+            for (size_t n = first_; n < last_; ++n) {
+#endif                
+
+                Float_ result_sum = 0;
+                const auto& cur_children = my_store[0].children;
+                auto neg_f = workspace.leaf_neg_f[n].data();
+                std::fill_n(neg_f, ndim_, 0);
+
+                for (int i = 0; i < Node::nchildren; ++i) {
+                    if (cur_children[i] && cur_children[i] != n) {
+                        result_sum += compute_non_edge_forces_for_leaves(n, theta, neg_f, cur_children[i]);
+                    }
+                }
+
+                workspace.leaf_sums[n] = result_sum;
+
+#ifndef QDTSNE_CUSTOM_PARALLEL
+            }
+        }
+#else
+            }
+        }, num_threads);
+#endif
+    }
+
+    Float_ compute_non_edge_forces_from_leaves(size_t index, Float_* neg_f, const LeafApproxWorkspace& workspace) const {
+        auto node_loc = my_locations[index];
+        Float_ result_sum = workspace.leaf_sums[node_loc];
+        const auto& leaf_neg_f = workspace.leaf_neg_f[node_loc];
+        std::copy(leaf_neg_f.begin(), leaf_neg_f.end(), neg_f);
+
+        const auto& node = my_store[node_loc];
+        if (node.number != 1) {
+            const Float_ * point = my_data + index * static_cast<size_t>(ndim_); // cast to avoid overflow.
+            std::array<Float_, ndim_> temp;
+            remove_self_from_center(point, node.center_of_mass, node.number, temp);
+            Float_ sqdist = compute_sqdist(point, temp);
+            add_non_edge_forces(point, temp, sqdist, node.number - 1, result_sum, neg_f);
+        }
+
+        return result_sum;
+    }
+
+private:
+    Float_ compute_non_edge_forces_for_leaves(size_t self_position, Float_ theta, Float_* neg_f, size_t position) const {
+        const auto& self_node = my_store[self_position];
+        auto point = self_node.center_of_mass.data();
+
+        const auto& node = my_store[position];
+        Float_ sqdist = compute_sqdist(point, node.center_of_mass);
+
+        bool skip_children = node.is_leaf || (node.max_halfwidth < theta * std::sqrt(sqdist));
+
+        Float_ result_sum = 0;
+        if (skip_children) {
+            add_non_edge_forces(point, node.center_of_mass, sqdist, node.number, result_sum, neg_f);
+        } else {
+            const auto& cur_children = node.children;
+            for (int i = 0; i < Node::nchildren; ++i) {
+                if (cur_children[i] && cur_children[i] != self_position) {
+                    result_sum += compute_non_edge_forces_for_leaves(self_position, theta, neg_f, cur_children[i]);
+                }
+            }
+        }
+
+        return result_sum;
+    }
+
 
 public:
 #ifndef NDEBUG

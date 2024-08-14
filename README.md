@@ -22,42 +22,62 @@ Using this library is as simple as including the header file in your source code
 ```cpp
 #include "qdtsne/qdtsne.hpp"
 
-/** ... boilerplate here... **/
+// Assuming `data` contains high-dimensional data in column-major format,
+// i.e., each column is a observation and each row is a dimension. We 
+// initialize the t-SNE algorithm for a 2-dimensional embedding.
+qdtsne::Options opt;
+auto status = qdtsne::initialize<2>(nrow, ncol, data.data(), knncolle::VptreeBuilder(), opt);
 
-auto Y = qdtsne::initialize_random(N); // initial coordinates
-
-/* Assuming `data` contains high-dimensional data in column-major format,
- * i.e., each column is a observation and each row is a dimension.
- * This fills `Y` in column-major format where each row is a dimension 
- * (defaulting to 2 dimensions) and each column is an observation.
- */
-qdtsne::Tsne thing;
-auto ref = thing.run(data.data(), D, N, Y.data());
+// Starting the t-SNE algorithm from random 2-dimensional coordinates.
+auto Y = qdtsne::initialize_random<2>(ncol); 
+status.run(Y.data());
 ```
 
 You can change the parameters with the relevant setters:
 
 ```cpp
-thing.set_perplexity(10).set_mom_switch_iter(100);
-thing.run(data.data(), D, N, Y.data());
+opt.perplexity = 10;
+opt.mom_switch_iter = 100;
 ```
 
 You can also stop and start the algorithm:
 
 ```cpp
-qdtsne::Tsne thing;
-auto ref = thing.initialize(data.data(), D, N);
-ref.run(Y.data(), 200); // run up to 200 iterations
-ref.run(Y.data(), 500); // run up to 500 iterations
+auto status2 = qdtsne::initialize(nrow, ncol, data.data(), knncolle::VptreeBuilder(), opt);
+status2.run(Y.data(), 200); // run up to 200 iterations
+status2.run(Y.data(), 500); // run up to 500 iterations
 ```
 
 See the [reference documentation](https://ltla.github.io/qdtsne/) for more details.
+
+## Approximations for speed
+
+van der Maaten (2014) proposed the use of the Barnes-Hut approximation for the repulsive force calculations in t-SNE.
+The algorithm consolidates a group of distant points into a single center of mass, avoiding the need to calculate forces between individual points. 
+The definition of "distant" is determined by the `theta` parameter, where larger values sacrifice accuracy for speed.
+
+In **qdtsne**, we introduce an extra `max_depth` parameter that bounds the depth of the tree used for the Barnes-Hut force calculations.
+A maximum depth of \f$m\f$ is equivalent to the following procedure:
+
+1. Define the bounding box/hypercube for our dataset and partition it along each dimension into $2^m$ intervals, forming a high-dimensional grid.
+2. In each grid cell, move all data points in that cell to the cell's center of mass.
+3. Construct a standard Barnes-Hut tree (without any maximum depth limits) on this modified dataset.
+4. Use the tree to compute repulsive forces for each (unmodified) point $i$ from the original dataset.
+
+The approximation is based on ignoring the distribution within each grid cell, which is probably acceptable for very small intervals.
+Smaller values reduce computational time by limiting the depth of the recursion, at the cost of approximation quality for the repulsive force calculation.
+A value of 7 to 10 seems to be a good compromise for most applications.
+
+We can approximate even further by using the center of mass for $i$'s leaf node to approximate $i$'s repulsive forces with all other nodes.
+This allows us to compute the repulsive forces once for each leaf node, and then re-use those values for all points assigned to that leaf node.
+We call this the "leaf approximation" for the repulsive forces, which is controlled by the `leaf_approximation` parameter.
+Note that this only has an effect in `max_depth`-bounded trees where multiple points can be assigned to a leaf node.
 
 ## Building projects
 
 If you're already using CMake, you can add something like this to your `CMakeLists.txt`:
 
-```
+```cmake
 include(FetchContent)
 
 FetchContent_Declare(
@@ -71,7 +91,7 @@ FetchContent_MakeAvailable(qdtsne)
 
 And then:
 
-```
+```cmake
 # For executables:
 target_link_libraries(myexe qdtsne)
 
@@ -80,35 +100,7 @@ target_link_libraries(mylib INTERFACE qdtsne)
 ```
 
 Otherwise, you can just copy the header files in `include/` into some location that is visible to your compiler.
-This requires the manual inclusion of a few dependencies:
-
-- The [**knncolle**](https://github.com/LTLA/knncolle) library for nearest neighbor search.
-If you are instead supplying your own neighbor search, this dependency can be eliminated by defining the `QDTSNE_CUSTOM_NEIGHBORS` macro.
-- The [**aarand**](https://github.com/LTLA/aarand) library for random distribution functions.
-
-## Approximations for speed
-
-The Barnes-Hut implementation (inherited from the 2014 paper) speeds up the algorithm by approximating the repulsive forces.
-Specifically, the algorithm consolidates a group of distant points into a single center of mass, avoiding the need to calculate forces between individual points. 
-The definition of "distant" is determined by the `theta` parameter, where larger values sacrifice accuracy for speed.
-However, it must be said that the default `theta` is already appropriate in most settings; further increases may result in a noticeable deterioration in the visualization.
-
-We have introduced an extra `max_depth` parameter that bounds the depth of the quad trees used for the Barnes-Hut force calculations.
-All nodes at the maximum depth are designated as leaf nodes; if multiple observations are present, they are aggregated into the center of mass for that node.
-This provides an upper bound on the runtime of the force calculation for each observation, e.g., a maximum depth of 7 means that there can be no more than 16384 leaf nodes.
-Some timings with `gallery/speedtest.cpp` suggest that a moderate improvement in run-time is possible;
-without any approximation, the iterations take 114 ± 1 seconds, while with `max_depth = 7`, the iterations take 85 ± 2 seconds.
-
-We have also added an `interpolation` parameter that instructs the library to interpolate the repulsive forces for each observations.
-Specifically, it divides up the bounding box for the current embedding into a grid of length equal to `interpolation` in each dimension.
-We compute the repulsive forces at each grid point and perform linear interpolation to obtain the force at each point inside the grid.
-This offers a large speed-up when the number of observations is much greater than the number of possible grid points.
-We suggest using a grid resolution of 200 to ensure that artificial "edge effects" from interpolation are not visible.
-(This implies that the dataset must have more than 40000 observations for the interpolation to provide any speed benefit.)
-
-Of course, users can enable OpenMP to throw more threads at the problem.
-With 4 threads and `max_depth` set as above, the iterations go down to 27 seconds.
-The results are agnostic to the choice of parallelization, i.e., you can get the same results with or without using OpenMP.
+This requires the manual inclusion of the dependencies listed in [`extern/CMakeLists.txt`](extern/CMakeLists.txt).
 
 ## References
 

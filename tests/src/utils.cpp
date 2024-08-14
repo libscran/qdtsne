@@ -5,7 +5,7 @@ class InitTester : public ::testing::TestWithParam<std::tuple<int, int> > {};
 
 TEST_P(InitTester, Normality) {
     auto param = GetParam();
-    auto Y = qdtsne::initialize_random<>(std::get<0>(param), std::get<1>(param));
+    auto Y = qdtsne::initialize_random<2>(std::get<0>(param), std::get<1>(param));
 
     EXPECT_NE(Y.back(), 0); // last element should be filled correctly in the odd case.
 
@@ -31,7 +31,7 @@ TEST_P(InitTester, Normality) {
     }
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     InitTests,
     InitTester,
     ::testing::Combine(

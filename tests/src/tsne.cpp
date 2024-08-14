@@ -5,50 +5,46 @@
 #include "custom_parallel.h"
 #endif
 
-#include "knncolle/knncolle.hpp"
-#include "qdtsne/tsne.hpp"
-#include "qdtsne/utils.hpp"
 #include <random>
+#include <vector>
+#include <map>
+#include <algorithm>
+#include <cmath>
 
-class TsneTester : public ::testing::TestWithParam<std::tuple<int, int, int> > {
+#include "knncolle/knncolle.hpp"
+
+#include "qdtsne/initialize.hpp"
+
+class TsneTester : public ::testing::TestWithParam<int> {
 protected:
-    void assemble(int N, int D, int K) {
-        X.resize(N * D);
+    inline static int ndim = 5;
+    inline static int nobs = 200;
+    inline static std::vector<double> X;
+
+    static void SetUpTestSuite() {
+        X.resize(ndim * nobs);
 
         std::mt19937_64 rng(42);
         std::normal_distribution<> dist(0, 1);
         for (auto& y : X) {
             y = dist(rng);
         }
-
-        knncolle::VpTreeEuclidean<> searcher(D, N, X.data()); 
-        for (size_t i = 0; i < N; ++i) {
-            neighbors.push_back(searcher.find_nearest_neighbors(i, K));
-        }
-
-        return;
     }
-
-    std::vector<double> X;
-    qdtsne::NeighborList<int, double> neighbors;
 };
 
 TEST_P(TsneTester, Initialization) {
-    auto PARAM = GetParam();
-    size_t N = std::get<0>(PARAM);
-    size_t D = std::get<1>(PARAM);
-    size_t K = std::get<2>(PARAM);
-    assemble(N, D, K);
+    int K = GetParam();
 
-    qdtsne::Tsne thing;
-    auto status = thing.initialize(neighbors);
+    qdtsne::Options opt;
+    opt.perplexity = K / 3.0;
+    auto status = qdtsne::initialize<2>(ndim, nobs, X.data(), knncolle::VptreeBuilder(), opt);
 
     // Checking probabilities are all between zero and 1.
-    const auto& probs = status.neighbors;
-    EXPECT_EQ(probs.size(), N);
+    const auto& probs = status.get_neighbors();
+    EXPECT_EQ(probs.size(), nobs);
     double total = 0;
     for (const auto& curp : probs) {
-        EXPECT_TRUE(curp.size() >= K);
+        EXPECT_GE(curp.size(), K);
         for (const auto& p : curp) {
             EXPECT_TRUE(p.second < 1);
             EXPECT_TRUE(p.second > 0);
@@ -59,8 +55,8 @@ TEST_P(TsneTester, Initialization) {
 
     // Checking symmetry of the probabilities.
     std::map<std::pair<int, int>, std::tuple<double, bool, bool> > stuff;
-    for (size_t n = 0; n < neighbors.size(); ++n) {
-        const auto& current = status.neighbors[n];
+    for (int n = 0; n < nobs; ++n) {
+        const auto& current = probs[n];
 
         for (const auto& y : current) {
             auto neighbor = y.first;
@@ -93,86 +89,126 @@ TEST_P(TsneTester, Initialization) {
 }
 
 TEST_P(TsneTester, Runner) {
-    auto PARAM = GetParam();
-    size_t N = std::get<0>(PARAM);
-    size_t D = std::get<1>(PARAM);
-    size_t K = std::get<2>(PARAM);
-    assemble(N, D, K);
+    int K = GetParam();
 
-    qdtsne::Tsne thing;
-    auto Y = qdtsne::initialize_random<>(N);
+    qdtsne::Options opt;
+    opt.perplexity = K / 3.0;
+    auto status = qdtsne::initialize<2>(ndim, nobs, X.data(), knncolle::VptreeBuilder(), opt);
+
+    auto Y = qdtsne::initialize_random<2>(nobs);
     auto old = Y;
 
-    auto status = thing.run(neighbors, Y.data());
+    status.run(Y.data());
     EXPECT_NE(old, Y); // there was some effect...
-    EXPECT_EQ(status.nobs(), N); 
+    EXPECT_EQ(status.num_observations(), nobs); 
     EXPECT_EQ(status.iteration(), 1000); // actually ran through the specified iterations
 
     // Check that coordinates are zero-mean.
     for (int d = 0; d < 2; ++d) {
         double total = 0;
-        for (size_t i = 0; i < N; ++i){
+        for (int i = 0; i < nobs; ++i){
             total += Y[2*i + d];
         }
-        EXPECT_TRUE(std::abs(total/N) < 1e-10);
+        EXPECT_TRUE(std::abs(total/nobs) < 1e-10);
     }
 
     // Same results when run in parallel.
-    thing.set_num_threads(3);
+    opt.num_threads = 3;
+    auto pstatus = qdtsne::initialize<2>(ndim, nobs, X.data(), knncolle::VptreeBuilder(), opt);
+
     auto copy = old;
-    auto pstatus = thing.run(neighbors, copy.data());
+    pstatus.run(copy.data());
     EXPECT_EQ(copy, Y);
 }
 
 TEST_P(TsneTester, StopStart) {
-    auto PARAM = GetParam();
-    size_t N = std::get<0>(PARAM);
-    size_t D = std::get<1>(PARAM);
-    size_t K = std::get<2>(PARAM);
-    assemble(N, D, K);
+    int K = GetParam();
 
-    auto Y = qdtsne::initialize_random<>(N);
+    qdtsne::Options opt;
+    opt.perplexity = K / 3.0;
+    auto status = qdtsne::initialize<2>(ndim, nobs, X.data(), knncolle::VptreeBuilder(), opt);
+
+    auto Y = qdtsne::initialize_random<2>(nobs);
     auto copy = Y;
+    status.run(Y.data());
 
-    qdtsne::Tsne thing;
-    auto ref = thing.run(neighbors, Y.data());
-
-    auto status = thing.initialize(neighbors);
-    status.run(copy.data(), 500);
-    status.run(copy.data(), 1000);
+    auto restatus = qdtsne::initialize<2>(ndim, nobs, X.data(), knncolle::VptreeBuilder(), opt);
+    restatus.run(copy.data(), 500);
+    restatus.run(copy.data(), 1000);
 
     EXPECT_EQ(copy, Y);
 }
 
-TEST_P(TsneTester, EasyStart) {
-    auto PARAM = GetParam();
-    size_t N = std::get<0>(PARAM);
-    size_t D = std::get<1>(PARAM);
-    size_t K = std::get<2>(PARAM);
-    assemble(N, D, K);
+TEST_P(TsneTester, AltStart) {
+    int K = GetParam();
 
-    auto original = qdtsne::initialize_random<>(N);
-    qdtsne::Tsne thing;
-    thing.set_max_iter(10); // don't need that many iterations for this...
+    qdtsne::NeighborList<int, double> neighbors(nobs);
+    {
+        auto index = knncolle::VptreeBuilder<>().build_unique(knncolle::SimpleMatrix(ndim, nobs, X.data()));
+        auto searcher = index->initialize();
+        std::vector<int> indices;
+        std::vector<double> distances;
+        for (int o = 0; o < nobs; ++o) {
+            searcher->search(o, K, &indices, &distances);
+            int actual_k = indices.size();
+            for (int x = 0; x < actual_k; ++x) {
+                neighbors[o].emplace_back(indices[x], distances[x]);
+            }
+        }
+    }
+
+    auto original = qdtsne::initialize_random<2>(nobs);
+    qdtsne::Options options;
 
     auto Y = original;
-    auto ref = thing.run(neighbors, Y.data());
+    auto status = qdtsne::initialize<2>(std::move(neighbors), options);
+    status.run(Y.data());
 
+    options.perplexity = K / 3.0;
+    auto ref_status = qdtsne::initialize<2>(ndim, nobs, X.data(), knncolle::VptreeBuilder(), options);
     auto copy = original;
-    auto easy = thing.set_perplexity(K/3).run(X.data(), D, N, copy.data());
-    EXPECT_EQ(copy, Y);
+    ref_status.run(copy.data());
 
-    EXPECT_EQ(ref.neighbors[0], easy.neighbors[0]);
-    EXPECT_EQ(ref.neighbors[10], easy.neighbors[10]);
-    EXPECT_EQ(ref.neighbors[100], easy.neighbors[100]);
+    EXPECT_EQ(copy, Y);
 }
 
-INSTANTIATE_TEST_CASE_P(
+TEST_P(TsneTester, LeafApproximation) {
+    int K = GetParam();
+
+    qdtsne::Options opt;
+    opt.perplexity = K / 3.0;
+    opt.max_depth = 4;
+    opt.leaf_approximation = true;
+    auto status = qdtsne::initialize<2>(ndim, nobs, X.data(), knncolle::VptreeBuilder(), opt);
+
+    auto Y = qdtsne::initialize_random<2>(nobs);
+    auto old = Y;
+
+    status.run(Y.data());
+    EXPECT_NE(old, Y); // there was some effect...
+    EXPECT_EQ(status.num_observations(), nobs); 
+    EXPECT_EQ(status.iteration(), 1000); // actually ran through the specified iterations
+
+    // Check that coordinates are zero-mean.
+    for (int d = 0; d < 2; ++d) {
+        double total = 0;
+        for (int i = 0; i < nobs; ++i){
+            total += Y[2*i + d];
+        }
+        EXPECT_TRUE(std::abs(total/nobs) < 1e-10);
+    }
+
+    // Same results when run in parallel.
+    opt.num_threads = 3;
+    auto pstatus = qdtsne::initialize<2>(ndim, nobs, X.data(), knncolle::VptreeBuilder(), opt);
+
+    auto copy = old;
+    pstatus.run(copy.data());
+    EXPECT_EQ(copy, Y);
+}
+
+INSTANTIATE_TEST_SUITE_P(
     TsneTests,
     TsneTester,
-    ::testing::Combine(
-        ::testing::Values(200), // number of observations
-        ::testing::Values(5), // input dimensions, doesn't really matter
-        ::testing::Values(30, 60, 90) // number of neighbors
-    )
+    ::testing::Values(30, 60, 90) // number of neighbors
 );

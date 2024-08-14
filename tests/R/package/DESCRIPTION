@@ -1,0 +1,17 @@
+Package: qdtsne
+Title: Test Bindings For Qdtsne 
+Description: Pretty much as it says on the tin. Provided for testing only.
+Authors@R: person("Aaron", "Lun", email="infinite.monkeys.with.keyboards@gmail.com", role=c("aut", "cre"))
+Version: 0.99.0
+Date: 2024-08-14
+Imports:
+    Rcpp
+LinkingTo:
+    Rcpp
+Suggests:
+    testthat,
+    BiocNeighbors
+SystemRequirements: C++17
+StagedInstall: no
+RoxygenNote: 7.3.2
+Encoding: UTF-8

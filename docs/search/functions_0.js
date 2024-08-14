@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['initialize_0',['initialize',['../classqdtsne_1_1Tsne.html#a8e74b496ef8be5ad02153abdbb88ac11',1,'qdtsne::Tsne::initialize(NeighborList&lt; Index, Float &gt; nn)'],['../classqdtsne_1_1Tsne.html#a79e18e584f88dc92bf88040ff25b0302',1,'qdtsne::Tsne::initialize(const Input *input, size_t D, size_t N)'],['../classqdtsne_1_1Tsne.html#a2fe8af4edd75f0d5f35a9757fc81319b',1,'qdtsne::Tsne::initialize(const Algorithm *searcher)']]],
-  ['initialize_5frandom_1',['initialize_random',['../namespaceqdtsne.html#aac440bd84565b633afd95352c01ff235',1,'qdtsne::initialize_random(Float *Y, size_t N, int seed=42)'],['../namespaceqdtsne.html#a81f07f18a19fe9afbc004be7796ead39',1,'qdtsne::initialize_random(size_t N, int seed=42)']]],
-  ['iteration_2',['iteration',['../structqdtsne_1_1Tsne_1_1Status.html#a8a12ff535bf2a393aa5a3d03177e315f',1,'qdtsne::Tsne::Status']]]
+  ['initialize_0',['initialize',['../namespaceqdtsne.html#ad8a5142687a23b674abed584613d92b0',1,'qdtsne::initialize(NeighborList&lt; Index_, Float_ &gt; neighbors, const Options &amp;options)'],['../namespaceqdtsne.html#a2450c5ca3309848fbaf9c5013da6827f',1,'qdtsne::initialize(const knncolle::Prebuilt&lt; Dim_, Index_, Float_ &gt; &amp;prebuilt, const Options &amp;options)'],['../namespaceqdtsne.html#abb3c650089bc1839dfedef1509127324',1,'qdtsne::initialize(Dim_ rows, Index_ columns, const Float_ *data, const knncolle::Builder&lt; knncolle::SimpleMatrix&lt; Dim_, Index_, Float_ &gt;, Float_ &gt; &amp;builder, const Options &amp;options)']]],
+  ['initialize_5frandom_1',['initialize_random',['../namespaceqdtsne.html#adfa23db003429e87a9cd0721aa053a9b',1,'qdtsne::initialize_random(Float_ *Y, size_t N, int seed=42)'],['../namespaceqdtsne.html#af118d0c0010d85e09f675e35628c21d2',1,'qdtsne::initialize_random(size_t N, int seed=42)']]],
+  ['iteration_2',['iteration',['../classqdtsne_1_1Status.html#a8a87044aab3607aa953509fc9f2fea86',1,'qdtsne::Status']]]
 ];

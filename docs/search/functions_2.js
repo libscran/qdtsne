@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['nobs_0',['nobs',['../structqdtsne_1_1Tsne_1_1Status.html#a7494af37014d7e8e2b9f871c9a039653',1,'qdtsne::Tsne::Status']]]
+  ['num_5fobservations_0',['num_observations',['../classqdtsne_1_1Status.html#ad0675eaca1ee284bf0519eb003f51b90',1,'qdtsne::Status']]]
 ];

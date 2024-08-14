@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['neighborlist_0',['NeighborList',['../namespaceqdtsne.html#a705e394d4929f075451d5d1967ad590c',1,'qdtsne']]],
-  ['nobs_1',['nobs',['../structqdtsne_1_1Tsne_1_1Status.html#a7494af37014d7e8e2b9f871c9a039653',1,'qdtsne::Tsne::Status']]],
-  ['num_5fthreads_2',['num_threads',['../structqdtsne_1_1Tsne_1_1Defaults.html#a98929084b6ee4545739ae47a1910a359',1,'qdtsne::Tsne::Defaults']]]
+  ['neighborlist_0',['NeighborList',['../namespaceqdtsne.html#ae7d0a049760527c4650e2f62d9eb99e8',1,'qdtsne']]],
+  ['num_5fobservations_1',['num_observations',['../classqdtsne_1_1Status.html#ad0675eaca1ee284bf0519eb003f51b90',1,'qdtsne::Status']]],
+  ['num_5fthreads_2',['num_threads',['../structqdtsne_1_1Options.html#abf708aa5e462b8b3038fcaef2711cbb0',1,'qdtsne::Options']]]
 ];

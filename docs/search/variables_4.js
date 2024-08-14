@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['num_5fthreads_0',['num_threads',['../structqdtsne_1_1Tsne_1_1Defaults.html#a98929084b6ee4545739ae47a1910a359',1,'qdtsne::Tsne::Defaults']]]
+  ['max_5fdepth_0',['max_depth',['../structqdtsne_1_1Options.html#a3202c4085c933353f0fbfb9cc1825f64',1,'qdtsne::Options']]],
+  ['max_5fiterations_1',['max_iterations',['../structqdtsne_1_1Options.html#a5caa0c9124703fd6220dfb51e0aa10e1',1,'qdtsne::Options']]],
+  ['mom_5fswitch_5fiter_2',['mom_switch_iter',['../structqdtsne_1_1Options.html#a0efc1892882f473e5e38e5ab11d5d604',1,'qdtsne::Options']]]
 ];

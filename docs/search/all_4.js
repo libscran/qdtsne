@@ -1,8 +1,5 @@
 var searchData=
 [
-  ['infer_5fperplexity_0',['infer_perplexity',['../structqdtsne_1_1Tsne_1_1Defaults.html#a78fa16a34bc9ae823d976ff4e667f8d9',1,'qdtsne::Tsne::Defaults']]],
-  ['initialize_1',['initialize',['../classqdtsne_1_1Tsne.html#a8e74b496ef8be5ad02153abdbb88ac11',1,'qdtsne::Tsne::initialize(NeighborList&lt; Index, Float &gt; nn)'],['../classqdtsne_1_1Tsne.html#a79e18e584f88dc92bf88040ff25b0302',1,'qdtsne::Tsne::initialize(const Input *input, size_t D, size_t N)'],['../classqdtsne_1_1Tsne.html#a2fe8af4edd75f0d5f35a9757fc81319b',1,'qdtsne::Tsne::initialize(const Algorithm *searcher)']]],
-  ['initialize_5frandom_2',['initialize_random',['../namespaceqdtsne.html#aac440bd84565b633afd95352c01ff235',1,'qdtsne::initialize_random(Float *Y, size_t N, int seed=42)'],['../namespaceqdtsne.html#a81f07f18a19fe9afbc004be7796ead39',1,'qdtsne::initialize_random(size_t N, int seed=42)']]],
-  ['interpolation_3',['interpolation',['../structqdtsne_1_1Tsne_1_1Defaults.html#a91557056478bcd66ff8334e87c3ae135',1,'qdtsne::Tsne::Defaults']]],
-  ['iteration_4',['iteration',['../structqdtsne_1_1Tsne_1_1Status.html#a8a12ff535bf2a393aa5a3d03177e315f',1,'qdtsne::Tsne::Status']]]
+  ['leaf_5fapproximation_0',['leaf_approximation',['../structqdtsne_1_1Options.html#a69b189230017a5574b41d2cac7780656',1,'qdtsne::Options']]],
+  ['library_20for_20t_20sne_1',['C++ library for t-SNE',['../index.html',1,'']]]
 ];

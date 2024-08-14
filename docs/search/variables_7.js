@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['theta_0',['theta',['../structqdtsne_1_1Tsne_1_1Defaults.html#ae05d3a9797fb5f20af86cba07c64ced6',1,'qdtsne::Tsne::Defaults']]]
+  ['start_5fmomentum_0',['start_momentum',['../structqdtsne_1_1Options.html#ab5e4ad0d2dc1daf15e48d193bb3c3d8f',1,'qdtsne::Options']]],
+  ['stop_5flying_5fiter_1',['stop_lying_iter',['../structqdtsne_1_1Options.html#af352392082ebac2046b5679b218d6594',1,'qdtsne::Options']]]
 ];

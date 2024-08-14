@@ -1,4 +1,11 @@
 <map id="qdtsne/utils.hpp" name="qdtsne/utils.hpp">
-<area shape="rect" id="node1" title="Utilities for running t&#45;SNE." alt="" coords="13,5,126,31"/>
-<area shape="rect" id="node2" href="$qdtsne_8hpp.html" title="Umbrella header for all qdtsne files." alt="" coords="5,79,133,104"/>
+<area shape="rect" id="Node000001" title="Utilities for running t&#45;SNE." alt="" coords="120,5,233,31"/>
+<area shape="rect" id="Node000002" href="$Status_8hpp.html" title="Status of the t&#45;SNE algorithm." alt="" coords="64,79,190,105"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="162,45,138,80,133,77,157,42"/>
+<area shape="rect" id="Node000004" href="$qdtsne_8hpp.html" title="Umbrella header for all qdtsne files." alt="" coords="113,226,240,252"/>
+<area shape="poly" id="edge5_Node000001_Node000004" title=" " alt="" coords="192,44,204,78,207,121,202,163,184,227,179,225,197,162,202,121,199,80,187,46"/>
+<area shape="rect" id="Node000003" href="$initialize_8hpp.html" title="Initialize the t&#45;SNE algorithm." alt="" coords="5,153,140,178"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="111,118,84,154,80,151,107,115"/>
+<area shape="poly" id="edge4_Node000002_Node000004" title=" " alt="" coords="141,118,154,152,176,225,171,227,149,154,136,120"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="104,185,160,224,157,228,101,189"/>
 </map>

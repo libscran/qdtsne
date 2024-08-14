@@ -56,3 +56,5 @@ jobs:
       uses: codecov/codecov-action@v3
       with:
         directory: build/tests/CMakeFiles/libtest.dir/src/
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

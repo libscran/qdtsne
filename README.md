@@ -1,9 +1,9 @@
 # C++ library for t-SNE
 
-![Unit tests](https://github.com/LTLA/qdtsne/actions/workflows/run-tests.yaml/badge.svg)
-![Documentation](https://github.com/LTLA/qdtsne/actions/workflows/doxygenate.yaml/badge.svg)
-![Rtsne comparison](https://github.com/LTLA/qdtsne/actions/workflows/compare-Rtsne.yaml/badge.svg)
-[![Codecov](https://codecov.io/gh/LTLA/qdtsne/branch/master/graph/badge.svg?token=CX6G39BM7B)](https://codecov.io/gh/LTLA/qdtsne)
+![Unit tests](https://github.com/libscran/qdtsne/actions/workflows/run-tests.yaml/badge.svg)
+![Documentation](https://github.com/libscran/qdtsne/actions/workflows/doxygenate.yaml/badge.svg)
+![Rtsne comparison](https://github.com/libscran/qdtsne/actions/workflows/compare-Rtsne.yaml/badge.svg)
+[![Codecov](https://codecov.io/gh/libscran/qdtsne/branch/master/graph/badge.svg?token=CX6G39BM7B)](https://codecov.io/gh/libscran/qdtsne)
 
 ## Overview
 
@@ -48,7 +48,7 @@ status2.run(Y.data(), 200); // run up to 200 iterations
 status2.run(Y.data(), 500); // run up to 500 iterations
 ```
 
-See the [reference documentation](https://ltla.github.io/qdtsne/) for more details.
+See the [reference documentation](https://libscran.github.io/qdtsne/) for more details.
 
 ## Approximations for speed
 

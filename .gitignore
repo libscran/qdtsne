@@ -1,0 +1,6 @@
+*.o
+*.swp
+*.so
+build/
+docs/html
+docs/latex

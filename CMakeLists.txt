@@ -5,19 +5,63 @@ project(qdtsne
     DESCRIPTION "Quick and dirty t-SNE implementation in C++"
     LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
 
+# Library
 add_library(qdtsne INTERFACE)
+add_library(libscran::qdtsne ALIAS qdtsne)
 
-target_include_directories(qdtsne INTERFACE include/)
+target_include_directories(qdtsne INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/qdtsne>)
+target_compile_features(qdtsne INTERFACE cxx_std_17)
 
-add_subdirectory(extern)
+# Dependencies
+option(QDTSNE_FETCH_EXTERN "Automatically fetch qdtsne's external dependencies." ON)
+if(QDTSNE_FETCH_EXTERN)
+    add_subdirectory(extern)
+else()
+    find_package(knncolle_knncolle 2.0.0 CONFIG REQUIRED)
+    find_package(ltla_aarand 1.0.0 CONFIG REQUIRED)
+endif()
 
-target_link_libraries(qdtsne INTERFACE knncolle aarand)
+target_link_libraries(qdtsne INTERFACE knncolle::knncolle ltla::aarand)
 
+# Tests
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    option(QDTSNE_TESTS "Build qdtsne's test suite." ON)
+else()
+    option(QDTSNE_TESTS "Build qdtsne's test suite." OFF)
+endif()
+
+if(QDTSNE_TESTS)
     include(CTest)
     if(BUILD_TESTING)
         add_subdirectory(tests)
-    endif()
+    endif() 
 endif()
+
+# Install
+install(DIRECTORY include/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/qdtsne)
+
+install(TARGETS qdtsne
+    EXPORT qdtsneTargets)
+
+install(EXPORT qdtsneTargets
+    FILE libscran_qdtsneTargets.cmake
+    NAMESPACE libscran::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libscran_qdtsne)
+
+configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Config.cmake.in
+    "${CMAKE_CURRENT_BINARY_DIR}/libscran_qdtsneConfig.cmake"
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libscran_qdtsne)
+
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/libscran_qdtsneConfigVersion.cmake"
+    COMPATIBILITY SameMajorVersion)
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libscran_qdtsneConfig.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/libscran_qdtsneConfigVersion.cmake"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libscran_qdtsne)

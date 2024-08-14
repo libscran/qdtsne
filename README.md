@@ -75,6 +75,8 @@ Note that this only has an effect in `max_depth`-bounded trees where multiple po
 
 ## Building projects
 
+### CMake with `FetchContent`
+
 If you're already using CMake, you can add something like this to your `CMakeLists.txt`:
 
 ```cmake
@@ -82,7 +84,7 @@ include(FetchContent)
 
 FetchContent_Declare(
   qdtsne 
-  GIT_REPOSITORY https://github.com/LTLA/qdtsne
+  GIT_REPOSITORY https://github.com/libscran/qdtsne
   GIT_TAG master # or any version of interest
 )
 
@@ -99,7 +101,28 @@ target_link_libraries(myexe qdtsne)
 target_link_libraries(mylib INTERFACE qdtsne)
 ```
 
-Otherwise, you can just copy the header files in `include/` into some location that is visible to your compiler.
+### CMake with `find_package()`
+
+```cmake
+find_package(libscran_qdtsne CONFIG REQUIRED)
+target_link_libraries(mylib INTERFACE libscran::qdtsne)
+```
+
+To install the library, use:
+
+```sh
+mkdir build && cd build
+cmake .. -DQDTSNE_TESTS=OFF
+cmake --build . --target install
+```
+
+By default, this will use `FetchContent` to fetch all external dependencies.
+If you want to install them manually, use `-DQDTSNE_FETCH_EXTERN=OFF`.
+See [`extern/CMakeLists.txt`](extern/CMakeLists.txt) to find compatible versions of each dependency.
+
+### Manual
+
+If you're not using CMake, you can just copy the header files in `include/` into some location that is visible to your compiler.
 This requires the manual inclusion of the dependencies listed in [`extern/CMakeLists.txt`](extern/CMakeLists.txt).
 
 ## References

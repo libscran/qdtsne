@@ -117,12 +117,13 @@ $(function() {
 <p>The approximation is based on ignoring the distribution within each grid cell, which is probably acceptable for very small intervals. Smaller values reduce computational time by limiting the depth of the recursion, at the cost of approximation quality for the repulsive force calculation. A value of 7 to 10 seems to be a good compromise for most applications.</p>
 <p>We can approximate even further by using the center of mass for $i$'s leaf node to approximate $i$'s repulsive forces with all other nodes. This allows us to compute the repulsive forces once for each leaf node, and then re-use those values for all points assigned to that leaf node. We call this the "leaf approximation" for the repulsive forces, which is controlled by the <code>leaf_approximation</code> parameter. Note that this only has an effect in <code>max_depth</code>-bounded trees where multiple points can be assigned to a leaf node.</p>
 <h1>Building projects</h1>
+<h2>CMake with <code>FetchContent</code></h2>
 <p>If you're already using CMake, you can add something like this to your <code>CMakeLists.txt</code>:</p>
 <div class="fragment"><div class="line">include(FetchContent)</div>
 <div class="line"> </div>
 <div class="line">FetchContent_Declare(</div>
 <div class="line">  qdtsne </div>
-<div class="line">  GIT_REPOSITORY https://github.com/LTLA/qdtsne</div>
+<div class="line">  GIT_REPOSITORY https://github.com/libscran/qdtsne</div>
 <div class="line">  GIT_TAG master # or any version of interest</div>
 <div class="line">)</div>
 <div class="line"> </div>
@@ -133,7 +134,16 @@ $(function() {
 <div class="line"> </div>
 <div class="line"># For libaries</div>
 <div class="line">target_link_libraries(mylib INTERFACE qdtsne)</div>
-</div><!-- fragment --><p>Otherwise, you can just copy the header files in <code>include/</code> into some location that is visible to your compiler. This requires the manual inclusion of the dependencies listed in <a href="extern/CMakeLists.txt"><code>extern/CMakeLists.txt</code></a>.</p>
+</div><!-- fragment --><h2>CMake with <code>find_package()</code></h2>
+<div class="fragment"><div class="line">find_package(libscran_qdtsne CONFIG REQUIRED)</div>
+<div class="line">target_link_libraries(mylib INTERFACE libscran::qdtsne)</div>
+</div><!-- fragment --><p>To install the library, use:</p>
+<div class="fragment"><div class="line">mkdir build &amp;&amp; cd build</div>
+<div class="line">cmake .. -DQDTSNE_TESTS=OFF</div>
+<div class="line">cmake --build . --target install</div>
+</div><!-- fragment --><p>By default, this will use <code>FetchContent</code> to fetch all external dependencies. If you want to install them manually, use <code>-DQDTSNE_FETCH_EXTERN=OFF</code>. See <a href="extern/CMakeLists.txt"><code>extern/CMakeLists.txt</code></a> to find compatible versions of each dependency.</p>
+<h2>Manual</h2>
+<p>If you're not using CMake, you can just copy the header files in <code>include/</code> into some location that is visible to your compiler. This requires the manual inclusion of the dependencies listed in <a href="extern/CMakeLists.txt"><code>extern/CMakeLists.txt</code></a>.</p>
 <h1>References</h1>
 <p>van der Maaten, L.J.P. and Hinton, G.E. (2008). Visualizing high-dimensional data using t-SNE. <em>Journal of Machine Learning Research</em>, 9, 2579-2605.</p>
 <p>van der Maaten, L.J.P. (2014). Accelerating t-SNE using tree-based algorithms. <em>Journal of Machine Learning Research</em>, 15, 3221-3245. </p>

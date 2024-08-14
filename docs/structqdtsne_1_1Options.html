@@ -12,6 +12,13 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 <link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
@@ -316,7 +323,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Amount of approximation to use in the Barnes-Hut calculation of repulsive forces. This is defined as the maximum <picture><source srcset="form_0_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$s/d$" src="form_0.png"/></picture> at which a group of points can be approximated by their center of mass, where <picture><source srcset="form_1_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$s$" src="form_1.png"/></picture> is the maximum width of the box containing all points in the group (i.e., the longest side across all dimensions) and <picture><source srcset="form_2_dark.png" media="(prefers-color-scheme: dark)"/><img class="formulaInl" alt="$d$" src="form_2.png"/></picture> is the distance from a point to the center of mass. Lower values increase accuracy at the cost of computational time. </p>
+<p>Amount of approximation to use in the Barnes-Hut calculation of repulsive forces. This is defined as the maximum \(s/d\) at which a group of points can be approximated by their center of mass, where \(s\) is the maximum width of the box containing all points in the group (i.e., the longest side across all dimensions) and \(d\) is the distance from a point to the center of mass. Lower values increase accuracy at the cost of computational time. </p>
 
 </div>
 </div>

@@ -89,7 +89,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Current status of the t-SNE iterations.  
+<p><a class="el" href="classqdtsne_1_1Status.html" title="Status of the t-SNE iterations.">Status</a> of the t-SNE iterations.  
  <a href="classqdtsne_1_1Status.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="Status_8hpp_source.html">Status.hpp</a>&gt;</code></p>
@@ -109,7 +109,7 @@ Public Member Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;int num_dim_, typename Index_, typename Float_&gt;<br />
-class qdtsne::Status&lt; num_dim_, Index_, Float_ &gt;</div><p>Current status of the t-SNE iterations. </p>
+class qdtsne::Status&lt; num_dim_, Index_, Float_ &gt;</div><p><a class="el" href="classqdtsne_1_1Status.html" title="Status of the t-SNE iterations.">Status</a> of the t-SNE iterations. </p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">num_dim_</td><td>Number of dimensions in the t-SNE embedding. </td></tr>
@@ -278,7 +278,7 @@ template&lt;<a class="el" href="classqdtsne_1_1Status.html">int</a> num_dim_, <a
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in,out]</td><td class="paramname">Y</td><td>Pointer to a array containing a column-major matrix with number of rows and columns equal to <code>num_dim_</code> and <code><a class="el" href="classqdtsne_1_1Status.html#ae4090be4f7e29149a6bf9c420d8e8b14">num_observations()</a></code>, respectively. Each row corresponds to a dimension of the embedding while each column corresponds to an observation. On input, this should contain the initial location of each observation; on output, it is updated to the t-SNE location at the specified number of iterations. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">limit</td><td>Number of iterations to run up to. The actual number of iterations performed will be the difference between <code>limit</code> and <code><a class="el" href="classqdtsne_1_1Status.html#a2e5fbb69b89a43b2deea5c46374b642b">iteration()</a></code>, i.e., <code><a class="el" href="classqdtsne_1_1Status.html#a2e5fbb69b89a43b2deea5c46374b642b">iteration()</a></code> will be equal to <code>limit</code> on completion. <code>limit</code> may be greater than <code><a class="el" href="classqdtsne_1_1Status.html#af67e41bd74305fbeba6f486bda76813f">max_iterations()</a></code>, to run the algorithm for more iterations than specified during construction of this <code><a class="el" href="classqdtsne_1_1Status.html" title="Current status of the t-SNE iterations.">Status</a></code> object. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">limit</td><td>Number of iterations to run up to. The actual number of iterations performed will be the difference between <code>limit</code> and <code><a class="el" href="classqdtsne_1_1Status.html#a2e5fbb69b89a43b2deea5c46374b642b">iteration()</a></code>, i.e., <code><a class="el" href="classqdtsne_1_1Status.html#a2e5fbb69b89a43b2deea5c46374b642b">iteration()</a></code> will be equal to <code>limit</code> on completion. <code>limit</code> may be greater than <code><a class="el" href="classqdtsne_1_1Status.html#af67e41bd74305fbeba6f486bda76813f">max_iterations()</a></code>, to run the algorithm for more iterations than specified during construction of this <code><a class="el" href="classqdtsne_1_1Status.html" title="Status of the t-SNE iterations.">Status</a></code> object. </td></tr>
   </table>
   </dd>
 </dl>

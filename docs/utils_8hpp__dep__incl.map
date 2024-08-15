@@ -1,6 +1,6 @@
 <map id="qdtsne/utils.hpp" name="qdtsne/utils.hpp">
 <area shape="rect" id="Node000001" title="Utilities for running t&#45;SNE." alt="" coords="120,5,233,31"/>
-<area shape="rect" id="Node000002" href="$Status_8hpp.html" title="Status of the t&#45;SNE algorithm." alt="" coords="64,79,190,105"/>
+<area shape="rect" id="Node000002" href="$Status_8hpp.html" title="Status of the t&#45;SNE iterations." alt="" coords="64,79,190,105"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="162,45,138,80,133,77,157,42"/>
 <area shape="rect" id="Node000004" href="$qdtsne_8hpp.html" title="Umbrella header for all qdtsne files." alt="" coords="113,226,240,252"/>
 <area shape="poly" id="edge5_Node000001_Node000004" title=" " alt="" coords="192,44,204,78,207,121,202,163,184,227,179,225,197,162,202,121,199,80,187,46"/>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['qdtsne_0',['qdtsne',['../namespaceqdtsne.html',1,'']]]
+  ['knncolle_0',['knncolle',['https://knncolle.github.io/knncolle/namespaceknncolle.html',1,'']]]
 ];

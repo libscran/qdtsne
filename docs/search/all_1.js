@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['eta_0',['eta',['../structqdtsne_1_1Options.html#a7f0dcada1addd28c257f0074727f9eae',1,'qdtsne::Options']]],
-  ['exaggeration_5ffactor_1',['exaggeration_factor',['../structqdtsne_1_1Options.html#ab0f96457fa0b6d05dd32b8ab3fdf31b6',1,'qdtsne::Options']]]
+  ['c_20library_20for_20t_20sne_0',['C++ library for t-SNE',['../index.html',1,'']]],
+  ['can_5fsearch_5fall_1',['can_search_all',['https://knncolle.github.io/knncolle/classknncolle_1_1BruteforceSearcher.html#a9c7cd8e9f01f5798d5b98a1d5318e8f4',1,'knncolle::BruteforceSearcher::can_search_all()'],['https://knncolle.github.io/knncolle/classknncolle_1_1KmknnSearcher.html#a8fae155ea1722024e5dde21550674116',1,'knncolle::KmknnSearcher::can_search_all()'],['https://knncolle.github.io/knncolle/classknncolle_1_1Searcher.html#a8362d0f6ea1b7f6e09d26a9188d31d1d',1,'knncolle::Searcher::can_search_all()'],['https://knncolle.github.io/knncolle/classknncolle_1_1VptreeSearcher.html#ac7a0f11645ab4f57b9991602339e0e15',1,'knncolle::VptreeSearcher::can_search_all()']]],
+  ['create_5fworkspace_2',['create_workspace',['https://knncolle.github.io/knncolle/classknncolle_1_1MockMatrix.html#ab67d03fc96f29ca6d37fb00a1d7fddc3',1,'knncolle::MockMatrix']]]
 ];

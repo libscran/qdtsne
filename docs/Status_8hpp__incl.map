@@ -1,30 +1,25 @@
 <map id="qdtsne/Status.hpp" name="qdtsne/Status.hpp">
-<area shape="rect" id="Node000001" title="Status of the t&#45;SNE algorithm." alt="" coords="410,5,537,31"/>
-<area shape="rect" id="Node000002" title=" " alt="" coords="245,153,302,178"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="445,34,403,54,359,81,324,112,294,143,291,139,320,108,356,77,400,49,443,29"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="326,153,384,178"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="443,34,408,53,378,81,365,109,359,138,354,137,360,107,374,77,405,48,440,29"/>
-<area shape="rect" id="Node000004" title=" " alt="" coords="480,153,555,178"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="480,31,512,137,507,138,475,32"/>
-<area shape="rect" id="Node000005" title=" " alt="" coords="553,79,634,105"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="495,29,561,68,559,73,492,34"/>
-<area shape="rect" id="Node000006" title=" " alt="" coords="658,79,710,105"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="510,29,644,74,642,79,508,34"/>
-<area shape="rect" id="Node000007" href="$SPTree_8hpp_source.html" title=" " alt="" coords="388,79,477,105"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="469,33,449,67,444,64,464,30"/>
-<area shape="rect" id="Node000009" href="$Options_8hpp.html" title="Options for the t&#45;SNE algorithm." alt="" coords="735,79,825,105"/>
-<area shape="poly" id="edge11_Node000001_Node000009" title=" " alt="" coords="526,29,720,74,719,79,525,34"/>
-<area shape="rect" id="Node000010" href="$utils_8hpp.html" title="Utilities for running t&#45;SNE." alt="" coords="192,79,262,105"/>
-<area shape="poly" id="edge12_Node000001_Node000010" title=" " alt="" coords="432,34,277,79,276,74,431,29"/>
-<area shape="poly" id="edge10_Node000007_Node000002" title=" " alt="" coords="406,108,315,148,313,144,404,103"/>
-<area shape="poly" id="edge7_Node000007_Node000003" title=" " alt="" coords="421,107,381,144,377,140,417,103"/>
-<area shape="poly" id="edge9_Node000007_Node000004" title=" " alt="" coords="448,103,493,141,490,145,445,107"/>
-<area shape="rect" id="Node000008" title=" " alt="" coords="408,153,457,178"/>
-<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="435,105,435,137,430,137,430,105"/>
-<area shape="poly" id="edge15_Node000010_Node000002" title=" " alt="" coords="237,103,260,138,255,141,232,106"/>
-<area shape="poly" id="edge14_Node000010_Node000003" title=" " alt="" coords="250,103,321,142,318,147,247,108"/>
-<area shape="rect" id="Node000011" title=" " alt="" coords="5,153,70,178"/>
-<area shape="poly" id="edge13_Node000010_Node000011" title=" " alt="" coords="196,108,85,149,83,144,194,103"/>
-<area shape="rect" id="Node000012" title=" " alt="" coords="94,153,221,178"/>
-<area shape="poly" id="edge16_Node000010_Node000012" title=" " alt="" coords="217,107,182,143,178,140,213,103"/>
+<area shape="rect" id="Node000001" title="Status of the t&#45;SNE iterations." alt="" coords="263,5,389,31"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,153,63,178"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="263,31,190,49,152,63,117,81,81,110,53,142,49,139,77,106,114,77,150,58,189,44,262,26"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="87,153,144,178"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="263,25,229,31,195,42,162,58,135,81,126,93,121,108,117,137,111,137,116,106,122,91,131,77,159,54,193,37,228,26,262,20"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="238,79,313,105"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="320,33,295,68,290,65,315,30"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="336,79,417,105"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="337,30,362,65,357,68,332,33"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="441,79,494,105"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="351,29,431,69,428,74,349,34"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="517,79,607,105"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="367,29,508,71,506,77,365,34"/>
+<area shape="rect" id="Node000008" href="$Options_8hpp.html" title="Options for the t&#45;SNE algorithm." alt="" coords="630,79,721,105"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="387,29,616,76,615,81,386,34"/>
+<area shape="rect" id="Node000009" href="$utils_8hpp.html" title="Utilities for running t&#45;SNE." alt="" coords="145,79,214,105"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="302,34,219,74,217,69,300,29"/>
+<area shape="poly" id="edge11_Node000009_Node000002" title=" " alt="" coords="156,108,74,148,71,143,154,103"/>
+<area shape="poly" id="edge10_Node000009_Node000003" title=" " alt="" coords="171,107,138,143,134,139,167,103"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="169,153,233,178"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="185,104,195,137,190,138,180,106"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="257,153,384,178"/>
+<area shape="poly" id="edge12_Node000009_Node000011" title=" " alt="" coords="205,103,284,143,282,148,202,108"/>
 </map>

@@ -54,6 +54,7 @@ macro(create_partest target)
     add_executable(
         ${target}
         src/tsne.cpp
+        src/SPTree.cpp
     )
 
     target_link_libraries(

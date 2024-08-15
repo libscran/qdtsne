@@ -55,11 +55,11 @@ namespace qdtsne {
  */
 namespace internal {
 
-template<int ndim_, typename Index_, typename Float_>
-Status<ndim_, Index_, Float_> initialize(NeighborList<Index_, Float_> nn, Float_ perp, const Options& options) {
+template<int num_dim_, typename Index_, typename Float_>
+Status<num_dim_, Index_, Float_> initialize(NeighborList<Index_, Float_> nn, Float_ perp, const Options& options) {
     compute_gaussian_perplexity(nn, perp, options.num_threads);
     symmetrize_matrix(nn);
-    return Status<ndim_, Index_, Float_>(std::move(nn), options);
+    return Status<num_dim_, Index_, Float_>(std::move(nn), options);
 }
 
 }
@@ -70,7 +70,7 @@ Status<ndim_, Index_, Float_> initialize(NeighborList<Index_, Float_> nn, Float_
 /**
  * Initialize the data structures for t-SNE algorithm, given the nearest neighbors of each observation.
  *
- * @tparam ndim_ Number of dimensions of the final embedding.
+ * @tparam num_dim_ Number of dimensions of the final embedding.
  * @tparam Index_ Integer type for the neighbor indices.
  * @tparam Float_ Floating-point type to use for the calculations.
  *
@@ -81,22 +81,22 @@ Status<ndim_, Index_, Float_> initialize(NeighborList<Index_, Float_> nn, Float_
  *
  * @return A `Status` object representing an initial state of the t-SNE algorithm.
  */
-template<int ndim_, typename Index_, typename Float_>
-Status<ndim_, Index_, Float_> initialize(NeighborList<Index_, Float_> neighbors, const Options& options) {
+template<int num_dim_, typename Index_, typename Float_>
+Status<num_dim_, Index_, Float_> initialize(NeighborList<Index_, Float_> neighbors, const Options& options) {
     Float_ perp;
     if (options.infer_perplexity && neighbors.size()) {
         perp = static_cast<Float_>(neighbors.front().size())/3;
     } else {
         perp = options.perplexity;
     }
-    return internal::initialize<ndim_>(std::move(neighbors), perp, options);
+    return internal::initialize<num_dim_>(std::move(neighbors), perp, options);
 }
 
 /**
  * Overload that accepts a neighbor search index and computes the nearest neighbors for each observation,
  * before proceeding with the initialization of the t-SNE algorithm.
  *
- * @tparam ndim_ Number of dimensions of the final embedding.
+ * @tparam num_dim_ Number of dimensions of the final embedding.
  * @tparam Dim_ Integer type for the dataset dimensions.
  * @tparam Index_ Integer type for the neighbor indices.
  * @tparam Float_ Floating-point type to use for the calculations.
@@ -106,8 +106,8 @@ Status<ndim_, Index_, Float_> initialize(NeighborList<Index_, Float_> neighbors,
  *
  * @return A `Status` object representing an initial state of the t-SNE algorithm.
  */
-template<int ndim_, typename Dim_, typename Index_, typename Float_>
-Status<ndim_, Index_, Float_> initialize(const knncolle::Prebuilt<Dim_, Index_, Float_>& prebuilt, const Options& options) { 
+template<int num_dim_, typename Dim_, typename Index_, typename Float_>
+Status<num_dim_, Index_, Float_> initialize(const knncolle::Prebuilt<Dim_, Index_, Float_>& prebuilt, const Options& options) { 
     const Index_ K = perplexity_to_k(options.perplexity);
     Index_ N = prebuilt.num_observations();
     if (K >= N) {
@@ -152,36 +152,36 @@ Status<ndim_, Index_, Float_> initialize(const knncolle::Prebuilt<Dim_, Index_, 
     }, options.num_threads);
 #endif
 
-    return internal::initialize<ndim_>(std::move(neighbors), options.perplexity, options);
+    return internal::initialize<num_dim_>(std::move(neighbors), options.perplexity, options);
 }
 
 /**
  * Overload that accepts a column-major matrix of coordinates and computes the nearest neighbors for each observation,
  * before proceeding with the initialization of the t-SNE algorithm.
  *
- * @tparam ndim_ Number of dimensions of the final embedding.
+ * @tparam num_dim_ Number of dimensions of the final embedding.
  * @tparam Dim_ Integer type for the dataset dimensions.
  * @tparam Index_ Integer type for the neighbor indices.
  * @tparam Float_ Floating-point type to use for the calculations.
  *
- * @param rows Number of rows of the matrix at `data`, corresponding to the dimensions of the input dataset.
- * @param columns Number of columns of the matrix at `data`, corresponding to the observations of the input dataset.
- * @param[in] data Pointer to an array containing a column-major matrix with `rows` rows and `columns` columns.
+ * @param data_dim Number of rows of the matrix at `data`, corresponding to the dimensions of the input dataset.
+ * @param num_points Number of columns of the matrix at `data`, corresponding to the points of the input dataset.
+ * @param[in] data Pointer to an array containing a column-major matrix with `data_dim` rows and `num_points` columns.
  * @param builder A `knncolle::Builder` instance specifying the nearest-neighbor algorithm to use.
  * @param options Further options.
  *
  * @return A `Status` object representing an initial state of the t-SNE algorithm.
  */
-template<int ndim_, typename Dim_, typename Index_, typename Float_>
-Status<ndim_, Index_, Float_> initialize(
-    Dim_ rows,
-    Index_ columns,
+template<int num_dim_, typename Dim_, typename Index_, typename Float_>
+Status<num_dim_, Index_, Float_> initialize(
+    Dim_ data_dim,
+    Index_ num_points,
     const Float_* data,
     const knncolle::Builder<knncolle::SimpleMatrix<Dim_, Index_, Float_>, Float_>& builder,
     const Options& options) 
 {
-    auto index = builder.build_unique(knncolle::SimpleMatrix<Dim_, Index_, Float_>(rows, columns, data));
-    return initialize<ndim_>(*index, options);
+    auto index = builder.build_unique(knncolle::SimpleMatrix<Dim_, Index_, Float_>(data_dim, num_points, data));
+    return initialize<num_dim_>(*index, options);
 }
 
 }

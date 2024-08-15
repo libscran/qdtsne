@@ -42,7 +42,7 @@ namespace qdtsne {
 
 namespace internal {
 
-template<int ndim_, typename Float_>
+template<int num_dim_, typename Float_>
 class SPTree {
 public:
     SPTree(size_t npts, int maxdepth) : my_npts(npts), my_maxdepth(maxdepth), my_locations(my_npts) {
@@ -53,7 +53,7 @@ public:
 public:
     struct Node {
         Node(size_t i, const Float_* point) : index(i) {
-            std::copy_n(point, ndim_, center_of_mass.data());
+            std::copy_n(point, num_dim_, center_of_mass.data());
             fill();
             return;
         }
@@ -65,11 +65,11 @@ public:
         }
 
     public:
-        static constexpr int nchildren = (1 << ndim_); 
+        static constexpr int nchildren = (1 << num_dim_); 
 
         std::array<size_t, nchildren> children;
-        std::array<Float_, ndim_> midpoint, halfwidth;
-        std::array<Float_, ndim_> center_of_mass;
+        std::array<Float_, num_dim_> midpoint, halfwidth;
+        std::array<Float_, num_dim_> center_of_mass;
         Float_ max_width = 0;
 
         size_t number = 1;
@@ -83,8 +83,8 @@ public:
 
     private:
         void fill() {
-            std::fill_n(midpoint.begin(), ndim_, 0);
-            std::fill_n(halfwidth.begin(), ndim_, 0);
+            std::fill_n(midpoint.begin(), num_dim_, 0);
+            std::fill_n(halfwidth.begin(), num_dim_, 0);
             std::fill_n(children.begin(), nchildren, 0);
         }
     };
@@ -115,30 +115,30 @@ public:
             my_store[0].is_leaf = false;
             my_store[0].number = my_npts;
 
-            std::array<Float_, ndim_> min_Y{}, max_Y{};
-            std::fill_n(min_Y.begin(), ndim_, std::numeric_limits<Float_>::max());
-            std::fill_n(max_Y.begin(), ndim_, std::numeric_limits<Float_>::lowest());
+            std::array<Float_, num_dim_> min_Y{}, max_Y{};
+            std::fill_n(min_Y.begin(), num_dim_, std::numeric_limits<Float_>::max());
+            std::fill_n(max_Y.begin(), num_dim_, std::numeric_limits<Float_>::lowest());
 
             // Setting the initial midpoint to the center of mass of all points
             // so that the partitioning effectively divides up the points.
             auto& mean_Y = my_store[0].midpoint;
             auto copy = Y;
             for (size_t n = 0; n < my_npts; ++n) {
-                for (int d = 0; d < ndim_; ++d) {
+                for (int d = 0; d < num_dim_; ++d) {
                     auto curval = copy[d];
                     mean_Y[d] += curval;
                     min_Y[d] = std::min(min_Y[d], curval);
                     max_Y[d] = std::max(max_Y[d], curval);
                 }
-                copy += ndim_;
+                copy += num_dim_;
             }
 
-            for (int d = 0; d < ndim_; ++d) {
+            for (int d = 0; d < num_dim_; ++d) {
                 mean_Y[d] /= my_npts;
             }
 
             auto& halfwidth = my_store[0].halfwidth;
-            for (int d = 0; d < ndim_; ++d) {
+            for (int d = 0; d < num_dim_; ++d) {
                 auto mean = mean_Y[d];
                 halfwidth[d] = std::max(max_Y[d] - mean, mean - min_Y[d]) + static_cast<Float_>(1e-5);
             }
@@ -146,8 +146,8 @@ public:
 
         auto point = Y;
         my_first_assignment.resize(my_npts);
-        for (size_t i = 0; i < my_npts; ++i, point += ndim_) {
-            std::array<bool, ndim_> side;
+        for (size_t i = 0; i < my_npts; ++i, point += num_dim_) {
+            std::array<bool, num_dim_> side;
             size_t parent = 0;
 
             for (int depth = 1; depth <= my_maxdepth; ++depth) {
@@ -172,10 +172,10 @@ public:
                     // No need to update the center of mass because it's the same point.
                     int nsame = 0;
                     const auto& center = my_store[current_loc].center_of_mass;
-                    for (int d = 0; d < ndim_; ++d) {
+                    for (int d = 0; d < num_dim_; ++d) {
                         nsame += (center[d] == point[d]);
                     }
-                    if (nsame == ndim_) {
+                    if (nsame == num_dim_) {
                         ++(my_store[current_loc].number);
                         my_first_assignment[i] = my_store[current_loc].index;
                         break;
@@ -209,7 +209,7 @@ public:
                 const Float_ cum_size = node.number;
                 const Float_ mult1 = (cum_size - 1) / cum_size;
 
-                for (int d = 0; d < ndim_; ++d) {
+                for (int d = 0; d < num_dim_; ++d) {
                     node.center_of_mass[d] *= mult1;
                     node.center_of_mass[d] += point[d] / cum_size;
                 }
@@ -240,7 +240,7 @@ private:
     size_t find_child (size_t parent, const Float_* point, bool * side) const {
         int multiplier = 1;
         size_t child = 0;
-        for (int d = 0; d < ndim_; ++d) {
+        for (int d = 0; d < num_dim_; ++d) {
             side[d] = (point[d] >= my_store[parent].midpoint[d]);
             child += multiplier * side[d];
             multiplier *= 2;
@@ -251,7 +251,7 @@ private:
     void set_child_boundaries(size_t parent, size_t child, const bool* keep) {
         auto& current = my_store[child];
         auto& parental = my_store[parent];
-        for (int d = 0; d < ndim_; ++d) {
+        for (int d = 0; d < num_dim_; ++d) {
             current.halfwidth[d] = parental.halfwidth[d] / static_cast<Float_>(2);
             if (keep[d]) {
                 current.midpoint[d] = parental.midpoint[d] + current.halfwidth[d];
@@ -272,16 +272,16 @@ private:
      *** Non-edge force calculations ***
      ***********************************/
 private:
-    static Float_ compute_sqdist(const Float_* point, const std::array<Float_, ndim_>& center) {
+    static Float_ compute_sqdist(const Float_* point, const std::array<Float_, num_dim_>& center) {
         Float_ sqdist = 0;
-        for (int d = 0; d < ndim_; ++d) {
+        for (int d = 0; d < num_dim_; ++d) {
             Float_ delta = point[d] - center[d];
             sqdist += delta * delta;
         }
         return sqdist;
     }
 
-    static void add_non_edge_forces(const Float_* point, const std::array<Float_, ndim_>& center, Float_ sqdist, size_t count, Float_& result_sum, Float_* neg_f) {
+    static void add_non_edge_forces(const Float_* point, const std::array<Float_, num_dim_>& center, Float_ sqdist, size_t count, Float_& result_sum, Float_* neg_f) {
         const Float_ div = static_cast<Float_>(1) / (static_cast<Float_>(1) + sqdist);
         Float_ mult = count * div;
         result_sum += mult;
@@ -289,16 +289,16 @@ private:
 #ifdef _OPENMP
         #pragma omp simd
 #endif
-        for (int d = 0; d < ndim_; ++d) {
+        for (int d = 0; d < num_dim_; ++d) {
             neg_f[d] += mult * (point[d] - center[d]);
         }
     }
 
-    static void remove_self_from_center(const Float_* point, const std::array<Float_, ndim_>& center, Float_ count, std::array<Float_, ndim_>& temp) {
+    static void remove_self_from_center(const Float_* point, const std::array<Float_, num_dim_>& center, Float_ count, std::array<Float_, num_dim_>& temp) {
 #ifdef _OPENMP
         #pragma omp simd
 #endif
-        for (int d = 0; d < ndim_; ++d) { 
+        for (int d = 0; d < num_dim_; ++d) { 
             temp[d] = (center[d] * count - point[d]) / (count - 1);
         }
     }
@@ -306,9 +306,9 @@ private:
 public:
     Float_ compute_non_edge_forces(size_t index, Float_ theta, Float_* neg_f) const {
         Float_ result_sum = 0;
-        const Float_ * point = my_data + index * static_cast<size_t>(ndim_); // cast to avoid overflow.
+        const Float_ * point = my_data + index * static_cast<size_t>(num_dim_); // cast to avoid overflow.
         const auto& cur_children = my_store[0].children;
-        std::fill_n(neg_f, ndim_, 0);
+        std::fill_n(neg_f, num_dim_, 0);
 
         for (int i = 0; i < Node::nchildren; ++i) {
             if (cur_children[i]) {
@@ -323,7 +323,7 @@ private:
     Float_ compute_non_edge_forces(size_t index, const Float_* point, Float_ theta, Float_* neg_f, size_t position) const {
         const auto& node = my_store[position];
 
-        std::array<Float_, ndim_> temp;
+        std::array<Float_, num_dim_> temp;
         auto center = &(node.center_of_mass);
         size_t count = node.number;
 
@@ -366,7 +366,7 @@ private:
 public:
     struct LeafApproxWorkspace {
         std::vector<size_t> leaf_indices;
-        std::vector<std::array<Float_, ndim_> > leaf_neg_f;
+        std::vector<std::array<Float_, num_dim_> > leaf_neg_f;
         std::vector<Float_> leaf_sums;
     };
 
@@ -378,7 +378,7 @@ public:
         auto process_leaf_node = [&](size_t leaf) {
             Float_ result_sum = 0;
             auto neg_f = workspace.leaf_neg_f[leaf].data();
-            std::fill_n(neg_f, ndim_, 0);
+            std::fill_n(neg_f, num_dim_, 0);
 
             const auto& cur_children = my_store[0].children;
             for (int i = 0; i < Node::nchildren; ++i) {
@@ -445,8 +445,8 @@ public:
 
         const auto& node = my_store[node_loc];
         if (node.number != 1) {
-            const Float_ * point = my_data + index * static_cast<size_t>(ndim_); // cast to avoid overflow.
-            std::array<Float_, ndim_> temp;
+            const Float_ * point = my_data + index * static_cast<size_t>(num_dim_); // cast to avoid overflow.
+            std::array<Float_, num_dim_> temp;
             remove_self_from_center(point, node.center_of_mass, node.number, temp);
             Float_ sqdist = compute_sqdist(point, temp);
             add_non_edge_forces(point, temp, sqdist, node.number - 1, result_sum, neg_f);

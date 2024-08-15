@@ -41,19 +41,19 @@ inline int perplexity_to_k(double perplexity) {
  * We do so using our own implementation of the Box-Muller transform,
  * to avoid problems with differences in the distribution functions across C++ standard library implementations.
  *
- * @tparam ndim_ Number of embedding dimensions.
+ * @tparam num_dim_ Number of embedding dimensions.
  * @tparam Float_ Floating-point type to use for the calculations.
  *
- * @param[out] Y Pointer to a 2D array with number of rows and columns equal to `ndim` and N`, respectively.
+ * @param[out] Y Pointer to a 2D array with number of rows and columns equal to `num_dim` and N`, respectively.
  * On output, `Y` is filled with random draws from a standard normal distribution. 
  * @param N Number of observations.
  * @param seed Seed for the random number generator.
  */
-template<int ndim_, typename Float_ = double>
+template<int num_dim_, typename Float_ = double>
 void initialize_random(Float_* Y, size_t N, int seed = 42) {
     std::mt19937_64 rng(seed);
 
-    size_t total = N * ndim_;
+    size_t total = N * num_dim_;
     bool odd = total % 2;
     if (odd) {
         --total;
@@ -78,18 +78,18 @@ void initialize_random(Float_* Y, size_t N, int seed = 42) {
 /**
  * Creates the initial locations of each observation in the embedding. 
  *
- * @tparam ndim_ Number of embedding dimensions.
+ * @tparam num_dim_ Number of embedding dimensions.
  * @tparam Float_ Floating-point type to use for the calculations.
  *
  * @param N Number of observations.
  * @param seed Seed for the random number generator.
  *
- * @return A vector of length `N * ndim_` containing random draws from a standard normal distribution. 
+ * @return A vector of length `N * num_dim_` containing random draws from a standard normal distribution. 
  */
-template<int ndim_, typename Float_ = double>
+template<int num_dim_, typename Float_ = double>
 std::vector<Float_> initialize_random(size_t N, int seed = 42) {
-    std::vector<Float_> Y(ndim_ * N);
-    initialize_random<ndim_>(Y.data(), N, seed);
+    std::vector<Float_> Y(num_dim_ * N);
+    initialize_random<num_dim_>(Y.data(), N, seed);
     return Y;
 }
 

@@ -53,14 +53,14 @@ namespace qdtsne {
 /**
  * @brief Current status of the t-SNE iterations.
  *
- * @tparam ndim_ Number of dimensions in the t-SNE embedding.
+ * @tparam num_dim_ Number of dimensions in the t-SNE embedding.
  * @tparam Index_ Integer type for the neighbor indices.
  * @tparam Float_ Floating-point type for the distances.
  *
  * This class holds the precomputed structures required to perform the t-SNE iterations.
  * Instances should not be constructed directly but instead created by `initialize()`.
  */
-template<int ndim_, typename Index_, typename Float_> 
+template<int num_dim_, typename Index_, typename Float_> 
 class Status {
 public:
     /**
@@ -68,11 +68,11 @@ public:
      */
     Status(NeighborList<Index_, Float_> neighbors, Options options) :
         my_neighbors(std::move(neighbors)),
-        my_dY(my_neighbors.size() * ndim_), 
-        my_uY(my_neighbors.size() * ndim_), 
-        my_gains(my_neighbors.size() * ndim_, 1.0), 
-        my_pos_f(my_neighbors.size() * ndim_), 
-        my_neg_f(my_neighbors.size() * ndim_), 
+        my_dY(my_neighbors.size() * num_dim_), 
+        my_uY(my_neighbors.size() * num_dim_), 
+        my_gains(my_neighbors.size() * num_dim_, 1.0), 
+        my_pos_f(my_neighbors.size() * num_dim_), 
+        my_neg_f(my_neighbors.size() * num_dim_), 
         my_tree(my_neighbors.size(), options.max_depth),
         my_options(std::move(options))
     {
@@ -88,7 +88,7 @@ private:
     NeighborList<Index_, Float_> my_neighbors; 
     std::vector<Float_> my_dY, my_uY, my_gains, my_pos_f, my_neg_f;
 
-    internal::SPTree<ndim_, Float_> my_tree;
+    internal::SPTree<num_dim_, Float_> my_tree;
     std::vector<Float_> my_parallel_buffer; // Buffer to hold parallel-computed results prior to reduction.
 
     Options my_options;
@@ -136,7 +136,7 @@ public:
      * Run the algorithm to the specified number of iterations.
      * This can be invoked repeatedly with increasing `limit` to run the algorithm incrementally.
      *
-     * @param[in, out] Y Pointer to a array containing a column-major matrix with number of rows and columns equal to `ndim_` and `num_observations()`, respectively.
+     * @param[in, out] Y Pointer to a array containing a column-major matrix with number of rows and columns equal to `num_dim_` and `num_observations()`, respectively.
      * Each row corresponds to a dimension of the embedding while each column corresponds to an observation.
      * On input, this should contain the initial location of each observation; on output, it is updated to the t-SNE location at the specified number of iterations.
      * @param limit Number of iterations to run up to.
@@ -165,7 +165,7 @@ public:
      * If `run()` has already been invoked with an iteration limit, this method will only perform the remaining iterations required for `iteration()` to reach `max_iter()`.
      * If `iteration()` is already greater than `max_iter()`, this method is a no-op.
      *
-     * @param[in, out] Y Pointer to a array containing a column-major matrix with number of rows and columns equal to `ndim_` and `num_observations()`, respectively.
+     * @param[in, out] Y Pointer to a array containing a column-major matrix with number of rows and columns equal to `num_dim_` and `num_observations()`, respectively.
      * Each row corresponds to a dimension of the embedding while each column corresponds to an observation.
      * On input, this should contain the initial location of each observation; on output, it is updated to the t-SNE location at the specified number of iterations.
      */
@@ -207,18 +207,18 @@ private:
 
         // Make solution zero-mean
         size_t N = num_observations();
-        for (int d = 0; d < ndim_; ++d) {
+        for (int d = 0; d < num_dim_; ++d) {
             auto start = Y + d;
 
             // Compute means from column-major coordinates.
             Float_ sum = 0;
-            for (size_t i = 0; i < N; ++i, start += ndim_) {
+            for (size_t i = 0; i < N; ++i, start += num_dim_) {
                 sum += *start;
             }
             sum /= N;
 
             start = Y + d;
-            for (size_t i = 0; i < N; ++i, start += ndim_) {
+            for (size_t i = 0; i < N; ++i, start += num_dim_) {
                 *start -= sum;
             }
         }
@@ -237,7 +237,7 @@ private:
         Float_ sum_Q = compute_non_edge_forces();
 
         // Compute final t-SNE gradient
-        size_t ntotal = N * static_cast<size_t>(ndim_);
+        size_t ntotal = N * static_cast<size_t>(num_dim_);
         for (size_t i = 0; i < ntotal; ++i) {
             my_dY[i] = my_pos_f[i] - (my_neg_f[i] / sum_Q);
         }
@@ -262,20 +262,20 @@ private:
 #endif
 
                 const auto& current = my_neighbors[n];
-                size_t offset = n * static_cast<size_t>(ndim_); // cast to avoid overflow.
+                size_t offset = n * static_cast<size_t>(num_dim_); // cast to avoid overflow.
                 const Float_* self = Y + offset;
                 Float_* pos_out = my_pos_f.data() + offset;
 
                 for (const auto& x : current) {
                     Float_ sqdist = 0; 
-                    const Float_* neighbor = Y + static_cast<size_t>(x.first) * ndim_; // cast to avoid overflow.
-                    for (int d = 0; d < ndim_; ++d) {
+                    const Float_* neighbor = Y + static_cast<size_t>(x.first) * num_dim_; // cast to avoid overflow.
+                    for (int d = 0; d < num_dim_; ++d) {
                         Float_ delta = self[d] - neighbor[d];
                         sqdist += delta * delta;
                     }
 
                     const Float_ mult = multiplier * x.second / (static_cast<Float_>(1) + sqdist);
-                    for (int d = 0; d < ndim_; ++d) {
+                    for (int d = 0; d < num_dim_; ++d) {
                         pos_out[d] += mult * (self[d] - neighbor[d]);
                     }
                 }
@@ -317,7 +317,7 @@ private:
                 for (size_t n = first_; n < last_; ++n) {
 #endif                
 
-                    auto neg_ptr = my_neg_f.data() + n * static_cast<size_t>(ndim_); // cast to avoid overflow.
+                    auto neg_ptr = my_neg_f.data() + n * static_cast<size_t>(num_dim_); // cast to avoid overflow.
                     if (my_options.leaf_approximation) {
                         my_parallel_buffer[n] = my_tree.compute_non_edge_forces_from_leaves(n, neg_ptr, my_leaf_workspace);
                     } else {
@@ -338,7 +338,7 @@ private:
 
         Float_ sum_Q = 0;
         for (size_t n = 0; n < N; ++n) {
-            auto neg_ptr = my_neg_f.data() + n * static_cast<size_t>(ndim_); // cast to avoid overflow.
+            auto neg_ptr = my_neg_f.data() + n * static_cast<size_t>(num_dim_); // cast to avoid overflow.
             if (my_options.leaf_approximation) {
                 sum_Q += my_tree.compute_non_edge_forces_from_leaves(n, neg_ptr, my_leaf_workspace);
             } else {

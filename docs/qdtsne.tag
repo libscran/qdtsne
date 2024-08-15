@@ -221,8 +221,8 @@
       <type>void</type>
       <name>initialize_random</name>
       <anchorfile>namespaceqdtsne.html</anchorfile>
-      <anchor>adfa23db003429e87a9cd0721aa053a9b</anchor>
-      <arglist>(Float_ *Y, size_t N, int seed=42)</arglist>
+      <anchor>a916236f6f1d1f805b1e68f2a11ae4296</anchor>
+      <arglist>(Float_ *Y, size_t num_points, int seed=42)</arglist>
     </member>
     <member kind="function">
       <type>std::vector&lt; Float_ &gt;</type>

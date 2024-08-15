@@ -74,6 +74,15 @@ This eliminates near-redundant searches through the tree for each point $i$, wit
 We call this approach the "leaf approximation", which is enabled through the `leaf_approximation` parameter.
 Note that this only has an effect in `max_depth`-bounded trees where multiple points are assigned to a leaf node.
 
+Some testing indicates that both approximations can significantly speed up calculation of the embeddings.
+Timings are shown below in seconds, based on a mock dataset containing 50,000 points (see [`tests/R/examples/basic.R`](tests/R/examples/basic.R) for details).
+
+|Strategy|Serial|Parallel (OpenMP, n = 4)|
+|----|----|---|
+|Default|136|42| 
+|`max_depth = 7`|85|26| 
+|`max_depth = 7`, `leaf_approximation = true`|46|16| 
+
 ## Building projects
 
 ### CMake with `FetchContent`

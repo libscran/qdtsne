@@ -21,6 +21,7 @@ Rcpp::NumericMatrix run_tsne(
     opt.stop_lying_iter = lie_iter;
     opt.mom_switch_iter = mom_iter;
     opt.leaf_approximation = leaf_approx;
+    opt.num_threads = num_threads;
 
     int nr = indices.nrow(), nc = indices.ncol();
     qdtsne::NeighborList<int, double> neighbors(nc);

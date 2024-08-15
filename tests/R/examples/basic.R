@@ -15,3 +15,7 @@ par(mfrow=c(1,3))
 plot(ref[,1], ref[,2], col=chosen, main="No approximation")
 plot(maxd[,1], maxd[,2], col=chosen, main="Maximum depth")
 plot(leaf[,1], leaf[,2], col=chosen, main="Leaf approximation")
+
+system.time(ref <- runTsne(res$index, res$distance, init=init, num.threads=4))
+system.time(maxd <- runTsne(res$index, res$distance, init=init, max.depth=7, num.threads=4))
+system.time(leaf <- runTsne(res$index, res$distance, init=init, max.depth=7, leaf.approx=TRUE, num.threads=4))

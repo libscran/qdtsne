@@ -1,6 +1,8 @@
 *.o
 *.swp
 *.so
+*.Rout
+*.pdf
 build/
 docs/html
 docs/latex

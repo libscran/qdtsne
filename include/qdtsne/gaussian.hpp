@@ -117,11 +117,11 @@ void compute_gaussian_perplexity(NeighborList<Index_, Float_>& neighbors, Float_
                             if (max_beta == max_value) {
                                 beta *= static_cast<Float_>(2);
                             } else {
-                                beta = (beta + max_beta) / static_cast<Float_>(2);
+                                beta += (max_beta - beta) / static_cast<Float_>(2); // i.e., midpoint that avoids problems with potential overflow.
                             }
                         } else {
                             max_beta = beta;
-                            beta = (beta + min_beta) / static_cast<Float_>(2);
+                            beta += (min_beta - beta) / static_cast<Float_>(2); // i.e., midpoint that avoids problems with potential overflow.
                         }
                     }
 

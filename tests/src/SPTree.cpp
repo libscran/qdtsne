@@ -430,6 +430,21 @@ TEST_P(SPTreeLeafApproxTest, CheckTree) {
             EXPECT_FLOAT_EQ(no_theta, ref);
         }
     }
+
+    // Same results with parallelization.
+    {
+        decltype(tree)::LeafApproxWorkspace workspace1, workspace3;
+        tree.compute_non_edge_forces_for_leaves(1, workspace1, 1);
+        tree.compute_non_edge_forces_for_leaves(1, workspace3, 3);
+
+        for (size_t n = 0; n < N; ++n) {
+            std::array<double, 2> ref, par;
+            auto refsum = tree.compute_non_edge_forces_from_leaves(n, ref.data(), workspace1);
+            auto parsum = tree.compute_non_edge_forces_from_leaves(n, par.data(), workspace3);
+            EXPECT_EQ(par, ref);
+            EXPECT_EQ(parsum, refsum);
+        }
+    }
 }
 
 INSTANTIATE_TEST_SUITE_P(

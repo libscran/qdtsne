@@ -365,6 +365,7 @@ private:
      *************************************************************/
 public:
     struct LeafApproxWorkspace {
+        std::vector<size_t> leaf_indices;
         std::vector<std::array<Float_, ndim_> > leaf_neg_f;
         std::vector<Float_> leaf_sums;
     };
@@ -374,40 +375,66 @@ public:
         workspace.leaf_neg_f.resize(nnodes);
         workspace.leaf_sums.resize(nnodes);
 
+        auto process_leaf_node = [&](size_t leaf) {
+            Float_ result_sum = 0;
+            auto neg_f = workspace.leaf_neg_f[leaf].data();
+            std::fill_n(neg_f, ndim_, 0);
+
+            const auto& cur_children = my_store[0].children;
+            for (int i = 0; i < Node::nchildren; ++i) {
+                if (cur_children[i] && cur_children[i] != leaf) {
+                    result_sum += compute_non_edge_forces_for_leaves(leaf, theta, neg_f, cur_children[i]);
+                }
+            }
+
+            workspace.leaf_sums[leaf] = result_sum;
+        };
+
+        if (num_threads == 1) {
+            for (size_t n = 0; n < nnodes; ++n) {
+                if (my_store[n].is_leaf) {
+                    process_leaf_node(n);
+                }
+            }
+
+        } else {
+            // Identifying the indices of leaf nods so that the processing is
+            // more balanced between threads, otherwise the last thread is
+            // going to have to process all the leaf nodes.
+            workspace.leaf_indices.clear();
+            workspace.leaf_indices.reserve(nnodes);
+            for (size_t n = 0; n < nnodes; ++n) {
+                if (my_store[n].is_leaf) {
+                    workspace.leaf_indices.push_back(n);
+                }
+            }
+
+            size_t nleaves = workspace.leaf_indices.size();
+
 #ifndef QDTSNE_CUSTOM_PARALLEL
 #ifdef _OPENMP
-        #pragma omp parallel num_threads(num_threads)
+            #pragma omp parallel num_threads(num_threads)
 #endif
-        {
+            {
 #ifdef _OPENMP
-            #pragma omp for
+                #pragma omp for
 #endif
-            for (size_t n = 0; n < nnodes; ++n) {
+                for (size_t n = 0; n < nleaves; ++n) {
 #else
-        QDTSNE_CUSTOM_PARALLEL(nnodes, [&](size_t first_, size_t last_) -> void {
-            for (size_t n = first_; n < last_; ++n) {
+            QDTSNE_CUSTOM_PARALLEL(nleaves, [&](size_t first_, size_t last_) -> void {
+                for (size_t n = first_; n < last_; ++n) {
 #endif                
 
-                Float_ result_sum = 0;
-                const auto& cur_children = my_store[0].children;
-                auto neg_f = workspace.leaf_neg_f[n].data();
-                std::fill_n(neg_f, ndim_, 0);
-
-                for (int i = 0; i < Node::nchildren; ++i) {
-                    if (cur_children[i] && cur_children[i] != n) {
-                        result_sum += compute_non_edge_forces_for_leaves(n, theta, neg_f, cur_children[i]);
-                    }
-                }
-
-                workspace.leaf_sums[n] = result_sum;
+                    process_leaf_node(workspace.leaf_indices[n]);
 
 #ifndef QDTSNE_CUSTOM_PARALLEL
+                }
             }
-        }
 #else
-            }
-        }, num_threads);
+                }
+            }, num_threads);
 #endif
+        }
     }
 
     Float_ compute_non_edge_forces_from_leaves(size_t index, Float_* neg_f, const LeafApproxWorkspace& workspace) const {

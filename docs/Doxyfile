@@ -917,7 +917,11 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = ../include/qdtsne \
+INPUT                  = ../include/qdtsne/qdtsne.hpp \
+                         ../include/qdtsne/Options.hpp \
+                         ../include/qdtsne/Status.hpp \
+                         ../include/qdtsne/initialize.hpp \
+                         ../include/qdtsne/utils.hpp \
                          ../README.md
 
 # This tag can be used to specify the character encoding of the source files
@@ -2370,13 +2374,13 @@ SKIP_FUNCTION_MACROS   = YES
 # the path). If a tag file is not located in the directory in which doxygen is
 # run, you must also specify the path to the tagfile here.
 
-TAGFILES               =
+TAGFILES               = knncolle.tag=https://knncolle.github.io/knncolle/
 
 # When a file name is specified after GENERATE_TAGFILE, doxygen will create a
 # tag file that is based on the input files it reads. See section "Linking to
 # external documentation" for more information about the usage of tag files.
 
-GENERATE_TAGFILE       =
+GENERATE_TAGFILE       = html/qdtsne.tag
 
 # If the ALLEXTERNALS tag is set to YES, all external class will be listed in
 # the class index. If set to NO, only the inherited external classes will be

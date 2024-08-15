@@ -45,13 +45,13 @@
 
 /**
  * @file Status.hpp
- * @brief Status of the t-SNE algorithm.
+ * @brief Status of the t-SNE iterations.
  */
 
 namespace qdtsne {
 
 /**
- * @brief Current status of the t-SNE iterations.
+ * @brief Status of the t-SNE iterations.
  *
  * @tparam num_dim_ Number of dimensions in the t-SNE embedding.
  * @tparam Index_ Integer type for the neighbor indices.

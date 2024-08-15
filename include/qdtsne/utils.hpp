@@ -27,7 +27,7 @@ using NeighborList = std::vector<std::vector<std::pair<Index_, Float_> > >;
 
 /**
  * Determines the appropriate number of neighbors, given a perplexity value.
- * Useful when the neighbor search is conducted outside of the `Tsne` class.
+ * Useful when the neighbor search is conducted outside of `initialize()`.
  *
  * @param perplexity Perplexity to use in the t-SNE algorithm.
  * @return Number of nearest neighbors to find.
@@ -44,16 +44,16 @@ inline int perplexity_to_k(double perplexity) {
  * @tparam num_dim_ Number of embedding dimensions.
  * @tparam Float_ Floating-point type to use for the calculations.
  *
- * @param[out] Y Pointer to a 2D array with number of rows and columns equal to `num_dim` and N`, respectively.
+ * @param[out] Y Pointer to a 2D array with number of rows and columns equal to `num_dim` and `num_points`, respectively.
  * On output, `Y` is filled with random draws from a standard normal distribution. 
- * @param N Number of observations.
+ * @param num_points Number of points in the embedding.
  * @param seed Seed for the random number generator.
  */
 template<int num_dim_, typename Float_ = double>
-void initialize_random(Float_* Y, size_t N, int seed = 42) {
+void initialize_random(Float_* Y, size_t num_points, int seed = 42) {
     std::mt19937_64 rng(seed);
 
-    size_t total = N * num_dim_;
+    size_t total = num_points * num_dim_;
     bool odd = total % 2;
     if (odd) {
         --total;
@@ -81,15 +81,15 @@ void initialize_random(Float_* Y, size_t N, int seed = 42) {
  * @tparam num_dim_ Number of embedding dimensions.
  * @tparam Float_ Floating-point type to use for the calculations.
  *
- * @param N Number of observations.
+ * @param num_points Number of observations.
  * @param seed Seed for the random number generator.
  *
- * @return A vector of length `N * num_dim_` containing random draws from a standard normal distribution. 
+ * @return A vector of length `num_points * num_dim_` containing random draws from a standard normal distribution. 
  */
 template<int num_dim_, typename Float_ = double>
-std::vector<Float_> initialize_random(size_t N, int seed = 42) {
-    std::vector<Float_> Y(num_dim_ * N);
-    initialize_random<num_dim_>(Y.data(), N, seed);
+std::vector<Float_> initialize_random(size_t num_points, int seed = 42) {
+    std::vector<Float_> Y(num_dim_ * num_points);
+    initialize_random<num_dim_>(Y.data(), num_points, seed);
     return Y;
 }
 

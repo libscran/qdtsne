@@ -3,14 +3,13 @@
 
 /**
  * @file Options.hpp
- *
  * @brief Options for the t-SNE algorithm.
  */
 
 namespace qdtsne {
 
 /**
- * @param Options for `initialize()`.
+ * @brief Options for `initialize()`.
  */
 struct Options {
     /**

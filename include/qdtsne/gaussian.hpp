@@ -95,11 +95,11 @@ void compute_gaussian_perplexity(NeighborList<Index_, Float_>& neighbors, Float_
 
                     // Attempt a Newton-Raphson search first. Note to self: derivative was a bit
                     // painful but pops out nicely enough, use R's D() to prove it to yourself
-                    // in the simple case of K = 2:
-                    // > D(expression((b*c*exp(-b*c) + b*d*exp(-b*d)) / (exp(-b*c) + exp(-b*d)) + log(exp(-b*c) + exp(-b*d))), name="b")
+                    // in the simple case of K = 2 where d0, d1 are the squared deltas.
+                    // > D(expression(b * (d0 * exp(- b * d0) + d1 * exp(- b * d1)) / (exp(-b*d0) + exp(-b*d1)) + log(exp(-b*d0) + exp(-b*d1))), name="b")
                     bool nr_ok = false;
 #ifndef QDTSNE_BETA_BINARY_SEARCH_ONLY
-                    const Float_ prod2 = std::inner_product(quad_delta_dist.begin() + 1, quad_delta_dist.end(), output.begin() + 1, static_cast<Float_>(0));
+                    const Float_ prod2 = std::inner_product(quad_delta_dist.begin() + 1, quad_delta_dist.end(), output.begin() + 1, static_cast<Float_>(0)); // again, skipping first where delta^2 = 0.
                     const Float_ d1 = - beta / sum_P * (prod2 - prod * prod / sum_P);
                     if (d1) {
                         const Float_ alt_beta = beta - (diff / d1); // if it overflows, we should get Inf or -Inf, so the following comparison should be fine.

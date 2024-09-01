@@ -22,7 +22,7 @@ option(QDTSNE_FETCH_EXTERN "Automatically fetch qdtsne's external dependencies."
 if(QDTSNE_FETCH_EXTERN)
     add_subdirectory(extern)
 else()
-    find_package(knncolle_knncolle 2.0.0 CONFIG REQUIRED)
+    find_package(knncolle_knncolle 2.3.0 CONFIG REQUIRED)
     find_package(ltla_aarand 1.0.0 CONFIG REQUIRED)
     find_package(ltla_subpar 0.3.1 CONFIG REQUIRED)
 endif()

@@ -101,7 +101,9 @@ struct Options {
     bool leaf_approximation = false;
 
     /**
-     * Number of threads to use, see `parallelize()` for more details.
+     * Number of threads to use.
+     * The parallelization scheme is determined by `parallelize()` for most calculations.
+     * The exception is the nearest-neighbor search in some of the `initialize()` overloads, where the scheme is determined by `knncolle::parallelize()` instead.
      */
     int num_threads = 1;
 };

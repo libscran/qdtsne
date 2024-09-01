@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "aarand/aarand.hpp"
+#include "knncolle/knncolle.hpp"
 
 #ifndef QDTSNE_CUSTOM_PARALLEL
 #include "subpar/subpar.hpp"
@@ -20,14 +21,18 @@
 namespace qdtsne {
 
 /**
- * A vector of length equal to the number of observations,
- * where each entry contains the indices of and distances to that observation's nearest neighbors.
+ * @brief Lists of neighbors for each observation.
+ *
+ * This is a convenient alias for the `knncolle::NeighborList` class.
+ * Each inner vector corresponds to an observation and contains the list of nearest neighbors for that observation, sorted by increasing distance.
+ * Neighbors for each observation should be unique - there should be no more than one occurrence of each index in each inner vector.
+ * Also, the inner vector for observation `i` should not contain any `Neighbor` with index `i`.
  *
  * @tparam Index_ Integer type to use for the indices.
  * @tparam Float_ Floating-point type to use for the calculations.
  */
 template<typename Index_, typename Float_>
-using NeighborList = std::vector<std::vector<std::pair<Index_, Float_> > >;
+using NeighborList = knncolle::NeighborList<Index_, Float_>;
 
 /**
  * Determines the appropriate number of neighbors, given a perplexity value.

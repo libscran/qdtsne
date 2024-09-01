@@ -114,22 +114,7 @@ Status<num_dim_, Index_, Float_> initialize(const knncolle::Prebuilt<Dim_, Index
         throw std::runtime_error("number of observations should be greater than 3 * perplexity");
     }
 
-    NeighborList<Index_, Float_> neighbors(N);
-
-    parallelize(options.num_threads, N, [&](int, size_t start, size_t length) {
-        std::vector<Index_> indices;
-        std::vector<Float_> distances;
-        auto searcher = prebuilt.initialize();
-
-        for (size_t i = start, end = start + length; i < end; ++i) {
-            searcher->search(i, K, &indices, &distances);
-            size_t actual_k = indices.size();
-            for (size_t x = 0; x < actual_k; ++x) {
-                neighbors[i].emplace_back(indices[x], distances[x]);
-            }
-        }
-    });
-
+    auto neighbors = find_nearest_neighbors(prebuilt, K, options.num_threads);
     return internal::initialize<num_dim_>(std::move(neighbors), options.perplexity, options);
 }
 

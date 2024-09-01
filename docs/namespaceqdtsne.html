@@ -123,6 +123,9 @@ Functions</h2></td></tr>
 <tr class="memitem:aca9df1b3ededa7ddc62d3cfa0225341c" id="r_aca9df1b3ededa7ddc62d3cfa0225341c"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="classqdtsne_1_1Status.html">int</a> num_dim_, <a class="el" href="classqdtsne_1_1Status.html">typename</a> <a class="el" href="classqdtsne_1_1Status.html">Float_</a>  = double&gt; </td></tr>
 <tr class="memitem:aca9df1b3ededa7ddc62d3cfa0225341c"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classqdtsne_1_1Status.html">Float_</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceqdtsne.html#aca9df1b3ededa7ddc62d3cfa0225341c">initialize_random</a> (<a class="el" href="classqdtsne_1_1Status.html">size_t</a> <a class="el" href="classqdtsne_1_1Status.html">num_points</a>, <a class="el" href="classqdtsne_1_1Status.html">int</a> <a class="el" href="classqdtsne_1_1Status.html">seed</a>=42)</td></tr>
 <tr class="separator:aca9df1b3ededa7ddc62d3cfa0225341c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfd3b53975731fd9df83eac1cc99fada" id="r_abfd3b53975731fd9df83eac1cc99fada"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="classqdtsne_1_1Status.html">typename</a> <a class="el" href="classqdtsne_1_1Status.html">Task_</a> , <a class="el" href="classqdtsne_1_1Status.html">class</a> <a class="el" href="classqdtsne_1_1Status.html">Run_</a> &gt; </td></tr>
+<tr class="memitem:abfd3b53975731fd9df83eac1cc99fada"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classqdtsne_1_1Status.html">void</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceqdtsne.html#abfd3b53975731fd9df83eac1cc99fada">parallelize</a> (<a class="el" href="classqdtsne_1_1Status.html">int</a> <a class="el" href="classqdtsne_1_1Status.html">num_workers</a>, <a class="el" href="classqdtsne_1_1Status.html">Task_</a> <a class="el" href="classqdtsne_1_1Status.html">num_tasks</a>, <a class="el" href="classqdtsne_1_1Status.html">Run_</a> <a class="el" href="classqdtsne_1_1Status.html">run_task_range</a>)</td></tr>
+<tr class="separator:abfd3b53975731fd9df83eac1cc99fada"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Quick and dirty t-SNE. </p>
@@ -411,6 +414,58 @@ template&lt;<a class="el" href="classqdtsne_1_1Status.html">int</a> num_dim_, <a
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A vector of length <code>num_points * num_dim_</code> containing random draws from a standard normal distribution. </dd></dl>
+
+</div>
+</div>
+<a id="abfd3b53975731fd9df83eac1cc99fada" name="abfd3b53975731fd9df83eac1cc99fada"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfd3b53975731fd9df83eac1cc99fada">&#9670;&#160;</a></span>parallelize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;<a class="el" href="classqdtsne_1_1Status.html">typename</a> <a class="el" href="classqdtsne_1_1Status.html">Task_</a> , <a class="el" href="classqdtsne_1_1Status.html">class</a> <a class="el" href="classqdtsne_1_1Status.html">Run_</a> &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classqdtsne_1_1Status.html">void</a> qdtsne::parallelize </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classqdtsne_1_1Status.html">int</a>&#160;</td>
+          <td class="paramname"><em>num_workers</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classqdtsne_1_1Status.html">Task_</a>&#160;</td>
+          <td class="paramname"><em>num_tasks</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classqdtsne_1_1Status.html">Run_</a>&#160;</td>
+          <td class="paramname"><em>run_task_range</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Task_</td><td>Integer type for the number of tasks. </td></tr>
+    <tr><td class="paramname">Run_</td><td>Function to execute a range of tasks.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">num_workers</td><td>Number of workers. </td></tr>
+    <tr><td class="paramname">num_tasks</td><td>Number of tasks. </td></tr>
+    <tr><td class="paramname">run_task_range</td><td>Function to iterate over a range of tasks within a worker.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>By default, this is an alias to <code><a class="elRef" href="https://ltla.github.io/subpar/namespacesubpar.html#a9c64cc17f4f8d1fadbba6d25053a8dbe">subpar::parallelize_range()</a></code>. However, if the <code>QDTSNE_CUSTOM_PARALLEL</code> function-like macro is defined, it is called instead. Any user-defined macro should accept the same arguments as <code><a class="elRef" href="https://ltla.github.io/subpar/namespacesubpar.html#a9c64cc17f4f8d1fadbba6d25053a8dbe">subpar::parallelize_range()</a></code>. </p>
 
 </div>
 </div>

@@ -292,112 +292,72 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>        std::fill(my_pos_f.begin(), my_pos_f.end(), 0);</div>
 <div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>        <span class="keywordtype">size_t</span> N = <a class="code hl_function" href="classqdtsne_1_1Status.html#ae4090be4f7e29149a6bf9c420d8e8b14">num_observations</a>();</div>
 <div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span> </div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span><span class="preprocessor">#ifndef QDTSNE_CUSTOM_PARALLEL</span></div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span><span class="preprocessor">#ifdef _OPENMP</span></div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span><span class="preprocessor">        #pragma omp parallel num_threads(my_options.num_threads)</span></div>
-<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>        {</div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span><span class="preprocessor">#ifdef _OPENMP</span></div>
-<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span><span class="preprocessor">            #pragma omp for </span></div>
-<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> n = 0; n &lt; N; ++n) {</div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>        QDTSNE_CUSTOM_PARALLEL(N, [&amp;](<span class="keywordtype">size_t</span> first_, <span class="keywordtype">size_t</span> last_) -&gt; <span class="keywordtype">void</span> {</div>
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>            <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> n = first_; n &lt; last_; ++n) {</div>
-<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span> </div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>                <span class="keyword">const</span> <span class="keyword">auto</span>&amp; current = my_neighbors[n];</div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>                <span class="keywordtype">size_t</span> offset = n * <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(num_dim_); <span class="comment">// cast to avoid overflow.</span></div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>                <span class="keyword">const</span> Float_* self = Y + offset;</div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>                Float_* pos_out = my_pos_f.data() + offset;</div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span> </div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>                <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; x : current) {</div>
-<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>                    Float_ sqdist = 0; </div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>                    <span class="keyword">const</span> Float_* neighbor = Y + <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(x.first) * num_dim_; <span class="comment">// cast to avoid overflow.</span></div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>                    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> d = 0; d &lt; num_dim_; ++d) {</div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>                        Float_ delta = self[d] - neighbor[d];</div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>                        sqdist += delta * delta;</div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>                    }</div>
-<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span> </div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>                    <span class="keyword">const</span> Float_ mult = multiplier * x.second / (<span class="keyword">static_cast&lt;</span>Float_<span class="keyword">&gt;</span>(1) + sqdist);</div>
-<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>                    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> d = 0; d &lt; num_dim_; ++d) {</div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>                        pos_out[d] += mult * (self[d] - neighbor[d]);</div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>                    }</div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>                }</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>        <a class="code hl_function" href="namespaceqdtsne.html#abfd3b53975731fd9df83eac1cc99fada">parallelize</a>(my_options.<a class="code hl_variable" href="structqdtsne_1_1Options.html#abf708aa5e462b8b3038fcaef2711cbb0">num_threads</a>, N, [&amp;](<span class="keywordtype">int</span>, <span class="keywordtype">size_t</span> start, <span class="keywordtype">size_t</span> length) -&gt; <span class="keywordtype">void</span> {</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>            for (size_t n = start, end = start + length; n &lt; end; ++n) {</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>                const auto&amp; current = my_neighbors[n];</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>                size_t offset = n * static_cast&lt;size_t&gt;(num_dim_); <span class="comment">// cast to avoid overflow.</span></div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>                const Float_* self = Y + offset;</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>                Float_* pos_out = my_pos_f.data() + offset;</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span> </div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>                for (const auto&amp; x : current) {</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>                    Float_ sqdist = 0; </div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>                    const Float_* neighbor = Y + static_cast&lt;size_t&gt;(x.first) * num_dim_; <span class="comment">// cast to avoid overflow.</span></div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>                    for (int d = 0; d &lt; num_dim_; ++d) {</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>                        Float_ delta = self[d] - neighbor[d];</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>                        sqdist += delta * delta;</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>                    }</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span> </div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>                    const Float_ mult = multiplier * x.second / (static_cast&lt;Float_&gt;(1) + sqdist);</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>                    for (int d = 0; d &lt; num_dim_; ++d) {</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>                        pos_out[d] += mult * (self[d] - neighbor[d]);</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>                    }</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>                }</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>            }</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>        });</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span> </div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    }</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span> </div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    Float_ compute_non_edge_forces() {</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>        <span class="keywordtype">size_t</span> N = num_observations();</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span> </div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>        <span class="keywordflow">if</span> (my_options.<a class="code hl_variable" href="structqdtsne_1_1Options.html#a69b189230017a5574b41d2cac7780656">leaf_approximation</a>) {</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>            my_tree.compute_non_edge_forces_for_leaves(my_options.<a class="code hl_variable" href="structqdtsne_1_1Options.html#ac69fb8679d8fe13ee31e5e06d7425cc6">theta</a>, my_leaf_workspace, my_options.<a class="code hl_variable" href="structqdtsne_1_1Options.html#abf708aa5e462b8b3038fcaef2711cbb0">num_threads</a>);</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>        }</div>
 <div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span> </div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span><span class="preprocessor">#ifndef QDTSNE_CUSTOM_PARALLEL</span></div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>            }</div>
-<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>        }</div>
-<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>            }</div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>        }, my_options.<a class="code hl_variable" href="structqdtsne_1_1Options.html#abf708aa5e462b8b3038fcaef2711cbb0">num_threads</a>);</div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span> </div>
-<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>        <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>    }</div>
-<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span> </div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>    Float_ compute_non_edge_forces() {</div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>        <span class="keywordtype">size_t</span> N = <a class="code hl_function" href="classqdtsne_1_1Status.html#ae4090be4f7e29149a6bf9c420d8e8b14">num_observations</a>();</div>
-<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span> </div>
-<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>        <span class="keywordflow">if</span> (my_options.<a class="code hl_variable" href="structqdtsne_1_1Options.html#a69b189230017a5574b41d2cac7780656">leaf_approximation</a>) {</div>
-<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>            my_tree.compute_non_edge_forces_for_leaves(my_options.<a class="code hl_variable" href="structqdtsne_1_1Options.html#ac69fb8679d8fe13ee31e5e06d7425cc6">theta</a>, my_leaf_workspace, my_options.<a class="code hl_variable" href="structqdtsne_1_1Options.html#abf708aa5e462b8b3038fcaef2711cbb0">num_threads</a>);</div>
-<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>        }</div>
-<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span> </div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span><span class="preprocessor">#if defined(_OPENMP) || defined(QDTSNE_CUSTOM_PARALLEL)</span></div>
-<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>        <span class="keywordflow">if</span> (my_options.<a class="code hl_variable" href="structqdtsne_1_1Options.html#abf708aa5e462b8b3038fcaef2711cbb0">num_threads</a> &gt; 1) {</div>
-<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>            <span class="comment">// Don&#39;t use reduction methods, otherwise we get numeric imprecision</span></div>
-<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>            <span class="comment">// issues (and stochastic results) based on the order of summation.</span></div>
-<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span> </div>
-<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span><span class="preprocessor">#ifndef QDTSNE_CUSTOM_PARALLEL</span></div>
-<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span><span class="preprocessor">#ifdef _OPENMP</span></div>
-<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span><span class="preprocessor">            #pragma omp parallel num_threads(my_options.num_threads)</span></div>
-<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>            {</div>
-<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span><span class="preprocessor">#ifdef _OPENMP</span></div>
-<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span><span class="preprocessor">                #pragma omp for</span></div>
-<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>                <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> n = 0; n &lt; N; ++n) {</div>
-<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>            QDTSNE_CUSTOM_PARALLEL(N, [&amp;](<span class="keywordtype">size_t</span> first_, <span class="keywordtype">size_t</span> last_) -&gt; <span class="keywordtype">void</span> {</div>
-<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>                <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> n = first_; n &lt; last_; ++n) {</div>
-<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span><span class="preprocessor">#endif                </span></div>
-<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span> </div>
-<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>                    <span class="keyword">auto</span> neg_ptr = my_neg_f.data() + n * <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(num_dim_); <span class="comment">// cast to avoid overflow.</span></div>
-<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>                    <span class="keywordflow">if</span> (my_options.<a class="code hl_variable" href="structqdtsne_1_1Options.html#a69b189230017a5574b41d2cac7780656">leaf_approximation</a>) {</div>
-<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>                        my_parallel_buffer[n] = my_tree.compute_non_edge_forces_from_leaves(n, neg_ptr, my_leaf_workspace);</div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>                    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>                        my_parallel_buffer[n] = my_tree.compute_non_edge_forces(n, my_options.theta, neg_ptr);</div>
-<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>                    }</div>
-<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span> </div>
-<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>#ifndef QDTSNE_CUSTOM_PARALLEL</div>
-<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>                }</div>
-<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>            }</div>
-<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>                }</div>
-<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>            }, my_options.<a class="code hl_variable" href="structqdtsne_1_1Options.html#abf708aa5e462b8b3038fcaef2711cbb0">num_threads</a>);</div>
-<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span> </div>
-<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>            <span class="keywordflow">return</span> std::accumulate(my_parallel_buffer.begin(), my_parallel_buffer.end(), <span class="keyword">static_cast&lt;</span>Float_<span class="keyword">&gt;</span>(0));</div>
-<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>        }</div>
-<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span> </div>
-<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>        Float_ sum_Q = 0;</div>
-<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> n = 0; n &lt; N; ++n) {</div>
-<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>            <span class="keyword">auto</span> neg_ptr = my_neg_f.data() + n * <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(num_dim_); <span class="comment">// cast to avoid overflow.</span></div>
-<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>            <span class="keywordflow">if</span> (my_options.<a class="code hl_variable" href="structqdtsne_1_1Options.html#a69b189230017a5574b41d2cac7780656">leaf_approximation</a>) {</div>
-<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>                sum_Q += my_tree.compute_non_edge_forces_from_leaves(n, neg_ptr, my_leaf_workspace);</div>
-<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>            } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>                sum_Q += my_tree.compute_non_edge_forces(n, my_options.<a class="code hl_variable" href="structqdtsne_1_1Options.html#ac69fb8679d8fe13ee31e5e06d7425cc6">theta</a>, neg_ptr);</div>
-<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>            }</div>
-<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>        }</div>
-<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>        <span class="keywordflow">return</span> sum_Q;</div>
-<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>    }</div>
-<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>};</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>        <span class="keywordflow">if</span> (my_options.<a class="code hl_variable" href="structqdtsne_1_1Options.html#abf708aa5e462b8b3038fcaef2711cbb0">num_threads</a> &gt; 1) {</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>            <span class="comment">// Don&#39;t use reduction methods, otherwise we get numeric imprecision</span></div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>            <span class="comment">// issues (and stochastic results) based on the order of summation.</span></div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>            <a class="code hl_function" href="namespaceqdtsne.html#abfd3b53975731fd9df83eac1cc99fada">parallelize</a>(my_options.<a class="code hl_variable" href="structqdtsne_1_1Options.html#abf708aa5e462b8b3038fcaef2711cbb0">num_threads</a>, N, [&amp;](<span class="keywordtype">int</span>, <span class="keywordtype">size_t</span> start, <span class="keywordtype">size_t</span> length) -&gt; <span class="keywordtype">void</span> {</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>                for (size_t n = start, end = start + length; n &lt; end; ++n) {</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>                    auto neg_ptr = my_neg_f.data() + n * static_cast&lt;size_t&gt;(num_dim_); <span class="comment">// cast to avoid overflow.</span></div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>                    if (my_options.leaf_approximation) {</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>                        my_parallel_buffer[n] = my_tree.compute_non_edge_forces_from_leaves(n, neg_ptr, my_leaf_workspace);</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>                    } else {</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>                        my_parallel_buffer[n] = my_tree.compute_non_edge_forces(n, my_options.theta, neg_ptr);</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>                    }</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>                }</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>            });</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>            <span class="keywordflow">return</span> std::accumulate(my_parallel_buffer.begin(), my_parallel_buffer.end(), <span class="keyword">static_cast&lt;</span>Float_<span class="keyword">&gt;</span>(0));</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>        }</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span> </div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>        Float_ sum_Q = 0;</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> n = 0; n &lt; N; ++n) {</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>            <span class="keyword">auto</span> neg_ptr = my_neg_f.data() + n * <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(num_dim_); <span class="comment">// cast to avoid overflow.</span></div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>            <span class="keywordflow">if</span> (my_options.<a class="code hl_variable" href="structqdtsne_1_1Options.html#a69b189230017a5574b41d2cac7780656">leaf_approximation</a>) {</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>                sum_Q += my_tree.compute_non_edge_forces_from_leaves(n, neg_ptr, my_leaf_workspace);</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>                sum_Q += my_tree.compute_non_edge_forces(n, my_options.<a class="code hl_variable" href="structqdtsne_1_1Options.html#ac69fb8679d8fe13ee31e5e06d7425cc6">theta</a>, neg_ptr);</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>            }</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>        }</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>        <span class="keywordflow">return</span> sum_Q;</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>    }</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>};</div>
 </div>
-<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span> </div>
-<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>}</div>
-<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span> </div>
-<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span> </div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>}</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span> </div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aOptions_8hpp_html"><div class="ttname"><a href="Options_8hpp.html">Options.hpp</a></div><div class="ttdoc">Options for the t-SNE algorithm.</div></div>
 <div class="ttc" id="aclassqdtsne_1_1Status_html"><div class="ttname"><a href="classqdtsne_1_1Status.html">qdtsne::Status</a></div><div class="ttdoc">Status of the t-SNE iterations.</div><div class="ttdef"><b>Definition</b> Status.hpp:64</div></div>
 <div class="ttc" id="aclassqdtsne_1_1Status_html_a2e5fbb69b89a43b2deea5c46374b642b"><div class="ttname"><a href="classqdtsne_1_1Status.html#a2e5fbb69b89a43b2deea5c46374b642b">qdtsne::Status::iteration</a></div><div class="ttdeci">int iteration() const</div><div class="ttdef"><b>Definition</b> Status.hpp:103</div></div>
@@ -406,6 +366,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="aclassqdtsne_1_1Status_html_ae4090be4f7e29149a6bf9c420d8e8b14"><div class="ttname"><a href="classqdtsne_1_1Status.html#ae4090be4f7e29149a6bf9c420d8e8b14">qdtsne::Status::num_observations</a></div><div class="ttdeci">size_t num_observations() const</div><div class="ttdef"><b>Definition</b> Status.hpp:118</div></div>
 <div class="ttc" id="aclassqdtsne_1_1Status_html_af67e41bd74305fbeba6f486bda76813f"><div class="ttname"><a href="classqdtsne_1_1Status.html#af67e41bd74305fbeba6f486bda76813f">qdtsne::Status::max_iterations</a></div><div class="ttdeci">int max_iterations() const</div><div class="ttdef"><b>Definition</b> Status.hpp:111</div></div>
 <div class="ttc" id="anamespaceqdtsne_html"><div class="ttname"><a href="namespaceqdtsne.html">qdtsne</a></div><div class="ttdoc">Quick and dirty t-SNE.</div></div>
+<div class="ttc" id="anamespaceqdtsne_html_abfd3b53975731fd9df83eac1cc99fada"><div class="ttname"><a href="namespaceqdtsne.html#abfd3b53975731fd9df83eac1cc99fada">qdtsne::parallelize</a></div><div class="ttdeci">void parallelize(int num_workers, Task_ num_tasks, Run_ run_task_range)</div><div class="ttdef"><b>Definition</b> utils.hpp:113</div></div>
 <div class="ttc" id="astructqdtsne_1_1Options_html"><div class="ttname"><a href="structqdtsne_1_1Options.html">qdtsne::Options</a></div><div class="ttdoc">Options for initialize().</div><div class="ttdef"><b>Definition</b> Options.hpp:14</div></div>
 <div class="ttc" id="astructqdtsne_1_1Options_html_a0efc1892882f473e5e38e5ab11d5d604"><div class="ttname"><a href="structqdtsne_1_1Options.html#a0efc1892882f473e5e38e5ab11d5d604">qdtsne::Options::mom_switch_iter</a></div><div class="ttdeci">int mom_switch_iter</div><div class="ttdef"><b>Definition</b> Options.hpp:62</div></div>
 <div class="ttc" id="astructqdtsne_1_1Options_html_a5caa0c9124703fd6220dfb51e0aa10e1"><div class="ttname"><a href="structqdtsne_1_1Options.html#a5caa0c9124703fd6220dfb51e0aa10e1">qdtsne::Options::max_iterations</a></div><div class="ttdeci">int max_iterations</div><div class="ttdef"><b>Definition</b> Options.hpp:43</div></div>

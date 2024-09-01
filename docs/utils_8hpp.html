@@ -96,20 +96,23 @@ $(function() {
 <code>#include &lt;cmath&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 <code>#include &quot;aarand/aarand.hpp&quot;</code><br />
+<code>#include &quot;<a class="elRef" href="https://ltla.github.io/subpar/subpar_8hpp.html">subpar/subpar.hpp</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for utils.hpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="utils_8hpp__incl.png" border="0" usemap="#aqdtsne_2utils_8hpp" alt=""/></div>
 <map name="aqdtsne_2utils_8hpp" id="aqdtsne_2utils_8hpp">
-<area shape="rect" title="Utilities for running t&#45;SNE." alt="" coords="107,5,219,31"/>
+<area shape="rect" title="Utilities for running t&#45;SNE." alt="" coords="148,5,260,31"/>
 <area shape="rect" title=" " alt="" coords="5,79,70,105"/>
-<area shape="poly" title=" " alt="" coords="143,34,73,73,71,69,140,29"/>
+<area shape="poly" title=" " alt="" coords="177,34,81,75,79,70,175,29"/>
 <area shape="rect" title=" " alt="" coords="94,79,152,105"/>
-<area shape="poly" title=" " alt="" coords="159,33,139,67,135,64,154,30"/>
+<area shape="poly" title=" " alt="" coords="192,34,150,71,146,67,189,30"/>
 <area shape="rect" title=" " alt="" coords="176,79,233,105"/>
-<area shape="poly" title=" " alt="" coords="172,30,192,64,187,67,167,33"/>
+<area shape="poly" title=" " alt="" coords="207,31,207,63,202,63,202,31"/>
 <area shape="rect" title=" " alt="" coords="257,79,384,105"/>
-<area shape="poly" title=" " alt="" coords="191,29,281,70,278,75,188,34"/>
+<area shape="poly" title=" " alt="" coords="225,29,289,68,286,73,222,34"/>
+<area shape="rect" target="_parent" href="https://ltla.github.io/subpar/subpar_8hpp.html" title=" " alt="" coords="409,79,536,105"/>
+<area shape="poly" title=" " alt="" coords="250,29,413,72,411,77,249,34"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -153,6 +156,9 @@ Functions</h2></td></tr>
 <tr class="memitem:aca9df1b3ededa7ddc62d3cfa0225341c" id="r_aca9df1b3ededa7ddc62d3cfa0225341c"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="classqdtsne_1_1Status.html">int</a> num_dim_, <a class="el" href="classqdtsne_1_1Status.html">typename</a> <a class="el" href="classqdtsne_1_1Status.html">Float_</a>  = double&gt; </td></tr>
 <tr class="memitem:aca9df1b3ededa7ddc62d3cfa0225341c"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classqdtsne_1_1Status.html">Float_</a> &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceqdtsne.html#aca9df1b3ededa7ddc62d3cfa0225341c">qdtsne::initialize_random</a> (<a class="el" href="classqdtsne_1_1Status.html">size_t</a> <a class="el" href="classqdtsne_1_1Status.html">num_points</a>, <a class="el" href="classqdtsne_1_1Status.html">int</a> <a class="el" href="classqdtsne_1_1Status.html">seed</a>=42)</td></tr>
 <tr class="separator:aca9df1b3ededa7ddc62d3cfa0225341c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfd3b53975731fd9df83eac1cc99fada" id="r_abfd3b53975731fd9df83eac1cc99fada"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="classqdtsne_1_1Status.html">typename</a> <a class="el" href="classqdtsne_1_1Status.html">Task_</a> , <a class="el" href="classqdtsne_1_1Status.html">class</a> <a class="el" href="classqdtsne_1_1Status.html">Run_</a> &gt; </td></tr>
+<tr class="memitem:abfd3b53975731fd9df83eac1cc99fada"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classqdtsne_1_1Status.html">void</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceqdtsne.html#abfd3b53975731fd9df83eac1cc99fada">qdtsne::parallelize</a> (<a class="el" href="classqdtsne_1_1Status.html">int</a> <a class="el" href="classqdtsne_1_1Status.html">num_workers</a>, <a class="el" href="classqdtsne_1_1Status.html">Task_</a> <a class="el" href="classqdtsne_1_1Status.html">num_tasks</a>, <a class="el" href="classqdtsne_1_1Status.html">Run_</a> <a class="el" href="classqdtsne_1_1Status.html">run_task_range</a>)</td></tr>
+<tr class="separator:abfd3b53975731fd9df83eac1cc99fada"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Utilities for running t-SNE. </p>

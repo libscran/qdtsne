@@ -231,6 +231,13 @@
       <anchor>aca9df1b3ededa7ddc62d3cfa0225341c</anchor>
       <arglist>(size_t num_points, int seed=42)</arglist>
     </member>
+    <member kind="function">
+      <type>void</type>
+      <name>parallelize</name>
+      <anchorfile>namespaceqdtsne.html</anchorfile>
+      <anchor>abfd3b53975731fd9df83eac1cc99fada</anchor>
+      <arglist>(int num_workers, Task_ num_tasks, Run_ run_task_range)</arglist>
+    </member>
   </compound>
   <compound kind="page">
     <name>index</name>

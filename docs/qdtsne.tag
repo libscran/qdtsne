@@ -183,10 +183,10 @@
     <class kind="struct">qdtsne::Options</class>
     <class kind="class">qdtsne::Status</class>
     <member kind="typedef">
-      <type>std::vector&lt; std::vector&lt; std::pair&lt; Index_, Float_ &gt; &gt; &gt;</type>
+      <type>knncolle::NeighborList&lt; Index_, Float_ &gt;</type>
       <name>NeighborList</name>
       <anchorfile>namespaceqdtsne.html</anchorfile>
-      <anchor>ae7d0a049760527c4650e2f62d9eb99e8</anchor>
+      <anchor>a6e5bf645bf5e126392f455c6b5375fbf</anchor>
       <arglist></arglist>
     </member>
     <member kind="function">

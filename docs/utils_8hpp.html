@@ -96,23 +96,26 @@ $(function() {
 <code>#include &lt;cmath&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 <code>#include &quot;aarand/aarand.hpp&quot;</code><br />
+<code>#include &quot;<a class="elRef" href="https://knncolle.github.io/knncolle/knncolle_8hpp.html">knncolle/knncolle.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="elRef" href="https://ltla.github.io/subpar/subpar_8hpp.html">subpar/subpar.hpp</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for utils.hpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="utils_8hpp__incl.png" border="0" usemap="#aqdtsne_2utils_8hpp" alt=""/></div>
 <map name="aqdtsne_2utils_8hpp" id="aqdtsne_2utils_8hpp">
-<area shape="rect" title="Utilities for running t&#45;SNE." alt="" coords="148,5,260,31"/>
+<area shape="rect" title="Utilities for running t&#45;SNE." alt="" coords="205,5,318,31"/>
 <area shape="rect" title=" " alt="" coords="5,79,70,105"/>
-<area shape="poly" title=" " alt="" coords="177,34,81,75,79,70,175,29"/>
+<area shape="poly" title=" " alt="" coords="224,34,85,78,84,73,223,29"/>
 <area shape="rect" title=" " alt="" coords="94,79,152,105"/>
-<area shape="poly" title=" " alt="" coords="192,34,150,71,146,67,189,30"/>
+<area shape="poly" title=" " alt="" coords="239,34,161,74,159,69,237,29"/>
 <area shape="rect" title=" " alt="" coords="176,79,233,105"/>
-<area shape="poly" title=" " alt="" coords="207,31,207,63,202,63,202,31"/>
+<area shape="poly" title=" " alt="" coords="254,33,225,68,221,65,250,30"/>
 <area shape="rect" title=" " alt="" coords="257,79,384,105"/>
-<area shape="poly" title=" " alt="" coords="225,29,289,68,286,73,222,34"/>
-<area shape="rect" target="_parent" href="https://ltla.github.io/subpar/subpar_8hpp.html" title=" " alt="" coords="409,79,536,105"/>
-<area shape="poly" title=" " alt="" coords="250,29,413,72,411,77,249,34"/>
+<area shape="poly" title=" " alt="" coords="273,30,303,65,299,69,269,33"/>
+<area shape="rect" target="_parent" href="https://knncolle.github.io/knncolle/knncolle_8hpp.html" title=" " alt="" coords="408,79,553,105"/>
+<area shape="poly" title=" " alt="" coords="299,29,429,71,428,76,298,34"/>
+<area shape="rect" target="_parent" href="https://ltla.github.io/subpar/subpar_8hpp.html" title=" " alt="" coords="577,79,704,105"/>
+<area shape="poly" title=" " alt="" coords="319,28,562,73,561,78,318,33"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -142,9 +145,10 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:ae7d0a049760527c4650e2f62d9eb99e8" id="r_ae7d0a049760527c4650e2f62d9eb99e8"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="classqdtsne_1_1Status.html">typename</a> <a class="el" href="classqdtsne_1_1Status.html">Index_</a> , <a class="el" href="classqdtsne_1_1Status.html">typename</a> <a class="el" href="classqdtsne_1_1Status.html">Float_</a> &gt; </td></tr>
-<tr class="memitem:ae7d0a049760527c4650e2f62d9eb99e8"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classqdtsne_1_1Status.html">using</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceqdtsne.html#ae7d0a049760527c4650e2f62d9eb99e8">qdtsne::NeighborList</a> = std::vector&lt; std::vector&lt; std::pair&lt; <a class="el" href="classqdtsne_1_1Status.html">Index_</a>, <a class="el" href="classqdtsne_1_1Status.html">Float_</a> &gt; &gt; &gt;</td></tr>
-<tr class="separator:ae7d0a049760527c4650e2f62d9eb99e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e5bf645bf5e126392f455c6b5375fbf" id="r_a6e5bf645bf5e126392f455c6b5375fbf"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="classqdtsne_1_1Status.html">typename</a> <a class="el" href="classqdtsne_1_1Status.html">Index_</a> , <a class="el" href="classqdtsne_1_1Status.html">typename</a> <a class="el" href="classqdtsne_1_1Status.html">Float_</a> &gt; </td></tr>
+<tr class="memitem:a6e5bf645bf5e126392f455c6b5375fbf"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classqdtsne_1_1Status.html">using</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceqdtsne.html#a6e5bf645bf5e126392f455c6b5375fbf">qdtsne::NeighborList</a> = <a class="elRef" href="https://knncolle.github.io/knncolle/namespaceknncolle.html#a25d7a950cf7745b99bc834b79e064c09">knncolle::NeighborList</a>&lt; <a class="el" href="classqdtsne_1_1Status.html">Index_</a>, <a class="el" href="classqdtsne_1_1Status.html">Float_</a> &gt;</td></tr>
+<tr class="memdesc:a6e5bf645bf5e126392f455c6b5375fbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lists of neighbors for each observation.  <br /></td></tr>
+<tr class="separator:a6e5bf645bf5e126392f455c6b5375fbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>

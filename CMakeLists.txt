@@ -24,9 +24,10 @@ if(QDTSNE_FETCH_EXTERN)
 else()
     find_package(knncolle_knncolle 2.0.0 CONFIG REQUIRED)
     find_package(ltla_aarand 1.0.0 CONFIG REQUIRED)
+    find_package(ltla_subpar 0.3.1 CONFIG REQUIRED)
 endif()
 
-target_link_libraries(qdtsne INTERFACE knncolle::knncolle ltla::aarand)
+target_link_libraries(qdtsne INTERFACE knncolle::knncolle ltla::aarand ltla::subpar)
 
 # Tests
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)

@@ -101,7 +101,7 @@ struct Options {
     bool leaf_approximation = false;
 
     /**
-     * Number of threads to use.
+     * Number of threads to use, see `parallelize()` for more details.
      */
     int num_threads = 1;
 };

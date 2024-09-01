@@ -116,41 +116,19 @@ Status<num_dim_, Index_, Float_> initialize(const knncolle::Prebuilt<Dim_, Index
 
     NeighborList<Index_, Float_> neighbors(N);
 
-#ifndef QDTSNE_CUSTOM_PARALLEL
-#ifdef _OPENMP
-    #pragma omp parallel num_threads(options.num_threads)
-#endif
-    {
-#else
-    QDTSNE_CUSTOM_PARALLEL(N, [&](size_t first_, size_t last_) -> void {
-#endif
-
+    parallelize(options.num_threads, N, [&](int, size_t start, size_t length) {
         std::vector<Index_> indices;
         std::vector<Float_> distances;
         auto searcher = prebuilt.initialize();
 
-#ifndef QDTSNE_CUSTOM_PARALLEL
-#ifdef _OPENMP
-        #pragma omp for 
-#endif
-        for (Index_ i = 0; i < N; ++i) {
-#else
-        for (size_t i = first_; i < last_; ++i) {
-#endif
-
+        for (size_t i = start, end = start + length; i < end; ++i) {
             searcher->search(i, K, &indices, &distances);
             size_t actual_k = indices.size();
             for (size_t x = 0; x < actual_k; ++x) {
                 neighbors[i].emplace_back(indices[x], distances[x]);
             }
-
-#ifndef QDTSNE_CUSTOM_PARALLEL
         }
-    }
-#else
-        }
-    }, options.num_threads);
-#endif
+    });
 
     return internal::initialize<num_dim_>(std::move(neighbors), options.perplexity, options);
 }

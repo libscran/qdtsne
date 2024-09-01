@@ -21,28 +21,12 @@ void compute_gaussian_perplexity(NeighborList<Index_, Float_>& neighbors, Float_
     const size_t num_points  = neighbors.size();
     const Float_ log_perplexity = std::log(perplexity);
 
-#ifndef QDTSNE_CUSTOM_PARALLEL
-#ifdef _OPENMP
-    #pragma omp parallel num_threads(nthreads)
-#endif
-    {
-#else
-    QDTSNE_CUSTOM_PARALLEL(num_points, [&](size_t first_, size_t last_) -> void {
-#endif
-
+    parallelize(nthreads, num_points, [&](int, size_t start, size_t length) -> void {
         std::vector<Float_> squared_delta_dist;
         std::vector<Float_> quad_delta_dist;
         std::vector<Float_> output;
 
-#ifndef QDTSNE_CUSTOM_PARALLEL
-#ifdef _OPENMP
-        #pragma omp for 
-#endif
-        for (size_t n = 0; n < num_points; ++n){
-#else
-        for (size_t n = first_; n < last_; ++n) {
-#endif
-
+        for (size_t n = start, end = start + length; n < end; ++n) {
             auto& current = neighbors[n];
             const int K = current.size();
             if (K) {
@@ -146,13 +130,8 @@ void compute_gaussian_perplexity(NeighborList<Index_, Float_>& neighbors, Float_
                 }
             }
 
-#ifndef QDTSNE_CUSTOM_PARALLEL
         }
-    }
-#else
-        }
-    }, nthreads);
-#endif
+    });
 
     return;
 }

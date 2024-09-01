@@ -21,13 +21,6 @@ add_executable(
     src/utils.cpp
 )
 
-target_link_libraries(
-    libtest
-    gtest_main
-    knncolle
-    qdtsne
-)
-
 # Add coverage.
 option(CODE_COVERAGE "Enable coverage testing" OFF)
 if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
@@ -37,6 +30,12 @@ else()
 endif()
 
 macro(add_common_properties target)
+    target_link_libraries(
+        ${target}
+        gtest_main
+        qdtsne
+    )
+
     target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic -Werror)
 
     if(DO_CODE_COVERAGE)
@@ -49,28 +48,12 @@ endmacro()
 
 add_common_properties(libtest)
 
-# Create targets to test parallelization.
-macro(create_partest target)
-    add_executable(
-        ${target}
-        src/tsne.cpp
-        src/SPTree.cpp
-    )
+# Create target to test custom parallelization.
+add_executable(
+    cuspartest
+    src/tsne.cpp
+    src/SPTree.cpp
+)
 
-    target_link_libraries(
-        ${target} 
-        gtest_main
-        qdtsne
-    )
-endmacro()
-
-create_partest(cuspartest)
 target_compile_definitions(cuspartest PRIVATE CUSTOM_PARALLEL_TEST=1)
 add_common_properties(cuspartest)
-
-find_package(OpenMP)
-if (OpenMP_FOUND)
-    create_partest(omptest)
-    target_link_libraries(omptest OpenMP::OpenMP_CXX)
-    add_common_properties(omptest)
-endif()

@@ -247,20 +247,8 @@ private:
         std::fill(my_pos_f.begin(), my_pos_f.end(), 0);
         size_t N = num_observations();
 
-#ifndef QDTSNE_CUSTOM_PARALLEL
-#ifdef _OPENMP
-        #pragma omp parallel num_threads(my_options.num_threads)
-#endif
-        {
-#ifdef _OPENMP
-            #pragma omp for 
-#endif
-            for (size_t n = 0; n < N; ++n) {
-#else
-        QDTSNE_CUSTOM_PARALLEL(N, [&](size_t first_, size_t last_) -> void {
-            for (size_t n = first_; n < last_; ++n) {
-#endif
-
+        parallelize(my_options.num_threads, N, [&](int, size_t start, size_t length) -> void {
+            for (size_t n = start, end = start + length; n < end; ++n) {
                 const auto& current = my_neighbors[n];
                 size_t offset = n * static_cast<size_t>(num_dim_); // cast to avoid overflow.
                 const Float_* self = Y + offset;
@@ -279,14 +267,8 @@ private:
                         pos_out[d] += mult * (self[d] - neighbor[d]);
                     }
                 }
-
-#ifndef QDTSNE_CUSTOM_PARALLEL
             }
-        }
-#else
-            }
-        }, my_options.num_threads);
-#endif
+        });
 
         return;
     }
@@ -298,43 +280,21 @@ private:
             my_tree.compute_non_edge_forces_for_leaves(my_options.theta, my_leaf_workspace, my_options.num_threads);
         }
 
-#if defined(_OPENMP) || defined(QDTSNE_CUSTOM_PARALLEL)
         if (my_options.num_threads > 1) {
             // Don't use reduction methods, otherwise we get numeric imprecision
             // issues (and stochastic results) based on the order of summation.
-
-#ifndef QDTSNE_CUSTOM_PARALLEL
-#ifdef _OPENMP
-            #pragma omp parallel num_threads(my_options.num_threads)
-#endif
-            {
-#ifdef _OPENMP
-                #pragma omp for
-#endif
-                for (size_t n = 0; n < N; ++n) {
-#else
-            QDTSNE_CUSTOM_PARALLEL(N, [&](size_t first_, size_t last_) -> void {
-                for (size_t n = first_; n < last_; ++n) {
-#endif                
-
+            parallelize(my_options.num_threads, N, [&](int, size_t start, size_t length) -> void {
+                for (size_t n = start, end = start + length; n < end; ++n) {
                     auto neg_ptr = my_neg_f.data() + n * static_cast<size_t>(num_dim_); // cast to avoid overflow.
                     if (my_options.leaf_approximation) {
                         my_parallel_buffer[n] = my_tree.compute_non_edge_forces_from_leaves(n, neg_ptr, my_leaf_workspace);
                     } else {
                         my_parallel_buffer[n] = my_tree.compute_non_edge_forces(n, my_options.theta, neg_ptr);
                     }
-
-#ifndef QDTSNE_CUSTOM_PARALLEL
                 }
-            }
-#else
-                }
-            }, my_options.num_threads);
-#endif
-
+            });
             return std::accumulate(my_parallel_buffer.begin(), my_parallel_buffer.end(), static_cast<Float_>(0));
         }
-#endif
 
         Float_ sum_Q = 0;
         for (size_t n = 0; n < N; ++n) {

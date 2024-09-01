@@ -38,6 +38,8 @@
 #include <algorithm>
 #include <vector>
 
+#include "utils.hpp"
+
 namespace qdtsne {
 
 namespace internal {
@@ -410,30 +412,11 @@ public:
             }
 
             size_t nleaves = workspace.leaf_indices.size();
-
-#ifndef QDTSNE_CUSTOM_PARALLEL
-#ifdef _OPENMP
-            #pragma omp parallel num_threads(num_threads)
-#endif
-            {
-#ifdef _OPENMP
-                #pragma omp for
-#endif
-                for (size_t n = 0; n < nleaves; ++n) {
-#else
-            QDTSNE_CUSTOM_PARALLEL(nleaves, [&](size_t first_, size_t last_) -> void {
-                for (size_t n = first_; n < last_; ++n) {
-#endif                
-
+            parallelize(num_threads, nleaves, [&](int, size_t start, size_t length) -> void {
+                for (size_t n = start, end = start + length; n < end; ++n) {
                     process_leaf_node(workspace.leaf_indices[n]);
-
-#ifndef QDTSNE_CUSTOM_PARALLEL
                 }
-            }
-#else
-                }
-            }, num_threads);
-#endif
+            });
         }
     }
 

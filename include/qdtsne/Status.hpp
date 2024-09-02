@@ -185,9 +185,6 @@ private:
 
         // Update gains
         size_t ngains = my_gains.size(); 
-#ifdef _OPENMP
-        #pragma omp simd
-#endif
         for (size_t i = 0; i < ngains; ++i) {
             Float_& g = my_gains[i];
             constexpr Float_ lower_bound = 0.01;
@@ -197,9 +194,6 @@ private:
         }
 
         // Perform gradient update (with momentum and gains)
-#ifdef _OPENMP
-        #pragma omp simd
-#endif
         for (size_t i = 0; i < ngains; ++i) {
             my_uY[i] = momentum * my_uY[i] - my_options.eta * my_gains[i] * my_dY[i];
             Y[i] += my_uY[i];

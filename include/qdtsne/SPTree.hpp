@@ -288,18 +288,12 @@ private:
         Float_ mult = count * div;
         result_sum += mult;
         mult *= div;
-#ifdef _OPENMP
-        #pragma omp simd
-#endif
         for (int d = 0; d < num_dim_; ++d) {
             neg_f[d] += mult * (point[d] - center[d]);
         }
     }
 
     static void remove_self_from_center(const Float_* point, const std::array<Float_, num_dim_>& center, Float_ count, std::array<Float_, num_dim_>& temp) {
-#ifdef _OPENMP
-        #pragma omp simd
-#endif
         for (int d = 0; d < num_dim_; ++d) { 
             temp[d] = (center[d] * count - point[d]) / (count - 1);
         }

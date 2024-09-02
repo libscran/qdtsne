@@ -42,9 +42,6 @@ void compute_gaussian_perplexity(NeighborList<Index_, Float_>& neighbors, Float_
                 const Float_ first = current[0].second;
                 const Float_ first2 = first * first;
 
-#ifdef _OPENMP
-                #pragma omp simd
-#endif
                 for (int m = 1; m < K; ++m) {
                     Float_ dist = current[m].second;
                     Float_ squared_delta_dist_raw = dist * dist - first2; 
@@ -61,9 +58,6 @@ void compute_gaussian_perplexity(NeighborList<Index_, Float_>& neighbors, Float_
                 for (int iter = 0; iter < 200; ++iter) {
                     // We skip the first value because we know that squared_delta_dist[0] = 0
                     // (as we subtracted 'first') and thus output[0] = 1.
-#ifdef _OPENMP
-                    #pragma omp simd
-#endif
                     for (int m = 1; m < K; ++m) {
                         output[m] = std::exp(-beta * squared_delta_dist[m]); 
                     }
@@ -111,9 +105,6 @@ void compute_gaussian_perplexity(NeighborList<Index_, Float_>& neighbors, Float_
 
                     if (std::isinf(beta)) {
                         // Avoid propagation of NaNs via Inf * 0. 
-#ifdef _OPENMP
-                        #pragma omp simd
-#endif
                         for (int m = 1; m < K; ++m) {
                             output[m] = (squared_delta_dist[m] == 0);
                         }
@@ -122,9 +113,6 @@ void compute_gaussian_perplexity(NeighborList<Index_, Float_>& neighbors, Float_
                 }
 
                 // Row-normalize current row of P.
-#ifdef _OPENMP
-                #pragma omp simd
-#endif
                 for (int m = 0; m < K; ++m) {
                     current[m].second = output[m] / sum_P;
                 }

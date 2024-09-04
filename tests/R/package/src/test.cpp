@@ -1,6 +1,6 @@
 #include "Rcpp.h"
 
-#define QDTSNE_BETA_BINARY_SEARCH_ONLY
+#define QDTSNE_R_PACKAGE_TESTING
 #include "qdtsne/qdtsne.hpp"
 
 // [[Rcpp::export(rng=false)]]

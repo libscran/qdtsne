@@ -182,7 +182,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Whether to infer the perplexity in <code><a class="el" href="namespaceqdtsne.html#ac7386895ff09abfb4c792a0ffdd9e170">initialize()</a></code> methods that accept a <code>NeighborList</code> object. In such cases, the value in <code><a class="el" href="structqdtsne_1_1Options.html#ae485ba64f2ff5379f09a75fb89447628">Options::perplexity</a></code> is ignored. The perplexity is instead defined from the <code>NeighborList</code> as the number of nearest neighbors per point divided by 3. </p>
+<p>Whether to infer the perplexity in <code><a class="el" href="namespaceqdtsne.html#ac7386895ff09abfb4c792a0ffdd9e170">initialize()</a></code> methods that accept a <code>NeighborList</code> object. In such cases, the value in <code><a class="el" href="structqdtsne_1_1Options.html#ae485ba64f2ff5379f09a75fb89447628">Options::perplexity</a></code> is ignored. The perplexity is instead defined from the <code>NeighborList</code> as the number of nearest neighbors for the first point divided by 3. (It is assumed that all points have the same number of neighbors.) </p>
 
 </div>
 </div>
@@ -275,7 +275,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Perplexity value that determines the balance between local and global structure. Higher perplexities will focus on global structure, at the cost of increased runtime and decreased local resolution.</p>
-<p>This option affects all <code><a class="el" href="namespaceqdtsne.html#ac7386895ff09abfb4c792a0ffdd9e170">initialize()</a></code> methods except if precomputed neighbor search results are supplied <em>and</em> <code><a class="el" href="structqdtsne_1_1Options.html#a824d9599d7ea23dcfdffc871afca0d49">Options::infer_perplexity</a> = true</code>. In such cases, the perplexity is inferred from the number of neighbors per point in the supplied search results. </p>
+<p>This option affects all <code><a class="el" href="namespaceqdtsne.html#ac7386895ff09abfb4c792a0ffdd9e170">initialize()</a></code> methods except if precomputed neighbor search results are supplied <em>and</em> <code><a class="el" href="structqdtsne_1_1Options.html#a824d9599d7ea23dcfdffc871afca0d49">Options::infer_perplexity</a> = true</code>. In such cases, the perplexity is inferred from the number of neighbors in the supplied search results. </p>
 
 </div>
 </div>

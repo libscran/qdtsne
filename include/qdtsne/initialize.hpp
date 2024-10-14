@@ -77,7 +77,7 @@ Status<num_dim_, Index_, Float_> initialize(NeighborList<Index_, Float_> nn, Flo
  * @param neighbors List of indices and distances to nearest neighbors for each observation. 
  * Each observation should have the same number of neighbors, sorted by increasing distance, which should not include itself.
  * @param options Further options.
- * If `Options::infer_perplexity = true`, the perplexity is determined from `nn` and the value in `Options::perplexity` is ignored.
+ * If `Options::infer_perplexity = true`, the perplexity is determined from `neighbors` and the value in `Options::perplexity` is ignored.
  *
  * @return A `Status` object representing an initial state of the t-SNE algorithm.
  */

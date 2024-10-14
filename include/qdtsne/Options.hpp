@@ -17,14 +17,15 @@ struct Options {
      * Higher perplexities will focus on global structure, at the cost of increased runtime and decreased local resolution.
      *
      * This option affects all `initialize()` methods except if precomputed neighbor search results are supplied _and_ `Options::infer_perplexity = true`.
-     * In such cases, the perplexity is inferred from the number of neighbors per point in the supplied search results.
+     * In such cases, the perplexity is inferred from the number of neighbors in the supplied search results.
      */
     double perplexity = 30;
 
     /**
      * Whether to infer the perplexity in `initialize()` methods that accept a `NeighborList` object.
      * In such cases, the value in `Options::perplexity` is ignored.
-     * The perplexity is instead defined from the `NeighborList` as the number of nearest neighbors per point divided by 3.
+     * The perplexity is instead defined from the `NeighborList` as the number of nearest neighbors for the first point divided by 3.
+     * (It is assumed that all points have the same number of neighbors.)
      */
     bool infer_perplexity = true;
 

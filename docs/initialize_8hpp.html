@@ -94,6 +94,7 @@ $(function() {
 <div class="textblock"><code>#include &quot;<a class="elRef" href="https://knncolle.github.io/knncolle/knncolle_8hpp.html">knncolle/knncolle.hpp</a>&quot;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 <code>#include &lt;stdexcept&gt;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
 <code>#include &quot;<a class="el" href="Status_8hpp_source.html">Status.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="Options_8hpp_source.html">Options.hpp</a>&quot;</code><br />
 <code>#include &quot;gaussian.hpp&quot;</code><br />
@@ -103,44 +104,45 @@ Include dependency graph for initialize.hpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="initialize_8hpp__incl.png" border="0" usemap="#aqdtsne_2initialize_8hpp" alt=""/></div>
 <map name="aqdtsne_2initialize_8hpp" id="aqdtsne_2initialize_8hpp">
-<area shape="rect" title="Initialize the t&#45;SNE algorithm." alt="" coords="662,5,796,31"/>
+<area shape="rect" title="Initialize the t&#45;SNE algorithm." alt="" coords="314,5,448,31"/>
 <area shape="rect" target="_parent" href="https://knncolle.github.io/knncolle/knncolle_8hpp.html" title=" " alt="" coords="5,226,151,252"/>
-<area shape="poly" title=" " alt="" coords="661,25,514,36,334,59,247,76,169,97,108,123,85,138,68,154,62,167,61,181,68,211,63,213,55,182,57,166,64,151,82,134,105,119,168,92,246,71,333,54,513,31,661,20"/>
-<area shape="rect" title=" " alt="" coords="709,226,767,252"/>
-<area shape="poly" title=" " alt="" coords="738,30,752,57,766,93,775,136,773,179,757,214,753,212,767,178,770,136,761,95,747,59,734,33"/>
-<area shape="rect" title=" " alt="" coords="614,79,691,105"/>
-<area shape="poly" title=" " alt="" coords="718,33,678,70,675,66,714,30"/>
-<area shape="rect" href="Status_8hpp.html" title="Status of the t&#45;SNE iterations." alt="" coords="412,79,496,105"/>
-<area shape="poly" title=" " alt="" coords="683,34,511,78,510,73,681,29"/>
-<area shape="rect" href="Options_8hpp.html" title="Options for the t&#45;SNE algorithm." alt="" coords="668,153,758,178"/>
-<area shape="poly" title=" " alt="" coords="730,32,718,138,713,137,725,31"/>
-<area shape="rect" title=" " alt="" coords="833,79,931,105"/>
-<area shape="poly" title=" " alt="" coords="756,29,843,70,841,75,754,34"/>
-<area shape="rect" title=" " alt="" coords="954,79,1066,105"/>
-<area shape="poly" title=" " alt="" coords="777,29,948,72,947,77,776,34"/>
-<area shape="poly" title=" " alt="" coords="491,103,546,123,606,150,662,183,710,215,707,219,660,187,603,155,544,128,489,108"/>
-<area shape="rect" title=" " alt="" coords="187,226,244,252"/>
-<area shape="poly" title=" " alt="" coords="412,100,300,119,248,135,230,144,217,154,211,167,208,182,210,211,205,212,203,181,206,165,213,151,227,140,246,130,299,114,411,95"/>
-<area shape="rect" title=" " alt="" coords="78,153,153,178"/>
-<area shape="poly" title=" " alt="" coords="412,105,168,156,167,151,411,99"/>
-<area shape="rect" title=" " alt="" coords="228,153,309,178"/>
-<area shape="poly" title=" " alt="" coords="424,108,315,149,313,144,422,103"/>
-<area shape="rect" title=" " alt="" coords="333,153,386,178"/>
-<area shape="poly" title=" " alt="" coords="440,107,389,145,386,141,436,103"/>
-<area shape="rect" title=" " alt="" coords="409,153,499,178"/>
-<area shape="poly" title=" " alt="" coords="457,105,457,137,451,137,451,105"/>
-<area shape="poly" title=" " alt="" coords="497,102,655,146,653,151,495,107"/>
-<area shape="rect" href="utils_8hpp.html" title="Utilities for running t&#45;SNE." alt="" coords="523,153,593,178"/>
-<area shape="poly" title=" " alt="" coords="473,103,529,141,526,146,470,107"/>
-<area shape="poly" title=" " alt="" coords="523,178,510,181,354,205,166,229,165,224,353,199,510,176,522,173"/>
-<area shape="poly" title=" " alt="" coords="590,176,696,218,694,223,588,181"/>
-<area shape="poly" title=" " alt="" coords="523,178,511,181,260,232,259,227,509,176,522,173"/>
-<area shape="rect" title=" " alt="" coords="621,226,685,252"/>
-<area shape="poly" title=" " alt="" coords="576,177,626,215,623,219,572,181"/>
-<area shape="rect" title=" " alt="" coords="317,226,444,252"/>
-<area shape="poly" title=" " alt="" coords="529,181,426,223,424,218,527,176"/>
-<area shape="rect" target="_parent" href="https://ltla.github.io/subpar/subpar_8hpp.html" title=" " alt="" coords="469,226,596,252"/>
-<area shape="poly" title=" " alt="" coords="556,179,545,213,539,211,551,178"/>
+<area shape="poly" title=" " alt="" coords="313,28,240,45,203,60,169,81,139,111,116,146,99,182,88,212,83,211,95,179,112,143,135,107,166,77,200,56,238,40,312,23"/>
+<area shape="rect" title=" " alt="" coords="189,226,247,252"/>
+<area shape="poly" title=" " alt="" coords="323,34,273,50,220,74,171,108,150,130,134,154,130,172,139,188,156,204,177,217,174,221,153,208,135,192,125,173,129,152,146,126,167,104,217,70,271,45,321,29"/>
+<area shape="rect" title=" " alt="" coords="458,79,535,105"/>
+<area shape="poly" title=" " alt="" coords="402,29,466,68,463,73,399,34"/>
+<area shape="rect" title=" " alt="" coords="144,153,218,178"/>
+<area shape="poly" title=" " alt="" coords="362,34,290,81,208,145,205,141,287,77,359,29"/>
+<area shape="rect" href="Status_8hpp.html" title="Status of the t&#45;SNE iterations." alt="" coords="300,79,384,105"/>
+<area shape="poly" title=" " alt="" coords="377,32,358,66,353,64,372,30"/>
+<area shape="rect" href="Options_8hpp.html" title="Options for the t&#45;SNE algorithm." alt="" coords="732,153,822,178"/>
+<area shape="poly" title=" " alt="" coords="388,30,411,67,427,86,447,102,483,121,515,133,545,139,574,141,637,142,716,149,716,155,637,148,574,147,544,144,513,138,481,126,445,107,424,90,406,70,384,32"/>
+<area shape="rect" title=" " alt="" coords="560,79,657,105"/>
+<area shape="poly" title=" " alt="" coords="420,29,556,71,554,76,419,34"/>
+<area shape="rect" title=" " alt="" coords="681,79,792,105"/>
+<area shape="poly" title=" " alt="" coords="442,29,667,74,666,79,441,34"/>
+<area shape="poly" title=" " alt="" coords="334,107,240,216,236,213,330,103"/>
+<area shape="poly" title=" " alt="" coords="316,108,223,148,221,144,314,103"/>
+<area shape="rect" title=" " alt="" coords="271,226,328,252"/>
+<area shape="poly" title=" " alt="" coords="341,106,310,212,305,211,336,104"/>
+<area shape="rect" title=" " alt="" coords="437,153,519,178"/>
+<area shape="poly" title=" " alt="" coords="366,103,443,143,440,147,364,108"/>
+<area shape="rect" title=" " alt="" coords="543,153,595,178"/>
+<area shape="poly" title=" " alt="" coords="381,103,529,149,527,154,380,108"/>
+<area shape="rect" title=" " alt="" coords="619,153,708,178"/>
+<area shape="poly" title=" " alt="" coords="385,100,604,148,603,154,383,105"/>
+<area shape="poly" title=" " alt="" coords="384,99,402,102,558,125,716,149,715,155,558,131,402,107,383,104"/>
+<area shape="rect" href="utils_8hpp.html" title="Utilities for running t&#45;SNE." alt="" coords="343,153,413,178"/>
+<area shape="poly" title=" " alt="" coords="350,104,368,138,363,140,346,106"/>
+<area shape="poly" title=" " alt="" coords="344,178,144,225,143,220,342,173"/>
+<area shape="poly" title=" " alt="" coords="352,181,260,222,258,217,350,176"/>
+<area shape="poly" title=" " alt="" coords="366,181,326,218,322,214,363,177"/>
+<area shape="rect" title=" " alt="" coords="353,226,417,252"/>
+<area shape="poly" title=" " alt="" coords="382,178,385,211,379,211,376,179"/>
+<area shape="rect" title=" " alt="" coords="441,226,568,252"/>
+<area shape="poly" title=" " alt="" coords="401,177,471,216,469,221,398,181"/>
+<area shape="rect" target="_parent" href="https://ltla.github.io/subpar/subpar_8hpp.html" title=" " alt="" coords="593,226,720,252"/>
+<area shape="poly" title=" " alt="" coords="414,173,595,219,594,225,413,178"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">

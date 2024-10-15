@@ -108,12 +108,7 @@ Status<num_dim_, Index_, Float_> initialize(NeighborList<Index_, Float_> neighbo
  */
 template<int num_dim_, typename Dim_, typename Index_, typename Float_>
 Status<num_dim_, Index_, Float_> initialize(const knncolle::Prebuilt<Dim_, Index_, Float_>& prebuilt, const Options& options) { 
-    const Index_ K = perplexity_to_k(options.perplexity);
-    Index_ N = prebuilt.num_observations();
-    if (K >= N) {
-        throw std::runtime_error("number of observations should be greater than 3 * perplexity");
-    }
-
+    const int K = perplexity_to_k(options.perplexity); 
     auto neighbors = find_nearest_neighbors(prebuilt, K, options.num_threads);
     return internal::initialize<num_dim_>(std::move(neighbors), options.perplexity, options);
 }

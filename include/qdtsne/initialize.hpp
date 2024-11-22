@@ -78,7 +78,7 @@ template<int num_dim_, typename Dim_, typename Index_, typename Float_>
 Status<num_dim_, Index_, Float_> initialize(const knncolle::Prebuilt<Dim_, Index_, Float_>& prebuilt, const Options& options) { 
     const int K = perplexity_to_k(options.perplexity); 
     auto neighbors = find_nearest_neighbors(prebuilt, K, options.num_threads);
-    return internal::initialize<num_dim_>(std::move(neighbors), options.perplexity, options);
+    return internal::initialize<num_dim_>(std::move(neighbors), static_cast<Float_>(options.perplexity), options);
 }
 
 /**

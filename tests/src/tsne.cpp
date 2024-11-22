@@ -207,6 +207,22 @@ TEST_P(TsneTester, LeafApproximation) {
     EXPECT_EQ(copy, Y);
 }
 
+TEST_P(TsneTester, Float32) {
+    int K = GetParam();
+    qdtsne::Options opt;
+    opt.perplexity = K / 3.0;
+
+    auto index = knncolle::VptreeBuilder<knncolle::EuclideanDistance, knncolle::SimpleMatrix<int, int, double>, float>().build_unique(knncolle::SimpleMatrix<int, int, double>(ndim, nobs, X.data()));
+    auto status = qdtsne::initialize<2>(*index, opt);
+    auto Y = qdtsne::initialize_random<2, float>(nobs);
+    auto old = Y;
+
+    status.run(Y.data());
+    EXPECT_NE(old, Y); // there was some effect...
+    EXPECT_EQ(status.num_observations(), nobs); 
+    EXPECT_EQ(status.iteration(), 1000); // actually ran through the specified iterations
+}
+
 INSTANTIATE_TEST_SUITE_P(
     TsneTests,
     TsneTester,

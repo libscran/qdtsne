@@ -61,16 +61,16 @@ Setting a maximum depth of $m$ is equivalent to the following procedure:
 
 1. Define the bounding box/hypercube for our dataset and partition it along each dimension into $2^m$ intervals, forming a high-dimensional grid.
 2. In each grid cell, move all data points in that cell to the cell's center of mass.
-3. Construct a standard Barnes-Hut tree (without any maximum depth limits) on this modified dataset.
-4. Use the tree to compute repulsive forces for each (unmodified) point $i$ from the original dataset.
+3. Construct a standard Barnes-Hut tree on this modified dataset.
+4. Use the tree to compute repulsive forces for each point $i$ using its original coordinates.
 
-The approximation is based on ignoring the distribution within each grid cell, which is probably acceptable for very small intervals with large $m$.
+The approximation is based on ignoring the distribution within each grid cell, which should be acceptable at large $m$ where the intervals are small.
 Smaller values of $m$ reduce computational time by limiting the depth of the recursion, at the cost of approximation quality for the repulsive force calculation.
 A value of 7 to 10 seems to be a good compromise for most applications.
 
 We can go even further by using the center of mass for $i$'s leaf node to approximate $i$'s repulsive forces with all other leaf nodes.
-We can thus compute the repulsive forces once per leaf node, and then re-use those values for all points assigned to the same node.
-This eliminates near-redundant searches through the tree for each point $i$, with the only extra calculation being the repulsion between $i$ and its own leaf node.
+We compute the repulsive forces once per leaf node, and then re-use those values for all points assigned to the same node.
+This eliminates near-redundant searches through the tree for neighboring points; the only extra calculation per point $i$ is the repulsion between $i$ and its leaf node.
 We call this approach the "leaf approximation", which is enabled through the `leaf_approximation` parameter.
 Note that this only has an effect in `max_depth`-bounded trees where multiple points are assigned to a leaf node.
 

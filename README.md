@@ -135,6 +135,12 @@ See [`extern/CMakeLists.txt`](extern/CMakeLists.txt) to find compatible versions
 If you're not using CMake, you can just copy the header files in `include/` into some location that is visible to your compiler.
 This requires the manual inclusion of the dependencies listed in [`extern/CMakeLists.txt`](extern/CMakeLists.txt).
 
+## Comments on licensing
+
+Most of the code in this repository is MIT-licensed (see the [`LICENSE`](LICENSE)).
+The exception is the code that was derived from the **Rtsne** R package, which in turn was taken from the van der Maaten (2014) paper.
+Readers are referred to the relevant source files ([`SPTree.hpp`](include/qdtsne/SPTree.hpp) and [`Status.hpp`](include/qdtsne/Status.hpp)) for their licensing conditions.
+
 ## References
 
 van der Maaten, L.J.P. and Hinton, G.E. (2008). 

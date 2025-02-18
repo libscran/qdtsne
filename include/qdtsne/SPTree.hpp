@@ -371,7 +371,7 @@ public:
         workspace.leaf_neg_f.resize(nnodes);
         workspace.leaf_sums.resize(nnodes);
 
-        auto process_leaf_node = [&](size_t leaf) {
+        auto process_leaf_node = [&](size_t leaf) -> void {
             Float_ result_sum = 0;
             auto neg_f = workspace.leaf_neg_f[leaf].data();
             std::fill_n(neg_f, num_dim_, 0);

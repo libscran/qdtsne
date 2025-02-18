@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
-<tagfile doxygen_version="1.9.8">
+<tagfile doxygen_version="1.12.0">
   <compound kind="file">
     <name>initialize.hpp</name>
     <path>qdtsne/</path>
@@ -186,7 +186,7 @@
       <type>knncolle::NeighborList&lt; Index_, Float_ &gt;</type>
       <name>NeighborList</name>
       <anchorfile>namespaceqdtsne.html</anchorfile>
-      <anchor>a6e5bf645bf5e126392f455c6b5375fbf</anchor>
+      <anchor>a06453be45faea3c21c0a66a0564bd084</anchor>
       <arglist></arglist>
     </member>
     <member kind="function">

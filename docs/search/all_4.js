@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['final_5fmomentum_0',['final_momentum',['../structqdtsne_1_1Options.html#aade824422084ecfb009f600c38c58abe',1,'qdtsne::Options']]],
-  ['find_5fnearest_5fneighbors_1',['find_nearest_neighbors',['https://knncolle.github.io/knncolle/namespaceknncolle.html#a22e035b2d5eb293fd828a67e61f3213d',1,'knncolle']]],
-  ['find_5fnearest_5fneighbors_2ehpp_2',['find_nearest_neighbors.hpp',['https://knncolle.github.io/knncolle/find__nearest__neighbors_8hpp.html',1,'']]],
-  ['find_5fnearest_5fneighbors_5findex_5fonly_3',['find_nearest_neighbors_index_only',['https://knncolle.github.io/knncolle/namespaceknncolle.html#a0b726765329530a709095ba304033a0d',1,'knncolle']]],
-  ['for_20t_20sne_4',['C++ library for t-SNE',['../index.html',1,'']]]
+  ['eta_0',['eta',['../structqdtsne_1_1Options.html#a7f0dcada1addd28c257f0074727f9eae',1,'qdtsne::Options']]],
+  ['euclideandistance_1',['EuclideanDistance',['https://knncolle.github.io/knncolle/classknncolle_1_1EuclideanDistance.html',1,'knncolle']]],
+  ['exaggeration_5ffactor_2',['exaggeration_factor',['../structqdtsne_1_1Options.html#ab0f96457fa0b6d05dd32b8ab3fdf31b6',1,'qdtsne::Options']]]
 ];

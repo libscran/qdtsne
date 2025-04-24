@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['qdtsne_2ehpp_0',['qdtsne.hpp',['../qdtsne_8hpp.html',1,'']]]
+  ['prebuilt_2ehpp_0',['Prebuilt.hpp',['https://knncolle.github.io/knncolle/Prebuilt_8hpp.html',1,'']]]
 ];

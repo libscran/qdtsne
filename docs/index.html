@@ -106,14 +106,23 @@ $(function(){ initResizable(false); });
 <div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="qdtsne_8hpp.html">qdtsne/qdtsne.hpp</a>&quot;</span></div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Assuming `data` contains high-dimensional data in column-major format,</span></div>
-<div class="line"><span class="comment">// i.e., each column is a observation and each row is a dimension. We </span></div>
-<div class="line"><span class="comment">// initialize the t-SNE algorithm for a 2-dimensional embedding.</span></div>
-<div class="line"><a class="code hl_struct" href="structqdtsne_1_1Options.html">qdtsne::Options</a> opt;</div>
-<div class="line"><span class="keyword">auto</span> status = <a class="code hl_function" href="namespaceqdtsne.html#ac7386895ff09abfb4c792a0ffdd9e170">qdtsne::initialize&lt;2&gt;</a>(nrow, ncol, data.data(), <a class="code hl_classRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1VptreeBuilder.html">knncolle::VptreeBuilder</a>(), opt);</div>
+<div class="line"><span class="comment">// i.e., each column is a observation and each row is a dimension.</span></div>
+<div class="line"><span class="keywordtype">int</span> nrow = 10;</div>
+<div class="line"><span class="keywordtype">int</span> ncol = 2000;</div>
+<div class="line">std::vector&lt;double&gt; data(nrow * ncol);</div>
 <div class="line"> </div>
-<div class="line"><span class="comment">// Starting the t-SNE algorithm from random 2-dimensional coordinates.</span></div>
-<div class="line"><span class="keyword">auto</span> Y = <a class="code hl_function" href="namespaceqdtsne.html#a916236f6f1d1f805b1e68f2a11ae4296">qdtsne::initialize_random&lt;2&gt;</a>(ncol); </div>
-<div class="line">status.run(Y.data());</div>
+<div class="line"><span class="comment">// Configuring the neighbor search algorithm; here, we&#39;ll be using an exact</span></div>
+<div class="line"><span class="comment">// search based on VP trees with a Euclidean distance metric.</span></div>
+<div class="line"><a class="code hl_classRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1VptreeBuilder.html">knncolle::VptreeBuilder&lt;int, double, double&gt;</a> nnalg(</div>
+<div class="line">    std::make_shared&lt;<a class="code hl_classRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1EuclideanDistance.html">knncolle::EuclideanDistance&lt;double, double&gt;</a> &gt;()</div>
+<div class="line">);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Run the t-SNE algorithm for a 2-dimensional embedding.</span></div>
+<div class="line"><a class="code hl_struct" href="structqdtsne_1_1Options.html">qdtsne::Options</a> opt;</div>
+<div class="line"><span class="keyword">auto</span> status = <a class="code hl_function" href="namespaceqdtsne.html#ac7386895ff09abfb4c792a0ffdd9e170">qdtsne::initialize&lt;2&gt;</a>(nrow, ncol, data.data(), nnalg, opt);</div>
+<div class="line"><span class="keyword">auto</span> Y = <a class="code hl_function" href="namespaceqdtsne.html#a916236f6f1d1f805b1e68f2a11ae4296">qdtsne::initialize_random&lt;2&gt;</a>(ncol); <span class="comment">// starting from random 2D coordinates.</span></div>
+<div class="line">status.run(Y.data()); <span class="comment">// Run through the iterations to obtain the t-SNE embedding.</span></div>
+<div class="ttc" id="aclassknncolle_1_1EuclideanDistance_html"><div class="ttname"><a href="https://knncolle.github.io/knncolle/classknncolle_1_1EuclideanDistance.html">knncolle::EuclideanDistance</a></div></div>
 <div class="ttc" id="aclassknncolle_1_1VptreeBuilder_html"><div class="ttname"><a href="https://knncolle.github.io/knncolle/classknncolle_1_1VptreeBuilder.html">knncolle::VptreeBuilder</a></div></div>
 <div class="ttc" id="anamespaceqdtsne_html_a916236f6f1d1f805b1e68f2a11ae4296"><div class="ttname"><a href="namespaceqdtsne.html#a916236f6f1d1f805b1e68f2a11ae4296">qdtsne::initialize_random</a></div><div class="ttdeci">void initialize_random(Float_ *Y, size_t num_points, int seed=42)</div><div class="ttdef"><b>Definition</b> utils.hpp:62</div></div>
 <div class="ttc" id="anamespaceqdtsne_html_ac7386895ff09abfb4c792a0ffdd9e170"><div class="ttname"><a href="namespaceqdtsne.html#ac7386895ff09abfb4c792a0ffdd9e170">qdtsne::initialize</a></div><div class="ttdeci">Status&lt; num_dim_, Index_, Float_ &gt; initialize(NeighborList&lt; Index_, Float_ &gt; neighbors, const Options &amp;options)</div><div class="ttdef"><b>Definition</b> initialize.hpp:53</div></div>
@@ -122,11 +131,11 @@ $(function(){ initResizable(false); });
 </div><!-- fragment --><p>You can change the parameters with the relevant setters:</p>
 <div class="fragment"><div class="line">opt.<a class="code hl_variable" href="structqdtsne_1_1Options.html#ae485ba64f2ff5379f09a75fb89447628">perplexity</a> = 10;</div>
 <div class="line">opt.<a class="code hl_variable" href="structqdtsne_1_1Options.html#a0efc1892882f473e5e38e5ab11d5d604">mom_switch_iter</a> = 100;</div>
+<div class="line"><span class="keyword">auto</span> status2 = <a class="code hl_function" href="namespaceqdtsne.html#ac7386895ff09abfb4c792a0ffdd9e170">qdtsne::initialize&lt;2&gt;</a>(nrow, ncol, data.data(), nnalg, opt);</div>
 <div class="ttc" id="astructqdtsne_1_1Options_html_a0efc1892882f473e5e38e5ab11d5d604"><div class="ttname"><a href="structqdtsne_1_1Options.html#a0efc1892882f473e5e38e5ab11d5d604">qdtsne::Options::mom_switch_iter</a></div><div class="ttdeci">int mom_switch_iter</div><div class="ttdef"><b>Definition</b> Options.hpp:63</div></div>
 <div class="ttc" id="astructqdtsne_1_1Options_html_ae485ba64f2ff5379f09a75fb89447628"><div class="ttname"><a href="structqdtsne_1_1Options.html#ae485ba64f2ff5379f09a75fb89447628">qdtsne::Options::perplexity</a></div><div class="ttdeci">double perplexity</div><div class="ttdef"><b>Definition</b> Options.hpp:22</div></div>
 </div><!-- fragment --><p>You can also stop and start the algorithm:</p>
-<div class="fragment"><div class="line"><span class="keyword">auto</span> status2 = <a class="code hl_function" href="namespaceqdtsne.html#ac7386895ff09abfb4c792a0ffdd9e170">qdtsne::initialize</a>(nrow, ncol, data.data(), <a class="code hl_classRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1VptreeBuilder.html">knncolle::VptreeBuilder</a>(), opt);</div>
-<div class="line">status2.run(Y.data(), 200); <span class="comment">// run up to 200 iterations</span></div>
+<div class="fragment"><div class="line">status2.run(Y.data(), 200); <span class="comment">// run up to 200 iterations</span></div>
 <div class="line">status2.run(Y.data(), 500); <span class="comment">// run up to 500 iterations</span></div>
 </div><!-- fragment --><p>See the <a href="https://libscran.github.io/qdtsne/">reference documentation</a> for more details.</p>
 <h1>Approximations for speed</h1>

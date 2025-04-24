@@ -200,15 +200,15 @@
       <type>Status&lt; num_dim_, Index_, Float_ &gt;</type>
       <name>initialize</name>
       <anchorfile>namespaceqdtsne.html</anchorfile>
-      <anchor>ac2c8c7711797f21e747524ee0d0cbec5</anchor>
-      <arglist>(const knncolle::Prebuilt&lt; Dim_, Index_, Float_ &gt; &amp;prebuilt, const Options &amp;options)</arglist>
+      <anchor>ae63cd82791c5b13f110050b28d3fffbd</anchor>
+      <arglist>(const knncolle::Prebuilt&lt; Index_, Input_, Float_ &gt; &amp;prebuilt, const Options &amp;options)</arglist>
     </member>
     <member kind="function">
       <type>Status&lt; num_dim_, Index_, Float_ &gt;</type>
       <name>initialize</name>
       <anchorfile>namespaceqdtsne.html</anchorfile>
-      <anchor>a417fdc4a516be1ea632ec2df48e60c6d</anchor>
-      <arglist>(Dim_ data_dim, Index_ num_points, const Float_ *data, const knncolle::Builder&lt; knncolle::SimpleMatrix&lt; Dim_, Index_, Float_ &gt;, Float_ &gt; &amp;builder, const Options &amp;options)</arglist>
+      <anchor>af2c49636abb5292d2d7e3756e7dc2a78</anchor>
+      <arglist>(std::size_t data_dim, Index_ num_points, const Float_ *data, const knncolle::Builder&lt; Index_, Float_, Float_, Matrix_ &gt; &amp;builder, const Options &amp;options)</arglist>
     </member>
     <member kind="function">
       <type>int</type>

@@ -1,7 +1,14 @@
 var searchData=
 [
-  ['c_20library_20for_20t_20sne_0',['C++ library for t-SNE',['../index.html',1,'']]],
-  ['can_5fsearch_5fall_1',['can_search_all',['https://knncolle.github.io/knncolle/classknncolle_1_1BruteforceSearcher.html#a9c7cd8e9f01f5798d5b98a1d5318e8f4',1,'knncolle::BruteforceSearcher::can_search_all()'],['https://knncolle.github.io/knncolle/classknncolle_1_1KmknnSearcher.html#a8fae155ea1722024e5dde21550674116',1,'knncolle::KmknnSearcher::can_search_all()'],['https://knncolle.github.io/knncolle/classknncolle_1_1Searcher.html#a8362d0f6ea1b7f6e09d26a9188d31d1d',1,'knncolle::Searcher::can_search_all()'],['https://knncolle.github.io/knncolle/classknncolle_1_1VptreeSearcher.html#ac7a0f11645ab4f57b9991602339e0e15',1,'knncolle::VptreeSearcher::can_search_all()']]],
-  ['cap_5fk_2',['cap_k',['https://knncolle.github.io/knncolle/namespaceknncolle.html#a926c81cd626de7081b073a891d352543',1,'knncolle']]],
-  ['create_5fworkspace_3',['create_workspace',['https://knncolle.github.io/knncolle/classknncolle_1_1MockMatrix.html#ab67d03fc96f29ca6d37fb00a1d7fddc3',1,'knncolle::MockMatrix']]]
+  ['bruteforce_2ehpp_0',['Bruteforce.hpp',['https://knncolle.github.io/knncolle/Bruteforce_8hpp.html',1,'']]],
+  ['bruteforcebuilder_1',['BruteforceBuilder',['https://knncolle.github.io/knncolle/classknncolle_1_1BruteforceBuilder.html',1,'knncolle::BruteforceBuilder&lt; typename Index_, typename Data_, typename Distance_, class Matrix_, class DistanceMetric_ &gt;'],['https://knncolle.github.io/knncolle/classknncolle_1_1BruteforceBuilder.html#a4a7b4fa0a5301677f340b64875969929',1,'knncolle::BruteforceBuilder::BruteforceBuilder()']]],
+  ['bruteforceprebuilt_2',['BruteforcePrebuilt',['https://knncolle.github.io/knncolle/classknncolle_1_1BruteforcePrebuilt.html',1,'knncolle']]],
+  ['bruteforcesearcher_3',['BruteforceSearcher',['https://knncolle.github.io/knncolle/classknncolle_1_1BruteforceSearcher.html',1,'knncolle']]],
+  ['build_5fraw_4',['build_raw',['https://knncolle.github.io/knncolle/classknncolle_1_1BruteforceBuilder.html#a96c9cd26d07b09768dc73b2e73899510',1,'knncolle::BruteforceBuilder::build_raw()'],['https://knncolle.github.io/knncolle/classknncolle_1_1Builder.html#acd18a78af362f948ede3ddd8d5f6e88c',1,'knncolle::Builder::build_raw()'],['https://knncolle.github.io/knncolle/classknncolle_1_1L2NormalizedBuilder.html#a437ca7f6f9a3b82fa32762edba0cd08b',1,'knncolle::L2NormalizedBuilder::build_raw()'],['https://knncolle.github.io/knncolle/classknncolle_1_1VptreeBuilder.html#aafa5db0eecf99ebab88d21f038b6b15a',1,'knncolle::VptreeBuilder::build_raw()']]],
+  ['build_5fshared_5',['build_shared',['https://knncolle.github.io/knncolle/classknncolle_1_1Builder.html#a9a7a0cb39688bedba6ab406e59da6c90',1,'knncolle::Builder']]],
+  ['build_5funique_6',['build_unique',['https://knncolle.github.io/knncolle/classknncolle_1_1Builder.html#a93cac638de3e4ad31919bc5d677d16b7',1,'knncolle::Builder']]],
+  ['builder_7',['Builder',['https://knncolle.github.io/knncolle/classknncolle_1_1Builder.html',1,'knncolle']]],
+  ['builder_2ehpp_8',['Builder.hpp',['https://knncolle.github.io/knncolle/Builder_8hpp.html',1,'']]],
+  ['builder_3c_20index_5f_2c_20data_5f_2c_20distance_5f_2c_20matrix_5f_20_3e_9',['Builder&lt; Index_, Data_, Distance_, Matrix_ &gt;',['https://knncolle.github.io/knncolle/classknncolle_1_1Builder.html',1,'knncolle']]],
+  ['buildermatrix_10',['BuilderMatrix',['https://knncolle.github.io/knncolle/classknncolle_1_1L2NormalizedBuilder.html#abeaefcb9c85ef73693defd5f59503ff2',1,'knncolle::L2NormalizedBuilder']]]
 ];

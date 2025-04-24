@@ -23,14 +23,22 @@ Using this library is as simple as including the header file in your source code
 #include "qdtsne/qdtsne.hpp"
 
 // Assuming `data` contains high-dimensional data in column-major format,
-// i.e., each column is a observation and each row is a dimension. We 
-// initialize the t-SNE algorithm for a 2-dimensional embedding.
-qdtsne::Options opt;
-auto status = qdtsne::initialize<2>(nrow, ncol, data.data(), knncolle::VptreeBuilder(), opt);
+// i.e., each column is a observation and each row is a dimension.
+int nrow = 10;
+int ncol = 2000;
+std::vector<double> data(nrow * ncol);
 
-// Starting the t-SNE algorithm from random 2-dimensional coordinates.
-auto Y = qdtsne::initialize_random<2>(ncol); 
-status.run(Y.data());
+// Configuring the neighbor search algorithm; here, we'll be using an exact
+// search based on VP trees with a Euclidean distance metric.
+knncolle::VptreeBuilder<int, double, double> nnalg(
+    std::make_shared<knncolle::EuclideanDistance<double, double> >()
+);
+
+// Run the t-SNE algorithm for a 2-dimensional embedding.
+qdtsne::Options opt;
+auto status = qdtsne::initialize<2>(nrow, ncol, data.data(), nnalg, opt);
+auto Y = qdtsne::initialize_random<2>(ncol); // starting from random 2D coordinates.
+status.run(Y.data()); // Run through the iterations to obtain the t-SNE embedding.
 ```
 
 You can change the parameters with the relevant setters:
@@ -38,12 +46,12 @@ You can change the parameters with the relevant setters:
 ```cpp
 opt.perplexity = 10;
 opt.mom_switch_iter = 100;
+auto status2 = qdtsne::initialize<2>(nrow, ncol, data.data(), nnalg, opt);
 ```
 
 You can also stop and start the algorithm:
 
 ```cpp
-auto status2 = qdtsne::initialize(nrow, ncol, data.data(), knncolle::VptreeBuilder(), opt);
 status2.run(Y.data(), 200); // run up to 200 iterations
 status2.run(Y.data(), 500); // run up to 500 iterations
 ```

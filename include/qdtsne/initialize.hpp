@@ -40,7 +40,7 @@ Status<num_dim_, Index_, Float_> initialize(NeighborList<Index_, Float_> nn, Flo
  *
  * @tparam num_dim_ Number of dimensions of the final embedding.
  * @tparam Index_ Integer type for the neighbor indices.
- * @tparam Float_ Floating-point type to use for the calculations.
+ * @tparam Float_ Floating-point type to use for the calculations and output data.
  *
  * @param neighbors List of indices and distances to nearest neighbors for each observation. 
  * Each observation should have the same number of neighbors, sorted by increasing distance, which should not include itself.
@@ -65,17 +65,18 @@ Status<num_dim_, Index_, Float_> initialize(NeighborList<Index_, Float_> neighbo
  * before proceeding with the initialization of the t-SNE algorithm.
  *
  * @tparam num_dim_ Number of dimensions of the final embedding.
- * @tparam Dim_ Integer type for the dataset dimensions.
- * @tparam Index_ Integer type for the neighbor indices.
- * @tparam Float_ Floating-point type to use for the calculations.
+ * @tparam Index_ Integer type of the neighbor indices.
+ * @tparam Input_ Floating-point type of the input data for the neighbor search.
+ * This is not used other than to define the `knncolle::Prebuilt` type.
+ * @tparam Float_ Floating-point type to use for the calculations and output data.
  *
- * @param prebuilt A `knncolle::Prebuilt` instance containing a neighbor search index built on the dataset of interest.
+ * @param prebuilt A neighbor search index built on the dataset of interest.
  * @param options Further options.
  *
  * @return A `Status` object representing an initial state of the t-SNE algorithm.
  */
-template<int num_dim_, typename Dim_, typename Index_, typename Float_>
-Status<num_dim_, Index_, Float_> initialize(const knncolle::Prebuilt<Dim_, Index_, Float_>& prebuilt, const Options& options) { 
+template<int num_dim_, typename Index_, typename Input_, typename Float_>
+Status<num_dim_, Index_, Float_> initialize(const knncolle::Prebuilt<Index_, Input_, Float_>& prebuilt, const Options& options) { 
     const int K = perplexity_to_k(options.perplexity); 
     auto neighbors = find_nearest_neighbors(prebuilt, K, options.num_threads);
     return internal::initialize<num_dim_>(std::move(neighbors), static_cast<Float_>(options.perplexity), options);
@@ -86,9 +87,10 @@ Status<num_dim_, Index_, Float_> initialize(const knncolle::Prebuilt<Dim_, Index
  * before proceeding with the initialization of the t-SNE algorithm.
  *
  * @tparam num_dim_ Number of dimensions of the final embedding.
- * @tparam Dim_ Integer type for the dataset dimensions.
  * @tparam Index_ Integer type for the neighbor indices.
- * @tparam Float_ Floating-point type to use for the calculations.
+ * @tparam Float_ Floating-point type to use for the input/output data and calculations.
+ * @tparam Matrix_ Class of the input matrix for the neighbor search.
+ * This should be a `knncolle::SimpleMatrix` or its base class (i.e., `knncolle::Matrix`).
  *
  * @param data_dim Number of rows of the matrix at `data`, corresponding to the dimensions of the input dataset.
  * @param num_points Number of columns of the matrix at `data`, corresponding to the points of the input dataset.
@@ -98,15 +100,15 @@ Status<num_dim_, Index_, Float_> initialize(const knncolle::Prebuilt<Dim_, Index
  *
  * @return A `Status` object representing an initial state of the t-SNE algorithm.
  */
-template<int num_dim_, typename Dim_, typename Index_, typename Float_>
+template<int num_dim_, typename Index_, typename Float_, class Matrix_>
 Status<num_dim_, Index_, Float_> initialize(
-    Dim_ data_dim,
+    std::size_t data_dim,
     Index_ num_points,
     const Float_* data,
-    const knncolle::Builder<knncolle::SimpleMatrix<Dim_, Index_, Float_>, Float_>& builder,
+    const knncolle::Builder<Index_, Float_, Float_, Matrix_>& builder,
     const Options& options) 
 {
-    auto index = builder.build_unique(knncolle::SimpleMatrix<Dim_, Index_, Float_>(data_dim, num_points, data));
+    auto index = builder.build_unique(knncolle::SimpleMatrix<Index_, Float_>(data_dim, num_points, data));
     return initialize<num_dim_>(*index, options);
 }
 

@@ -8,7 +8,7 @@
 
 class GaussianTest : public ::testing::TestWithParam<std::tuple<int, double> > {
 protected:
-    inline static std::unique_ptr<knncolle::Prebuilt<int, int, double> > index;
+    inline static std::unique_ptr<knncolle::Prebuilt<int, double, double> > index;
     inline static int N = 200;
 
     static void SetUpTestSuite() {
@@ -19,7 +19,9 @@ protected:
         for (auto& y : X) {
             y = dist(rng);
         }
-        index = knncolle::VptreeBuilder().build_unique(knncolle::SimpleMatrix(D, N, X.data()));
+
+        knncolle::VptreeBuilder<int, double, double> builder(std::make_shared<knncolle::EuclideanDistance<double, double> >());
+        index = builder.build_unique(knncolle::SimpleMatrix(D, N, X.data()));
         return;
     }
 

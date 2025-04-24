@@ -25,7 +25,8 @@ TEST_P(SymmetrizeTest, Combining) {
             d = dist(rng);
         }
 
-        auto index = knncolle::VptreeBuilder().build_unique(knncolle::SimpleMatrix<int, int, double>(ndim, nobs, data.data()));
+        knncolle::VptreeBuilder<int, double, double> builder(std::make_shared<knncolle::EuclideanDistance<double, double> >());
+        auto index = builder.build_unique(knncolle::SimpleMatrix<int, double>(ndim, nobs, data.data()));
         auto searcher = index->initialize();
         std::vector<int> indices;
         std::vector<double> distances;

@@ -20,6 +20,7 @@ protected:
     inline static int ndim = 5;
     inline static int nobs = 200;
     inline static std::vector<double> X;
+    inline static std::shared_ptr<knncolle::Builder<int, double, double> > builder;
 
     static void SetUpTestSuite() {
         X.resize(ndim * nobs);
@@ -29,6 +30,10 @@ protected:
         for (auto& y : X) {
             y = dist(rng);
         }
+
+        builder.reset(new knncolle::VptreeBuilder<int, double, double>(
+            std::make_shared<knncolle::EuclideanDistance<double, double> >()
+        ));
     }
 };
 
@@ -37,7 +42,7 @@ TEST_P(TsneTester, Initialization) {
 
     qdtsne::Options opt;
     opt.perplexity = K / 3.0;
-    auto status = qdtsne::initialize<2>(ndim, nobs, X.data(), knncolle::VptreeBuilder(), opt);
+    auto status = qdtsne::initialize<2>(ndim, nobs, X.data(), *builder, opt);
 
     // Checking probabilities are all between zero and 1.
     const auto& probs = status.get_neighbors();
@@ -93,7 +98,7 @@ TEST_P(TsneTester, Runner) {
 
     qdtsne::Options opt;
     opt.perplexity = K / 3.0;
-    auto status = qdtsne::initialize<2>(ndim, nobs, X.data(), knncolle::VptreeBuilder(), opt);
+    auto status = qdtsne::initialize<2>(ndim, nobs, X.data(), *builder, opt);
 
     auto Y = qdtsne::initialize_random<2>(nobs);
     auto old = Y;
@@ -114,7 +119,7 @@ TEST_P(TsneTester, Runner) {
 
     // Same results when run in parallel.
     opt.num_threads = 3;
-    auto pstatus = qdtsne::initialize<2>(ndim, nobs, X.data(), knncolle::VptreeBuilder(), opt);
+    auto pstatus = qdtsne::initialize<2>(ndim, nobs, X.data(), *builder, opt);
 
     auto copy = old;
     pstatus.run(copy.data());
@@ -126,13 +131,13 @@ TEST_P(TsneTester, StopStart) {
 
     qdtsne::Options opt;
     opt.perplexity = K / 3.0;
-    auto status = qdtsne::initialize<2>(ndim, nobs, X.data(), knncolle::VptreeBuilder(), opt);
+    auto status = qdtsne::initialize<2>(ndim, nobs, X.data(), *builder, opt);
 
     auto Y = qdtsne::initialize_random<2>(nobs);
     auto copy = Y;
     status.run(Y.data());
 
-    auto restatus = qdtsne::initialize<2>(ndim, nobs, X.data(), knncolle::VptreeBuilder(), opt);
+    auto restatus = qdtsne::initialize<2>(ndim, nobs, X.data(), *builder, opt);
     restatus.run(copy.data(), 500);
     restatus.run(copy.data(), 1000);
 
@@ -144,7 +149,7 @@ TEST_P(TsneTester, AltStart) {
 
     qdtsne::NeighborList<int, double> neighbors(nobs);
     {
-        auto index = knncolle::VptreeBuilder<>().build_unique(knncolle::SimpleMatrix(ndim, nobs, X.data()));
+        auto index = builder->build_unique(knncolle::SimpleMatrix(ndim, nobs, X.data()));
         auto searcher = index->initialize();
         std::vector<int> indices;
         std::vector<double> distances;
@@ -165,7 +170,7 @@ TEST_P(TsneTester, AltStart) {
     status.run(Y.data());
 
     options.perplexity = K / 3.0;
-    auto ref_status = qdtsne::initialize<2>(ndim, nobs, X.data(), knncolle::VptreeBuilder(), options);
+    auto ref_status = qdtsne::initialize<2>(ndim, nobs, X.data(), *builder, options);
     auto copy = original;
     ref_status.run(copy.data());
 
@@ -179,7 +184,7 @@ TEST_P(TsneTester, LeafApproximation) {
     opt.perplexity = K / 3.0;
     opt.max_depth = 4;
     opt.leaf_approximation = true;
-    auto status = qdtsne::initialize<2>(ndim, nobs, X.data(), knncolle::VptreeBuilder(), opt);
+    auto status = qdtsne::initialize<2>(ndim, nobs, X.data(), *builder, opt);
 
     auto Y = qdtsne::initialize_random<2>(nobs);
     auto old = Y;
@@ -200,7 +205,7 @@ TEST_P(TsneTester, LeafApproximation) {
 
     // Same results when run in parallel.
     opt.num_threads = 3;
-    auto pstatus = qdtsne::initialize<2>(ndim, nobs, X.data(), knncolle::VptreeBuilder(), opt);
+    auto pstatus = qdtsne::initialize<2>(ndim, nobs, X.data(), *builder, opt);
 
     auto copy = old;
     pstatus.run(copy.data());
@@ -212,7 +217,9 @@ TEST_P(TsneTester, Float32) {
     qdtsne::Options opt;
     opt.perplexity = K / 3.0;
 
-    auto index = knncolle::VptreeBuilder<knncolle::EuclideanDistance, knncolle::SimpleMatrix<int, int, double>, float>().build_unique(knncolle::SimpleMatrix<int, int, double>(ndim, nobs, X.data()));
+    knncolle::VptreeBuilder<int, double, float> builder(std::make_shared<knncolle::EuclideanDistance<double, float> >());
+    auto index = builder.build_unique(knncolle::SimpleMatrix<int, double>(ndim, nobs, X.data()));
+
     auto status = qdtsne::initialize<2>(*index, opt);
     auto Y = qdtsne::initialize_random<2, float>(nobs);
     auto old = Y;

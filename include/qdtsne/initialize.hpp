@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <stdexcept>
+#include <cstddef>
 
 #include "Status.hpp"
 #include "Options.hpp"
@@ -39,8 +40,8 @@ Status<num_dim_, Index_, Float_> initialize(NeighborList<Index_, Float_> nn, Flo
  * Initialize the data structures for t-SNE algorithm, given the nearest neighbors of each observation.
  *
  * @tparam num_dim_ Number of dimensions of the final embedding.
- * @tparam Index_ Integer type for the neighbor indices.
- * @tparam Float_ Floating-point type to use for the calculations and output data.
+ * @tparam Index_ Integer type of the observation indices.
+ * @tparam Float_ Floating-point type of the neighbor distances and output embedding.
  *
  * @param neighbors List of indices and distances to nearest neighbors for each observation. 
  * Each observation should have the same number of neighbors, sorted by increasing distance, which should not include itself.
@@ -65,10 +66,10 @@ Status<num_dim_, Index_, Float_> initialize(NeighborList<Index_, Float_> neighbo
  * before proceeding with the initialization of the t-SNE algorithm.
  *
  * @tparam num_dim_ Number of dimensions of the final embedding.
- * @tparam Index_ Integer type of the neighbor indices.
+ * @tparam Index_ Integer type of the observation indices.
  * @tparam Input_ Floating-point type of the input data for the neighbor search.
  * This is not used other than to define the `knncolle::Prebuilt` type.
- * @tparam Float_ Floating-point type to use for the calculations and output data.
+ * @tparam Float_ Floating-point type of the neighbor distances and output embedding.
  *
  * @param prebuilt A neighbor search index built on the dataset of interest.
  * @param options Further options.
@@ -87,8 +88,8 @@ Status<num_dim_, Index_, Float_> initialize(const knncolle::Prebuilt<Index_, Inp
  * before proceeding with the initialization of the t-SNE algorithm.
  *
  * @tparam num_dim_ Number of dimensions of the final embedding.
- * @tparam Index_ Integer type for the neighbor indices.
- * @tparam Float_ Floating-point type to use for the input/output data and calculations.
+ * @tparam Index_ Integer type of the observation indices.
+ * @tparam Float_ Floating-point type of the input data, neighbor distances and output embedding.
  * @tparam Matrix_ Class of the input matrix for the neighbor search.
  * This should be a `knncolle::SimpleMatrix` or its base class (i.e., `knncolle::Matrix`).
  *
@@ -103,7 +104,7 @@ Status<num_dim_, Index_, Float_> initialize(const knncolle::Prebuilt<Index_, Inp
 template<int num_dim_, typename Index_, typename Float_, class Matrix_>
 Status<num_dim_, Index_, Float_> initialize(
     std::size_t data_dim,
-    Index_ num_points,
+    std::size_t num_points,
     const Float_* data,
     const knncolle::Builder<Index_, Float_, Float_, Matrix_>& builder,
     const Options& options) 

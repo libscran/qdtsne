@@ -44,15 +44,15 @@ false
 #endif
 , typename Index_, typename Float_>
 void compute_gaussian_perplexity(NeighborList<Index_, Float_>& neighbors, Float_ perplexity, int nthreads) {
-    const size_t num_points = neighbors.size();
+    Index_ num_points = neighbors.size();
     const Float_ log_perplexity = std::log(perplexity);
 
-    parallelize(nthreads, num_points, [&](int, size_t start, size_t length) -> void {
+    parallelize(nthreads, num_points, [&](int, Index_ start, Index_ length) -> void {
         std::vector<Float_> squared_delta_dist;
         std::vector<Float_> quad_delta_dist;
         std::vector<Float_> prob_numerator; // i.e., the numerator of the probability.
 
-        for (size_t n = start, end = start + length; n < end; ++n) {
+        for (Index_ n = start, end = start + length; n < end; ++n) {
             auto& current = neighbors[n];
             const int K = current.size();
             if (K == 0) {

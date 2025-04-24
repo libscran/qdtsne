@@ -10,6 +10,7 @@
 #include <random>
 #include <cmath>
 #include <vector>
+#include <cstddef>
 
 #include "aarand/aarand.hpp"
 #include "knncolle/knncolle.hpp"
@@ -28,8 +29,8 @@ namespace qdtsne {
  * Neighbors for each observation should be unique - there should be no more than one occurrence of each index in each inner vector.
  * Also, the inner vector for observation `i` should not contain any `Neighbor` with index `i`.
  *
- * @tparam Index_ Integer type to use for the indices.
- * @tparam Float_ Floating-point type to use for the calculations.
+ * @tparam Index_ Integer type of the observation indices.
+ * @tparam Float_ Floating-point type of the neighbor distances.
  */
 template<typename Index_, typename Float_>
 using NeighborList = knncolle::NeighborList<Index_, Float_>;
@@ -51,7 +52,7 @@ inline int perplexity_to_k(double perplexity) {
  * to avoid problems with differences in the distribution functions across C++ standard library implementations.
  *
  * @tparam num_dim_ Number of embedding dimensions.
- * @tparam Float_ Floating-point type to use for the calculations.
+ * @tparam Float_ Floating-point type of the embedding.
  *
  * @param[out] Y Pointer to a 2D array with number of rows and columns equal to `num_dim` and `num_points`, respectively.
  * On output, `Y` is filled with random draws from a standard normal distribution. 
@@ -59,17 +60,17 @@ inline int perplexity_to_k(double perplexity) {
  * @param seed Seed for the random number generator.
  */
 template<int num_dim_, typename Float_ = double>
-void initialize_random(Float_* Y, size_t num_points, int seed = 42) {
+void initialize_random(Float_* Y, std::size_t num_points, int seed = 42) {
     std::mt19937_64 rng(seed);
 
-    size_t total = num_points * num_dim_;
+    std::size_t total = num_points * static_cast<std::size_t>(num_dim_); // cast to avoid overflow.
     bool odd = total % 2;
     if (odd) {
         --total;
     }
 
     // Box-Muller gives us two random values at a time.
-    for (size_t i = 0; i < total; i += 2) {
+    for (std::size_t i = 0; i < total; i += 2) {
         auto paired = aarand::standard_normal<Float_>(rng);
         Y[i] = paired.first;
         Y[i + 1] = paired.second;
@@ -88,7 +89,7 @@ void initialize_random(Float_* Y, size_t num_points, int seed = 42) {
  * Creates the initial locations of each observation in the embedding. 
  *
  * @tparam num_dim_ Number of embedding dimensions.
- * @tparam Float_ Floating-point type to use for the calculations.
+ * @tparam Float_ Floating-point type of the embedding.
  *
  * @param num_points Number of observations.
  * @param seed Seed for the random number generator.
@@ -96,8 +97,8 @@ void initialize_random(Float_* Y, size_t num_points, int seed = 42) {
  * @return A vector of length `num_points * num_dim_` containing random draws from a standard normal distribution. 
  */
 template<int num_dim_, typename Float_ = double>
-std::vector<Float_> initialize_random(size_t num_points, int seed = 42) {
-    std::vector<Float_> Y(num_dim_ * num_points);
+std::vector<Float_> initialize_random(std::size_t num_points, int seed = 42) {
+    std::vector<Float_> Y(num_points * static_cast<std::size_t>(num_dim_)); // cast to avoid overflow.
     initialize_random<num_dim_>(Y.data(), num_points, seed);
     return Y;
 }

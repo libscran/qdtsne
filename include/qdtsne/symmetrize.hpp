@@ -12,12 +12,11 @@ namespace internal {
 
 template<typename Index_, typename Float_>
 void symmetrize_matrix(NeighborList<Index_, Float_>& x) {
-    size_t num_points = x.size();
-    std::vector<size_t> last(num_points);
-    std::vector<size_t> original(num_points);
+    Index_ num_points = x.size();
+    std::vector<decltype(x[0].size())> last(num_points), original(num_points);
 
     Float_ total = 0;
-    for (size_t i = 0; i < num_points; ++i) {
+    for (Index_ i = 0; i < num_points; ++i) {
         auto& current = x[i];
         std::sort(current.begin(), current.end()); // sorting by ID, see below.
 
@@ -27,9 +26,8 @@ void symmetrize_matrix(NeighborList<Index_, Float_>& x) {
         }
     }
 
-    for (size_t first = 0; first < num_points; ++first) {
-        auto& current = x[first];
-        const Index_ desired = first;
+    for (Index_ i = 0; i < num_points; ++i) {
+        auto& current = x[i];
 
         // Looping through the neighbors and searching for self in each
         // neighbor's neighbors. Assuming that the each neighbor list is sorted
@@ -41,21 +39,22 @@ void symmetrize_matrix(NeighborList<Index_, Float_>& x) {
             auto& target = x[y.first];
             auto& curlast = last[y.first];
             auto limits = original[y.first];
-            while (curlast < limits && target[curlast].first < desired) {
+            while (curlast < limits && target[curlast].first < i) {
                 ++curlast;
             }
 
-            if (curlast < limits && target[curlast].first == desired) {
-                if (desired < y.first) { 
-                    // Adding the probabilities - but if desired > y.first,
-                    // then this would have already been done when y.first was
-                    // 'desired'. So we skip this to avoid adding it twice.
+            if (curlast < limits && target[curlast].first == i) {
+                if (i < y.first) { 
+                    // Adding the probabilities - but if i > y.first, then this
+                    // would have already been done in a previous iteration of
+                    // the outermost loop where i and y.first swap values. So
+                    // we skip this to avoid adding it twice.
                     Float_ combined = y.second + target[curlast].second;
                     y.second = combined;
                     target[curlast].second = combined;
                 }
             } else {
-                target.emplace_back(desired, y.second);
+                target.emplace_back(i, y.second);
             }
         }
     }

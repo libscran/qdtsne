@@ -37,6 +37,7 @@
 #include <array>
 #include <algorithm>
 #include <vector>
+#include <cstddef>
 
 #include "utils.hpp"
 
@@ -44,17 +45,20 @@ namespace qdtsne {
 
 namespace internal {
 
+// Assume that size_t is big enough to hold positional indices to all of the nodes.
+typedef std::size_t SPTreeIndex;
+
 template<int num_dim_, typename Float_>
 class SPTree {
 public:
-    SPTree(size_t npts, int maxdepth) : my_npts(npts), my_maxdepth(maxdepth), my_locations(my_npts) {
+    SPTree(SPTreeIndex npts, int maxdepth) : my_npts(npts), my_maxdepth(maxdepth), my_locations(my_npts) {
         my_store.reserve(std::min(static_cast<Float_>(my_npts), std::pow(static_cast<Float_>(4.0), static_cast<Float_>(my_maxdepth))) * 2);
         return;
     }
 
 public:
     struct Node {
-        Node(size_t i, const Float_* point) : index(i) {
+        Node(SPTreeIndex i, const Float_* point) : index(i) {
             std::copy_n(point, num_dim_, center_of_mass.data());
             fill();
             return;
@@ -69,17 +73,17 @@ public:
     public:
         static constexpr int nchildren = (1 << num_dim_); 
 
-        std::array<size_t, nchildren> children;
+        std::array<SPTreeIndex, nchildren> children;
         std::array<Float_, num_dim_> midpoint, halfwidth;
         std::array<Float_, num_dim_> center_of_mass;
         Float_ max_width = 0;
 
-        size_t number = 1;
+        SPTreeIndex number = 1;
 
         // This should only be used when is_leaf = true. In cases where multiple
         // points are assigned to the same leaf node (e.g., duplicates, max depth
         // truncation), it is the index of the first point for this Node.
-        size_t index = -1; 
+        SPTreeIndex index = -1; 
 
         bool is_leaf = true;
 
@@ -93,16 +97,16 @@ public:
 
 private:
     const Float_ * my_data = NULL;
-    size_t my_npts;
+    SPTreeIndex my_npts;
     int my_maxdepth;
     std::vector<Node> my_store;
 
     // We need to store the on-tree locations for each point separately as each
     // point may not have a 1:1 mapping to a single Node if there are
     // duplicates or we truncate the tree at 'maxdepth'.
-    std::vector<size_t> my_locations;
+    std::vector<SPTreeIndex> my_locations;
 
-    std::vector<size_t> my_first_assignment;
+    std::vector<SPTreeIndex> my_first_assignment;
 
     /****************************
      *** Construction methods ***
@@ -125,7 +129,7 @@ public:
             // so that the partitioning effectively divides up the points.
             auto& mean_Y = my_store[0].midpoint;
             auto copy = Y;
-            for (size_t n = 0; n < my_npts; ++n) {
+            for (SPTreeIndex n = 0; n < my_npts; ++n) {
                 for (int d = 0; d < num_dim_; ++d) {
                     auto curval = copy[d];
                     mean_Y[d] += curval;
@@ -148,16 +152,16 @@ public:
 
         auto point = Y;
         my_first_assignment.resize(my_npts);
-        for (size_t i = 0; i < my_npts; ++i, point += num_dim_) {
+        for (SPTreeIndex i = 0; i < my_npts; ++i, point += num_dim_) {
             std::array<bool, num_dim_> side;
-            size_t parent = 0;
+            SPTreeIndex parent = 0;
 
             for (int depth = 1; depth <= my_maxdepth; ++depth) {
-                size_t child_idx = find_child(parent, point, side.data());
+                SPTreeIndex child_idx = find_child(parent, point, side.data());
 
                 // Be careful with persistent references to my_store's contents,
                 // as the vector may be reallocated when a push_back() occurs.
-                size_t current_loc = my_store[parent].children[child_idx];
+                SPTreeIndex current_loc = my_store[parent].children[child_idx];
 
                 // If current_loc refers to the root, this means that there is no
                 // existing child, so we make a new one.
@@ -188,7 +192,7 @@ public:
                     } else {
                         // Otherwise, we convert the current node into a non-leaf node to
                         // accommodate further recursion.
-                        size_t new_loc = my_store.size();
+                        SPTreeIndex new_loc = my_store.size();
 
                         // Push the entire Node! Don't emplace_back() with the
                         // pointer for the child's center of mass, as any potential
@@ -199,7 +203,7 @@ public:
                         my_store[current_loc].is_leaf = false;
                         set_child_boundaries(parent, current_loc, side.data());
 
-                        size_t new_child_idx = find_child(current_loc, my_store[new_loc].center_of_mass.data(), side.data());
+                        SPTreeIndex new_child_idx = find_child(current_loc, my_store[new_loc].center_of_mass.data(), side.data());
                         my_store[current_loc].children[new_child_idx] = new_loc;
                     }
                 }
@@ -222,15 +226,15 @@ public:
 
         // Populating the on-tree locations for each node.
         my_locations.resize(my_npts);
-        size_t nnodes = my_store.size();
-        for (size_t n = 0; n < nnodes; ++n) {
+        SPTreeIndex nnodes = my_store.size();
+        for (SPTreeIndex n = 0; n < nnodes; ++n) {
             const auto& node = my_store[n];
             if (node.is_leaf) {
                 my_locations[node.index] = n;
             }
         }
 
-        for (size_t i = 0; i < my_npts; ++i) {
+        for (SPTreeIndex i = 0; i < my_npts; ++i) {
             auto tmp = my_locations[my_first_assignment[i]]; // break it up to avoid unsequencing errors when assigning to self.
             my_locations[i] = tmp;
         } 
@@ -239,9 +243,9 @@ public:
     }
 
 private:
-    size_t find_child (size_t parent, const Float_* point, bool * side) const {
+    SPTreeIndex find_child (SPTreeIndex parent, const Float_* point, bool * side) const {
         int multiplier = 1;
-        size_t child = 0;
+        SPTreeIndex child = 0;
         for (int d = 0; d < num_dim_; ++d) {
             side[d] = (point[d] >= my_store[parent].midpoint[d]);
             child += multiplier * side[d];
@@ -250,7 +254,7 @@ private:
         return child;
     }
 
-    void set_child_boundaries(size_t parent, size_t child, const bool* keep) {
+    void set_child_boundaries(SPTreeIndex parent, SPTreeIndex child, const bool* keep) {
         auto& current = my_store[child];
         auto& parental = my_store[parent];
         for (int d = 0; d < num_dim_; ++d) {
@@ -283,7 +287,7 @@ private:
         return sqdist;
     }
 
-    static void add_non_edge_forces(const Float_* point, const std::array<Float_, num_dim_>& center, Float_ sqdist, size_t count, Float_& result_sum, Float_* neg_f) {
+    static void add_non_edge_forces(const Float_* point, const std::array<Float_, num_dim_>& center, Float_ sqdist, Float_ count, Float_& result_sum, Float_* neg_f) {
         const Float_ div = static_cast<Float_>(1) / (static_cast<Float_>(1) + sqdist);
         Float_ mult = count * div;
         result_sum += mult;
@@ -300,9 +304,9 @@ private:
     }
 
 public:
-    Float_ compute_non_edge_forces(size_t index, Float_ theta, Float_* neg_f) const {
+    Float_ compute_non_edge_forces(SPTreeIndex index, Float_ theta, Float_* neg_f) const {
         Float_ result_sum = 0;
-        const Float_ * point = my_data + index * static_cast<size_t>(num_dim_); // cast to avoid overflow.
+        const Float_ * point = my_data + index * static_cast<SPTreeIndex>(num_dim_); // cast to avoid overflow.
         const auto& cur_children = my_store[0].children;
         std::fill_n(neg_f, num_dim_, 0);
 
@@ -316,12 +320,12 @@ public:
     }
 
 private:
-    Float_ compute_non_edge_forces(size_t index, const Float_* point, Float_ theta, Float_* neg_f, size_t position) const {
+    Float_ compute_non_edge_forces(SPTreeIndex index, const Float_* point, Float_ theta, Float_* neg_f, SPTreeIndex position) const {
         const auto& node = my_store[position];
 
         std::array<Float_, num_dim_> temp;
         auto center = &(node.center_of_mass);
-        size_t count = node.number;
+        SPTreeIndex count = node.number;
 
         // Check if we're at the leaf node containing the 'index' point. We
         // skip it if the leaf only contains that point, otherwise we remove
@@ -361,17 +365,17 @@ private:
      *************************************************************/
 public:
     struct LeafApproxWorkspace {
-        std::vector<size_t> leaf_indices;
+        std::vector<SPTreeIndex> leaf_indices;
         std::vector<std::array<Float_, num_dim_> > leaf_neg_f;
         std::vector<Float_> leaf_sums;
     };
 
     void compute_non_edge_forces_for_leaves(Float_ theta, LeafApproxWorkspace& workspace, [[maybe_unused]] int num_threads) const {
-        size_t nnodes = my_store.size();
+        SPTreeIndex nnodes = my_store.size();
         workspace.leaf_neg_f.resize(nnodes);
         workspace.leaf_sums.resize(nnodes);
 
-        auto process_leaf_node = [&](size_t leaf) -> void {
+        auto process_leaf_node = [&](SPTreeIndex leaf) -> void {
             Float_ result_sum = 0;
             auto neg_f = workspace.leaf_neg_f[leaf].data();
             std::fill_n(neg_f, num_dim_, 0);
@@ -387,7 +391,7 @@ public:
         };
 
         if (num_threads == 1) {
-            for (size_t n = 0; n < nnodes; ++n) {
+            for (SPTreeIndex n = 0; n < nnodes; ++n) {
                 if (my_store[n].is_leaf) {
                     process_leaf_node(n);
                 }
@@ -399,22 +403,22 @@ public:
             // going to have to process all the leaf nodes.
             workspace.leaf_indices.clear();
             workspace.leaf_indices.reserve(nnodes);
-            for (size_t n = 0; n < nnodes; ++n) {
+            for (SPTreeIndex n = 0; n < nnodes; ++n) {
                 if (my_store[n].is_leaf) {
                     workspace.leaf_indices.push_back(n);
                 }
             }
 
-            size_t nleaves = workspace.leaf_indices.size();
-            parallelize(num_threads, nleaves, [&](int, size_t start, size_t length) -> void {
-                for (size_t n = start, end = start + length; n < end; ++n) {
+            SPTreeIndex nleaves = workspace.leaf_indices.size();
+            parallelize(num_threads, nleaves, [&](int, SPTreeIndex start, SPTreeIndex length) -> void {
+                for (SPTreeIndex n = start, end = start + length; n < end; ++n) {
                     process_leaf_node(workspace.leaf_indices[n]);
                 }
             });
         }
     }
 
-    Float_ compute_non_edge_forces_from_leaves(size_t index, Float_* neg_f, const LeafApproxWorkspace& workspace) const {
+    Float_ compute_non_edge_forces_from_leaves(SPTreeIndex index, Float_* neg_f, const LeafApproxWorkspace& workspace) const {
         auto node_loc = my_locations[index];
         Float_ result_sum = workspace.leaf_sums[node_loc];
         const auto& leaf_neg_f = workspace.leaf_neg_f[node_loc];
@@ -422,7 +426,7 @@ public:
 
         const auto& node = my_store[node_loc];
         if (node.number != 1) {
-            const Float_ * point = my_data + index * static_cast<size_t>(num_dim_); // cast to avoid overflow.
+            const Float_ * point = my_data + index * static_cast<SPTreeIndex>(num_dim_); // cast to avoid overflow.
             std::array<Float_, num_dim_> temp;
             remove_self_from_center(point, node.center_of_mass, node.number, temp);
             Float_ sqdist = compute_sqdist(point, temp);
@@ -433,7 +437,7 @@ public:
     }
 
 private:
-    Float_ compute_non_edge_forces_for_leaves(size_t self_position, Float_ theta, Float_* neg_f, size_t position) const {
+    Float_ compute_non_edge_forces_for_leaves(SPTreeIndex self_position, Float_ theta, Float_* neg_f, SPTreeIndex position) const {
         const auto& self_node = my_store[self_position];
         auto point = self_node.center_of_mass.data();
 

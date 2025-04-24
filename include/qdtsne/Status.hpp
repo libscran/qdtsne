@@ -38,6 +38,7 @@
 #include <algorithm>
 #include <type_traits>
 #include <limits>
+#include <cstddef>
 
 #include "SPTree.hpp"
 #include "Options.hpp"
@@ -54,8 +55,8 @@ namespace qdtsne {
  * @brief Status of the t-SNE iterations.
  *
  * @tparam num_dim_ Number of dimensions in the t-SNE embedding.
- * @tparam Index_ Integer type for the neighbor indices.
- * @tparam Float_ Floating-point type for the distances.
+ * @tparam Index_ Integer type of the observation indices.
+ * @tparam Float_ Floating-point type of the neighbor distances and output embedding.
  *
  * This class holds the precomputed structures required to perform the t-SNE iterations.
  * Instances should not be constructed directly but instead created by `initialize()`.
@@ -115,7 +116,7 @@ public:
     /**
      * @return The number of observations in the dataset.
      */
-    size_t num_observations() const {
+    std::size_t num_observations() const {
         return my_neighbors.size();
     }
 
@@ -184,8 +185,8 @@ private:
         compute_gradient(Y, multiplier);
 
         // Update gains
-        size_t ngains = my_gains.size(); 
-        for (size_t i = 0; i < ngains; ++i) {
+        auto ngains = my_gains.size(); 
+        for (decltype(ngains) i = 0; i < ngains; ++i) {
             Float_& g = my_gains[i];
             constexpr Float_ lower_bound = 0.01;
             constexpr Float_ to_add = 0.2;
@@ -194,25 +195,25 @@ private:
         }
 
         // Perform gradient update (with momentum and gains)
-        for (size_t i = 0; i < ngains; ++i) {
+        for (decltype(ngains) i = 0; i < ngains; ++i) {
             my_uY[i] = momentum * my_uY[i] - my_options.eta * my_gains[i] * my_dY[i];
             Y[i] += my_uY[i];
         }
 
         // Make solution zero-mean
-        size_t N = num_observations();
+        std::size_t num_obs = num_observations();
         for (int d = 0; d < num_dim_; ++d) {
             auto start = Y + d;
 
             // Compute means from column-major coordinates.
             Float_ sum = 0;
-            for (size_t i = 0; i < N; ++i, start += num_dim_) {
+            for (std::size_t i = 0; i < num_obs; ++i, start += num_dim_) {
                 sum += *start;
             }
-            sum /= N;
+            sum /= num_obs;
 
             start = Y + d;
-            for (size_t i = 0; i < N; ++i, start += num_dim_) {
+            for (std::size_t i = 0; i < num_obs; ++i, start += num_dim_) {
                 *start -= sum;
             }
         }
@@ -225,24 +226,23 @@ private:
         my_tree.set(Y);
         compute_edge_forces(Y, multiplier);
 
-        size_t N = num_observations();
+        std::size_t num_obs = num_observations();
         std::fill(my_neg_f.begin(), my_neg_f.end(), 0);
-
         Float_ sum_Q = compute_non_edge_forces();
 
         // Compute final t-SNE gradient
-        size_t ntotal = N * static_cast<size_t>(num_dim_);
-        for (size_t i = 0; i < ntotal; ++i) {
+        std::size_t ntotal = num_obs * static_cast<std::size_t>(num_dim_); // cast to avoid overflow.
+        for (std::size_t i = 0; i < ntotal; ++i) {
             my_dY[i] = my_pos_f[i] - (my_neg_f[i] / sum_Q);
         }
     }
 
     void compute_edge_forces(const Float_* Y, Float_ multiplier) {
         std::fill(my_pos_f.begin(), my_pos_f.end(), 0);
-        size_t N = num_observations();
+        std::size_t num_obs = num_observations();
 
-        parallelize(my_options.num_threads, N, [&](int, size_t start, size_t length) -> void {
-            for (size_t n = start, end = start + length; n < end; ++n) {
+        parallelize(my_options.num_threads, num_obs, [&](int, std::size_t start, std::size_t length) -> void {
+            for (std::size_t n = start, end = start + length; n < end; ++n) {
                 const auto& current = my_neighbors[n];
                 size_t offset = n * static_cast<size_t>(num_dim_); // cast to avoid overflow.
                 const Float_* self = Y + offset;
@@ -250,7 +250,7 @@ private:
 
                 for (const auto& x : current) {
                     Float_ sqdist = 0; 
-                    const Float_* neighbor = Y + static_cast<size_t>(x.first) * num_dim_; // cast to avoid overflow.
+                    const Float_* neighbor = Y + static_cast<std::size_t>(x.first) * num_dim_; // cast to avoid overflow.
                     for (int d = 0; d < num_dim_; ++d) {
                         Float_ delta = self[d] - neighbor[d];
                         sqdist += delta * delta;
@@ -268,18 +268,17 @@ private:
     }
 
     Float_ compute_non_edge_forces() {
-        size_t N = num_observations();
-
         if (my_options.leaf_approximation) {
             my_tree.compute_non_edge_forces_for_leaves(my_options.theta, my_leaf_workspace, my_options.num_threads);
         }
 
+        std::size_t num_obs = num_observations();
         if (my_options.num_threads > 1) {
             // Don't use reduction methods, otherwise we get numeric imprecision
             // issues (and stochastic results) based on the order of summation.
-            parallelize(my_options.num_threads, N, [&](int, size_t start, size_t length) -> void {
-                for (size_t n = start, end = start + length; n < end; ++n) {
-                    auto neg_ptr = my_neg_f.data() + n * static_cast<size_t>(num_dim_); // cast to avoid overflow.
+            parallelize(my_options.num_threads, num_obs, [&](int, std::size_t start, std::size_t length) -> void {
+                for (std::size_t n = start, end = start + length; n < end; ++n) {
+                    auto neg_ptr = my_neg_f.data() + n * static_cast<std::size_t>(num_dim_); // cast to avoid overflow.
                     if (my_options.leaf_approximation) {
                         my_parallel_buffer[n] = my_tree.compute_non_edge_forces_from_leaves(n, neg_ptr, my_leaf_workspace);
                     } else {
@@ -291,8 +290,8 @@ private:
         }
 
         Float_ sum_Q = 0;
-        for (size_t n = 0; n < N; ++n) {
-            auto neg_ptr = my_neg_f.data() + n * static_cast<size_t>(num_dim_); // cast to avoid overflow.
+        for (std::size_t n = 0; n < num_obs; ++n) {
+            auto neg_ptr = my_neg_f.data() + n * static_cast<std::size_t>(num_dim_); // cast to avoid overflow.
             if (my_options.leaf_approximation) {
                 sum_Q += my_tree.compute_non_edge_forces_from_leaves(n, neg_ptr, my_leaf_workspace);
             } else {

@@ -106,85 +106,86 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;random&gt;</span></div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;aarand/aarand.hpp&quot;</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="codeRef" href="https://knncolle.github.io/knncolle/knncolle_8hpp.html">knncolle/knncolle.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#ifndef QDTSNE_CUSTOM_PARALLEL</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;<a class="codeRef" href="https://ltla.github.io/subpar/subpar_8hpp.html">subpar/subpar.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceqdtsne.html">qdtsne</a> {</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Index_, <span class="keyword">typename</span> Float_&gt;</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="namespaceqdtsne.html#a06453be45faea3c21c0a66a0564bd084">   35</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceqdtsne.html#a06453be45faea3c21c0a66a0564bd084">NeighborList</a> = <a class="code hl_typedefRef" href="https://knncolle.github.io/knncolle/namespaceknncolle.html#a97693d779b6041859ffa0ef2d9c1500b">knncolle::NeighborList&lt;Index_, Float_&gt;</a>;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
-<div class="foldopen" id="foldopen00044" data-start="{" data-end="}">
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="namespaceqdtsne.html#a673dd037719d1b1824da29e20fd1618d">   44</a></span><span class="keyword">inline</span> <span class="keywordtype">int</span> <a class="code hl_function" href="namespaceqdtsne.html#a673dd037719d1b1824da29e20fd1618d">perplexity_to_k</a>(<span class="keywordtype">double</span> perplexity) {</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordflow">return</span> std::ceil(perplexity * 3);</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>}</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;aarand/aarand.hpp&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;<a class="codeRef" href="https://knncolle.github.io/knncolle/knncolle_8hpp.html">knncolle/knncolle.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#ifndef QDTSNE_CUSTOM_PARALLEL</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;<a class="codeRef" href="https://ltla.github.io/subpar/subpar_8hpp.html">subpar/subpar.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceqdtsne.html">qdtsne</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Index_, <span class="keyword">typename</span> Float_&gt;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="namespaceqdtsne.html#a06453be45faea3c21c0a66a0564bd084">   36</a></span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceqdtsne.html#a06453be45faea3c21c0a66a0564bd084">NeighborList</a> = <a class="code hl_typedefRef" href="https://knncolle.github.io/knncolle/namespaceknncolle.html#a97693d779b6041859ffa0ef2d9c1500b">knncolle::NeighborList&lt;Index_, Float_&gt;</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="}">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="namespaceqdtsne.html#a673dd037719d1b1824da29e20fd1618d">   45</a></span><span class="keyword">inline</span> <span class="keywordtype">int</span> <a class="code hl_function" href="namespaceqdtsne.html#a673dd037719d1b1824da29e20fd1618d">perplexity_to_k</a>(<span class="keywordtype">double</span> perplexity) {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">return</span> std::ceil(perplexity * 3);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>}</div>
 </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="keyword">template</span>&lt;<span class="keywordtype">int</span> num_dim_, <span class="keyword">typename</span> Float_ = <span class="keywordtype">double</span>&gt;</div>
-<div class="foldopen" id="foldopen00062" data-start="{" data-end="}">
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="namespaceqdtsne.html#a916236f6f1d1f805b1e68f2a11ae4296">   62</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceqdtsne.html#a916236f6f1d1f805b1e68f2a11ae4296">initialize_random</a>(Float_* Y, <span class="keywordtype">size_t</span> num_points, <span class="keywordtype">int</span> seed = 42) {</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    std::mt19937_64 rng(seed);</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordtype">size_t</span> total = num_points * num_dim_;</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordtype">bool</span> odd = total % 2;</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordflow">if</span> (odd) {</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        --total;</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    }</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="comment">// Box-Muller gives us two random values at a time.</span></div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; total; i += 2) {</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keyword">auto</span> paired = aarand::standard_normal&lt;Float_&gt;(rng);</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        Y[i] = paired.first;</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        Y[i + 1] = paired.second;</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    }</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordflow">if</span> (odd) {</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <span class="comment">// Adding the poor extra for odd total lengths.</span></div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keyword">auto</span> paired = aarand::standard_normal&lt;Float_&gt;(rng);</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        Y[total] = paired.first;</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    }</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>}</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="keyword">template</span>&lt;<span class="keywordtype">int</span> num_dim_, <span class="keyword">typename</span> Float_ = <span class="keywordtype">double</span>&gt;</div>
+<div class="foldopen" id="foldopen00063" data-start="{" data-end="}">
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="namespaceqdtsne.html#a14667d0a76bb759ad69bb39f00da8dd2">   63</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceqdtsne.html#a14667d0a76bb759ad69bb39f00da8dd2">initialize_random</a>(Float_* Y, std::size_t num_points, <span class="keywordtype">int</span> seed = 42) {</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    std::mt19937_64 rng(seed);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    std::size_t total = num_points * <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(num_dim_); <span class="comment">// cast to avoid overflow.</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordtype">bool</span> odd = total % 2;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">if</span> (odd) {</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        --total;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    }</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="comment">// Box-Muller gives us two random values at a time.</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; total; i += 2) {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keyword">auto</span> paired = aarand::standard_normal&lt;Float_&gt;(rng);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        Y[i] = paired.first;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        Y[i + 1] = paired.second;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    }</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordflow">if</span> (odd) {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="comment">// Adding the poor extra for odd total lengths.</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <span class="keyword">auto</span> paired = aarand::standard_normal&lt;Float_&gt;(rng);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        Y[total] = paired.first;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    }</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>}</div>
 </div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span><span class="keyword">template</span>&lt;<span class="keywordtype">int</span> num_dim_, <span class="keyword">typename</span> Float_ = <span class="keywordtype">double</span>&gt;</div>
-<div class="foldopen" id="foldopen00099" data-start="{" data-end="}">
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="namespaceqdtsne.html#aca9df1b3ededa7ddc62d3cfa0225341c">   99</a></span>std::vector&lt;Float_&gt; <a class="code hl_function" href="namespaceqdtsne.html#a916236f6f1d1f805b1e68f2a11ae4296">initialize_random</a>(<span class="keywordtype">size_t</span> num_points, <span class="keywordtype">int</span> seed = 42) {</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    std::vector&lt;Float_&gt; Y(num_dim_ * num_points);</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <a class="code hl_function" href="namespaceqdtsne.html#a916236f6f1d1f805b1e68f2a11ae4296">initialize_random&lt;num_dim_&gt;</a>(Y.data(), num_points, seed);</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordflow">return</span> Y;</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>}</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="keyword">template</span>&lt;<span class="keywordtype">int</span> num_dim_, <span class="keyword">typename</span> Float_ = <span class="keywordtype">double</span>&gt;</div>
+<div class="foldopen" id="foldopen00100" data-start="{" data-end="}">
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="namespaceqdtsne.html#ab7a95317899f0c27320d4da806a4929a">  100</a></span>std::vector&lt;Float_&gt; <a class="code hl_function" href="namespaceqdtsne.html#a14667d0a76bb759ad69bb39f00da8dd2">initialize_random</a>(std::size_t num_points, <span class="keywordtype">int</span> seed = 42) {</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    std::vector&lt;Float_&gt; Y(num_points * <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(num_dim_)); <span class="comment">// cast to avoid overflow.</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <a class="code hl_function" href="namespaceqdtsne.html#a14667d0a76bb759ad69bb39f00da8dd2">initialize_random&lt;num_dim_&gt;</a>(Y.data(), num_points, seed);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordflow">return</span> Y;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>}</div>
 </div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Task_, <span class="keyword">class</span> Run_&gt;</div>
-<div class="foldopen" id="foldopen00118" data-start="{" data-end="}">
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno"><a class="line" href="namespaceqdtsne.html#abfd3b53975731fd9df83eac1cc99fada">  118</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceqdtsne.html#abfd3b53975731fd9df83eac1cc99fada">parallelize</a>(<span class="keywordtype">int</span> num_workers, Task_ num_tasks, Run_ run_task_range) {</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span><span class="preprocessor">#ifndef QDTSNE_CUSTOM_PARALLEL</span></div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="comment">// Don&#39;t make this nothrow_ = true, there&#39;s too many allocations and the</span></div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="comment">// derived methods for the nearest neighbors search could do anything...</span></div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    subpar::parallelize(num_workers, num_tasks, std::move(run_task_range));</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    QDTSNE_CUSTOM_PARALLEL(num_workers, num_tasks, run_task_range);</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>}</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Task_, <span class="keyword">class</span> Run_&gt;</div>
+<div class="foldopen" id="foldopen00119" data-start="{" data-end="}">
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno"><a class="line" href="namespaceqdtsne.html#abfd3b53975731fd9df83eac1cc99fada">  119</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceqdtsne.html#abfd3b53975731fd9df83eac1cc99fada">parallelize</a>(<span class="keywordtype">int</span> num_workers, Task_ num_tasks, Run_ run_task_range) {</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span><span class="preprocessor">#ifndef QDTSNE_CUSTOM_PARALLEL</span></div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="comment">// Don&#39;t make this nothrow_ = true, there&#39;s too many allocations and the</span></div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="comment">// derived methods for the nearest neighbors search could do anything...</span></div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    subpar::parallelize(num_workers, num_tasks, std::move(run_task_range));</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span><span class="preprocessor">#else</span></div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    QDTSNE_CUSTOM_PARALLEL(num_workers, num_tasks, run_task_range);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>}</div>
 </div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>}</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>}</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aknncolle_8hpp_html"><div class="ttname"><a href="https://knncolle.github.io/knncolle/knncolle_8hpp.html">knncolle.hpp</a></div></div>
 <div class="ttc" id="anamespaceknncolle_html_a97693d779b6041859ffa0ef2d9c1500b"><div class="ttname"><a href="https://knncolle.github.io/knncolle/namespaceknncolle.html#a97693d779b6041859ffa0ef2d9c1500b">knncolle::NeighborList</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; std::pair&lt; Index_, Distance_ &gt; &gt; &gt; NeighborList</div></div>
 <div class="ttc" id="anamespaceqdtsne_html"><div class="ttname"><a href="namespaceqdtsne.html">qdtsne</a></div><div class="ttdoc">Quick and dirty t-SNE.</div></div>
-<div class="ttc" id="anamespaceqdtsne_html_a06453be45faea3c21c0a66a0564bd084"><div class="ttname"><a href="namespaceqdtsne.html#a06453be45faea3c21c0a66a0564bd084">qdtsne::NeighborList</a></div><div class="ttdeci">knncolle::NeighborList&lt; Index_, Float_ &gt; NeighborList</div><div class="ttdoc">Lists of neighbors for each observation.</div><div class="ttdef"><b>Definition</b> utils.hpp:35</div></div>
-<div class="ttc" id="anamespaceqdtsne_html_a673dd037719d1b1824da29e20fd1618d"><div class="ttname"><a href="namespaceqdtsne.html#a673dd037719d1b1824da29e20fd1618d">qdtsne::perplexity_to_k</a></div><div class="ttdeci">int perplexity_to_k(double perplexity)</div><div class="ttdef"><b>Definition</b> utils.hpp:44</div></div>
-<div class="ttc" id="anamespaceqdtsne_html_a916236f6f1d1f805b1e68f2a11ae4296"><div class="ttname"><a href="namespaceqdtsne.html#a916236f6f1d1f805b1e68f2a11ae4296">qdtsne::initialize_random</a></div><div class="ttdeci">void initialize_random(Float_ *Y, size_t num_points, int seed=42)</div><div class="ttdef"><b>Definition</b> utils.hpp:62</div></div>
-<div class="ttc" id="anamespaceqdtsne_html_abfd3b53975731fd9df83eac1cc99fada"><div class="ttname"><a href="namespaceqdtsne.html#abfd3b53975731fd9df83eac1cc99fada">qdtsne::parallelize</a></div><div class="ttdeci">void parallelize(int num_workers, Task_ num_tasks, Run_ run_task_range)</div><div class="ttdef"><b>Definition</b> utils.hpp:118</div></div>
+<div class="ttc" id="anamespaceqdtsne_html_a06453be45faea3c21c0a66a0564bd084"><div class="ttname"><a href="namespaceqdtsne.html#a06453be45faea3c21c0a66a0564bd084">qdtsne::NeighborList</a></div><div class="ttdeci">knncolle::NeighborList&lt; Index_, Float_ &gt; NeighborList</div><div class="ttdoc">Lists of neighbors for each observation.</div><div class="ttdef"><b>Definition</b> utils.hpp:36</div></div>
+<div class="ttc" id="anamespaceqdtsne_html_a14667d0a76bb759ad69bb39f00da8dd2"><div class="ttname"><a href="namespaceqdtsne.html#a14667d0a76bb759ad69bb39f00da8dd2">qdtsne::initialize_random</a></div><div class="ttdeci">void initialize_random(Float_ *Y, std::size_t num_points, int seed=42)</div><div class="ttdef"><b>Definition</b> utils.hpp:63</div></div>
+<div class="ttc" id="anamespaceqdtsne_html_a673dd037719d1b1824da29e20fd1618d"><div class="ttname"><a href="namespaceqdtsne.html#a673dd037719d1b1824da29e20fd1618d">qdtsne::perplexity_to_k</a></div><div class="ttdeci">int perplexity_to_k(double perplexity)</div><div class="ttdef"><b>Definition</b> utils.hpp:45</div></div>
+<div class="ttc" id="anamespaceqdtsne_html_abfd3b53975731fd9df83eac1cc99fada"><div class="ttname"><a href="namespaceqdtsne.html#abfd3b53975731fd9df83eac1cc99fada">qdtsne::parallelize</a></div><div class="ttdeci">void parallelize(int num_workers, Task_ num_tasks, Run_ run_task_range)</div><div class="ttdef"><b>Definition</b> utils.hpp:119</div></div>
 <div class="ttc" id="asubpar_8hpp_html"><div class="ttname"><a href="https://ltla.github.io/subpar/subpar_8hpp.html">subpar.hpp</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

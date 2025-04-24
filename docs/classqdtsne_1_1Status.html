@@ -115,8 +115,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a2e5fbb69b89a43b2deea5c46374b642b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af67e41bd74305fbeba6f486bda76813f" id="r_af67e41bd74305fbeba6f486bda76813f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af67e41bd74305fbeba6f486bda76813f">max_iterations</a> () const</td></tr>
 <tr class="separator:af67e41bd74305fbeba6f486bda76813f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4090be4f7e29149a6bf9c420d8e8b14" id="r_ae4090be4f7e29149a6bf9c420d8e8b14"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae4090be4f7e29149a6bf9c420d8e8b14">num_observations</a> () const</td></tr>
-<tr class="separator:ae4090be4f7e29149a6bf9c420d8e8b14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac867022bd3620c23e831c2c37f20f656" id="r_ac867022bd3620c23e831c2c37f20f656"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac867022bd3620c23e831c2c37f20f656">num_observations</a> () const</td></tr>
+<tr class="separator:ac867022bd3620c23e831c2c37f20f656"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a56714ad4a50f6a467599fbcf2ce69d51" id="r_a56714ad4a50f6a467599fbcf2ce69d51"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a56714ad4a50f6a467599fbcf2ce69d51">run</a> (Float_ *Y, int limit)</td></tr>
 <tr class="separator:a56714ad4a50f6a467599fbcf2ce69d51"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a73f99b3c064d4054396373543cb57820" id="r_a73f99b3c064d4054396373543cb57820"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a73f99b3c064d4054396373543cb57820">run</a> (Float_ *Y)</td></tr>
@@ -128,8 +128,8 @@ class qdtsne::Status&lt; num_dim_, Index_, Float_ &gt;</div><p><a class="el" hre
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">num_dim_</td><td>Number of dimensions in the t-SNE embedding. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Integer type for the neighbor indices. </td></tr>
-    <tr><td class="paramname">Float_</td><td>Floating-point type for the distances.</td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the observation indices. </td></tr>
+    <tr><td class="paramname">Float_</td><td>Floating-point type of the neighbor distances and output embedding.</td></tr>
   </table>
   </dd>
 </dl>
@@ -191,8 +191,8 @@ template&lt;int num_dim_, typename Index_ , typename Float_ &gt; </div>
 
 </div>
 </div>
-<a id="ae4090be4f7e29149a6bf9c420d8e8b14" name="ae4090be4f7e29149a6bf9c420d8e8b14"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae4090be4f7e29149a6bf9c420d8e8b14">&#9670;&#160;</a></span>num_observations()</h2>
+<a id="ac867022bd3620c23e831c2c37f20f656" name="ac867022bd3620c23e831c2c37f20f656"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac867022bd3620c23e831c2c37f20f656">&#9670;&#160;</a></span>num_observations()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -203,7 +203,7 @@ template&lt;int num_dim_, typename Index_ , typename Float_ &gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">size_t <a class="el" href="classqdtsne_1_1Status.html">qdtsne::Status</a>&lt; num_dim_, Index_, Float_ &gt;::num_observations </td>
+          <td class="memname">std::size_t <a class="el" href="classqdtsne_1_1Status.html">qdtsne::Status</a>&lt; num_dim_, Index_, Float_ &gt;::num_observations </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -246,7 +246,7 @@ template&lt;int num_dim_, typename Index_ , typename Float_ &gt; </div>
 <p>Run the algorithm to the maximum number of iterations. If <code><a class="el" href="#a56714ad4a50f6a467599fbcf2ce69d51">run()</a></code> has already been invoked with an iteration limit, this method will only perform the remaining iterations required for <code><a class="el" href="#a2e5fbb69b89a43b2deea5c46374b642b">iteration()</a></code> to reach <code>max_iter()</code>. If <code><a class="el" href="#a2e5fbb69b89a43b2deea5c46374b642b">iteration()</a></code> is already greater than <code>max_iter()</code>, this method is a no-op.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">Y</td><td>Pointer to a array containing a column-major matrix with number of rows and columns equal to <code>num_dim_</code> and <code><a class="el" href="#ae4090be4f7e29149a6bf9c420d8e8b14">num_observations()</a></code>, respectively. Each row corresponds to a dimension of the embedding while each column corresponds to an observation. On input, this should contain the initial location of each observation; on output, it is updated to the t-SNE location at the specified number of iterations. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">Y</td><td>Pointer to a array containing a column-major matrix with number of rows and columns equal to <code>num_dim_</code> and <code><a class="el" href="#ac867022bd3620c23e831c2c37f20f656">num_observations()</a></code>, respectively. Each row corresponds to a dimension of the embedding while each column corresponds to an observation. On input, this should contain the initial location of each observation; on output, it is updated to the t-SNE location at the specified number of iterations. </td></tr>
   </table>
   </dd>
 </dl>
@@ -284,7 +284,7 @@ template&lt;int num_dim_, typename Index_ , typename Float_ &gt; </div>
 <p>Run the algorithm to the specified number of iterations. This can be invoked repeatedly with increasing <code>limit</code> to run the algorithm incrementally.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">Y</td><td>Pointer to a array containing a column-major matrix with number of rows and columns equal to <code>num_dim_</code> and <code><a class="el" href="#ae4090be4f7e29149a6bf9c420d8e8b14">num_observations()</a></code>, respectively. Each row corresponds to a dimension of the embedding while each column corresponds to an observation. On input, this should contain the initial location of each observation; on output, it is updated to the t-SNE location at the specified number of iterations. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">Y</td><td>Pointer to a array containing a column-major matrix with number of rows and columns equal to <code>num_dim_</code> and <code><a class="el" href="#ac867022bd3620c23e831c2c37f20f656">num_observations()</a></code>, respectively. Each row corresponds to a dimension of the embedding while each column corresponds to an observation. On input, this should contain the initial location of each observation; on output, it is updated to the t-SNE location at the specified number of iterations. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">limit</td><td>Number of iterations to run up to. The actual number of iterations performed will be the difference between <code>limit</code> and <code><a class="el" href="#a2e5fbb69b89a43b2deea5c46374b642b">iteration()</a></code>, i.e., <code><a class="el" href="#a2e5fbb69b89a43b2deea5c46374b642b">iteration()</a></code> will be equal to <code>limit</code> on completion. <code>limit</code> may be greater than <code><a class="el" href="#af67e41bd74305fbeba6f486bda76813f">max_iterations()</a></code>, to run the algorithm for more iterations than specified during construction of this <code><a class="el" href="classqdtsne_1_1Status.html" title="Status of the t-SNE iterations.">Status</a></code> object. </td></tr>
   </table>
   </dd>

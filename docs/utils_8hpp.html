@@ -110,6 +110,7 @@ $(function(){ initResizable(false); });
 <div class="textblock"><code>#include &lt;random&gt;</code><br />
 <code>#include &lt;cmath&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
+<code>#include &lt;cstddef&gt;</code><br />
 <code>#include &quot;aarand/aarand.hpp&quot;</code><br />
 <code>#include &quot;<a class="elRef" href="https://knncolle.github.io/knncolle/knncolle_8hpp.html">knncolle/knncolle.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="elRef" href="https://ltla.github.io/subpar/subpar_8hpp.html">subpar/subpar.hpp</a>&quot;</code><br />
@@ -118,19 +119,21 @@ Include dependency graph for utils.hpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="utils_8hpp__incl.png" border="0" usemap="#aqdtsne_2utils_8hpp" alt=""/></div>
 <map name="aqdtsne_2utils_8hpp" id="aqdtsne_2utils_8hpp">
-<area shape="rect" title="Utilities for running t&#45;SNE." alt="" coords="205,5,318,31"/>
+<area shape="rect" title="Utilities for running t&#45;SNE." alt="" coords="233,5,346,31"/>
 <area shape="rect" title=" " alt="" coords="5,79,70,105"/>
-<area shape="poly" title=" " alt="" coords="224,34,85,78,84,73,223,29"/>
+<area shape="poly" title=" " alt="" coords="247,34,85,80,83,75,246,29"/>
 <area shape="rect" title=" " alt="" coords="94,79,152,105"/>
-<area shape="poly" title=" " alt="" coords="239,34,161,74,159,69,237,29"/>
+<area shape="poly" title=" " alt="" coords="262,34,166,75,164,70,260,29"/>
 <area shape="rect" title=" " alt="" coords="176,79,233,105"/>
-<area shape="poly" title=" " alt="" coords="254,33,225,68,221,65,250,30"/>
-<area shape="rect" title=" " alt="" coords="256,79,384,105"/>
-<area shape="poly" title=" " alt="" coords="273,30,303,65,299,69,269,33"/>
-<area shape="rect" target="_parent" href="https://knncolle.github.io/knncolle/knncolle_8hpp.html" title=" " alt="" coords="408,79,553,105"/>
-<area shape="poly" title=" " alt="" coords="299,29,429,71,428,76,298,34"/>
-<area shape="rect" target="_parent" href="https://ltla.github.io/subpar/subpar_8hpp.html" title=" " alt="" coords="576,79,704,105"/>
-<area shape="poly" title=" " alt="" coords="319,28,562,73,561,78,318,33"/>
+<area shape="poly" title=" " alt="" coords="277,34,232,71,228,67,273,29"/>
+<area shape="rect" title=" " alt="" coords="257,79,322,105"/>
+<area shape="poly" title=" " alt="" coords="292,31,292,63,287,63,287,31"/>
+<area shape="rect" title=" " alt="" coords="346,79,473,105"/>
+<area shape="poly" title=" " alt="" coords="311,29,377,68,375,73,308,34"/>
+<area shape="rect" target="_parent" href="https://knncolle.github.io/knncolle/knncolle_8hpp.html" title=" " alt="" coords="497,79,642,105"/>
+<area shape="poly" title=" " alt="" coords="338,29,508,72,507,77,336,34"/>
+<area shape="rect" target="_parent" href="https://ltla.github.io/subpar/subpar_8hpp.html" title=" " alt="" coords="666,79,793,105"/>
+<area shape="poly" title=" " alt="" coords="347,26,651,75,650,80,346,31"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -169,12 +172,12 @@ Typedefs</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:a673dd037719d1b1824da29e20fd1618d" id="r_a673dd037719d1b1824da29e20fd1618d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceqdtsne.html#a673dd037719d1b1824da29e20fd1618d">qdtsne::perplexity_to_k</a> (double perplexity)</td></tr>
 <tr class="separator:a673dd037719d1b1824da29e20fd1618d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a916236f6f1d1f805b1e68f2a11ae4296" id="r_a916236f6f1d1f805b1e68f2a11ae4296"><td class="memTemplParams" colspan="2">template&lt;int num_dim_, typename Float_  = double&gt; </td></tr>
-<tr class="memitem:a916236f6f1d1f805b1e68f2a11ae4296"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceqdtsne.html#a916236f6f1d1f805b1e68f2a11ae4296">qdtsne::initialize_random</a> (Float_ *Y, size_t num_points, int seed=42)</td></tr>
-<tr class="separator:a916236f6f1d1f805b1e68f2a11ae4296"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aca9df1b3ededa7ddc62d3cfa0225341c" id="r_aca9df1b3ededa7ddc62d3cfa0225341c"><td class="memTemplParams" colspan="2">template&lt;int num_dim_, typename Float_  = double&gt; </td></tr>
-<tr class="memitem:aca9df1b3ededa7ddc62d3cfa0225341c"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; Float_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceqdtsne.html#aca9df1b3ededa7ddc62d3cfa0225341c">qdtsne::initialize_random</a> (size_t num_points, int seed=42)</td></tr>
-<tr class="separator:aca9df1b3ededa7ddc62d3cfa0225341c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14667d0a76bb759ad69bb39f00da8dd2" id="r_a14667d0a76bb759ad69bb39f00da8dd2"><td class="memTemplParams" colspan="2">template&lt;int num_dim_, typename Float_  = double&gt; </td></tr>
+<tr class="memitem:a14667d0a76bb759ad69bb39f00da8dd2"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceqdtsne.html#a14667d0a76bb759ad69bb39f00da8dd2">qdtsne::initialize_random</a> (Float_ *Y, std::size_t num_points, int seed=42)</td></tr>
+<tr class="separator:a14667d0a76bb759ad69bb39f00da8dd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7a95317899f0c27320d4da806a4929a" id="r_ab7a95317899f0c27320d4da806a4929a"><td class="memTemplParams" colspan="2">template&lt;int num_dim_, typename Float_  = double&gt; </td></tr>
+<tr class="memitem:ab7a95317899f0c27320d4da806a4929a"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; Float_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceqdtsne.html#ab7a95317899f0c27320d4da806a4929a">qdtsne::initialize_random</a> (std::size_t num_points, int seed=42)</td></tr>
+<tr class="separator:ab7a95317899f0c27320d4da806a4929a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abfd3b53975731fd9df83eac1cc99fada" id="r_abfd3b53975731fd9df83eac1cc99fada"><td class="memTemplParams" colspan="2">template&lt;typename Task_ , class Run_ &gt; </td></tr>
 <tr class="memitem:abfd3b53975731fd9df83eac1cc99fada"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceqdtsne.html#abfd3b53975731fd9df83eac1cc99fada">qdtsne::parallelize</a> (int num_workers, Task_ num_tasks, Run_ run_task_range)</td></tr>
 <tr class="separator:abfd3b53975731fd9df83eac1cc99fada"><td class="memSeparator" colspan="2">&#160;</td></tr>

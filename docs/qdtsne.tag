@@ -156,10 +156,10 @@
       <arglist>() const</arglist>
     </member>
     <member kind="function">
-      <type>size_t</type>
+      <type>std::size_t</type>
       <name>num_observations</name>
       <anchorfile>classqdtsne_1_1Status.html</anchorfile>
-      <anchor>ae4090be4f7e29149a6bf9c420d8e8b14</anchor>
+      <anchor>ac867022bd3620c23e831c2c37f20f656</anchor>
       <arglist>() const</arglist>
     </member>
     <member kind="function">
@@ -207,8 +207,8 @@
       <type>Status&lt; num_dim_, Index_, Float_ &gt;</type>
       <name>initialize</name>
       <anchorfile>namespaceqdtsne.html</anchorfile>
-      <anchor>af2c49636abb5292d2d7e3756e7dc2a78</anchor>
-      <arglist>(std::size_t data_dim, Index_ num_points, const Float_ *data, const knncolle::Builder&lt; Index_, Float_, Float_, Matrix_ &gt; &amp;builder, const Options &amp;options)</arglist>
+      <anchor>a0dccf6763d0c02f24026c8c8ddfc50c2</anchor>
+      <arglist>(std::size_t data_dim, std::size_t num_points, const Float_ *data, const knncolle::Builder&lt; Index_, Float_, Float_, Matrix_ &gt; &amp;builder, const Options &amp;options)</arglist>
     </member>
     <member kind="function">
       <type>int</type>
@@ -221,15 +221,15 @@
       <type>void</type>
       <name>initialize_random</name>
       <anchorfile>namespaceqdtsne.html</anchorfile>
-      <anchor>a916236f6f1d1f805b1e68f2a11ae4296</anchor>
-      <arglist>(Float_ *Y, size_t num_points, int seed=42)</arglist>
+      <anchor>a14667d0a76bb759ad69bb39f00da8dd2</anchor>
+      <arglist>(Float_ *Y, std::size_t num_points, int seed=42)</arglist>
     </member>
     <member kind="function">
       <type>std::vector&lt; Float_ &gt;</type>
       <name>initialize_random</name>
       <anchorfile>namespaceqdtsne.html</anchorfile>
-      <anchor>aca9df1b3ededa7ddc62d3cfa0225341c</anchor>
-      <arglist>(size_t num_points, int seed=42)</arglist>
+      <anchor>ab7a95317899f0c27320d4da806a4929a</anchor>
+      <arglist>(std::size_t num_points, int seed=42)</arglist>
     </member>
     <member kind="function">
       <type>void</type>

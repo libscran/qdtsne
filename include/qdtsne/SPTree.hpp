@@ -278,22 +278,23 @@ private:
      *** Non-edge force calculations ***
      ***********************************/
 private:
-    static Float_ compute_sqdist(const Float_* point, const std::array<Float_, num_dim_>& center) {
+    static Float_ compute_sqdist(const Float_* point, const std::array<Float_, num_dim_>& center, std::array<Float_, num_dim_>& diffs) {
         Float_ sqdist = 0;
         for (int d = 0; d < num_dim_; ++d) {
-            Float_ delta = point[d] - center[d];
+            Float_ delta = point[d] - center[d]; // note that 'diffs' expects to hold 'point - center' on output, not the other way around.
+            diffs[d] = delta;
             sqdist += delta * delta;
         }
         return sqdist;
     }
 
-    static void add_non_edge_forces(const Float_* point, const std::array<Float_, num_dim_>& center, Float_ sqdist, Float_ count, Float_& result_sum, Float_* neg_f) {
+    static void add_non_edge_forces(const std::array<Float_, num_dim_>& diffs, Float_ sqdist, Float_ count, Float_& result_sum, Float_* neg_f) {
         const Float_ div = static_cast<Float_>(1) / (static_cast<Float_>(1) + sqdist);
         Float_ mult = count * div;
         result_sum += mult;
         mult *= div;
         for (int d = 0; d < num_dim_; ++d) {
-            neg_f[d] += mult * (point[d] - center[d]);
+            neg_f[d] += mult * diffs[d]; // remember, 'diff[d] := point[d] - center[d]' from compute_sqdist().
         }
     }
 
@@ -339,7 +340,8 @@ private:
             --count;
         }
 
-        Float_ sqdist = compute_sqdist(point, *center);
+        std::array<Float_, num_dim_> diffs;
+        Float_ sqdist = compute_sqdist(point, *center, diffs);
 
         // Check whether we can use skip this node's children, either because
         // it's already a leaf or because we can use the BH approximation.
@@ -347,7 +349,7 @@ private:
 
         Float_ result_sum = 0;
         if (skip_children) {
-            add_non_edge_forces(point, *center, sqdist, count, result_sum, neg_f);
+            add_non_edge_forces(diffs, sqdist, count, result_sum, neg_f);
         } else {
             const auto& cur_children = node.children;
             for (int i = 0; i < Node::nchildren; ++i) {
@@ -429,8 +431,10 @@ public:
             const Float_ * point = my_data + index * static_cast<SPTreeIndex>(num_dim_); // cast to avoid overflow.
             std::array<Float_, num_dim_> temp;
             remove_self_from_center(point, node.center_of_mass, node.number, temp);
-            Float_ sqdist = compute_sqdist(point, temp);
-            add_non_edge_forces(point, temp, sqdist, node.number - 1, result_sum, neg_f);
+
+            std::array<Float_, num_dim_> diffs;
+            Float_ sqdist = compute_sqdist(point, temp, diffs);
+            add_non_edge_forces(diffs, sqdist, node.number - 1, result_sum, neg_f);
         }
 
         return result_sum;
@@ -442,13 +446,14 @@ private:
         auto point = self_node.center_of_mass.data();
 
         const auto& node = my_store[position];
-        Float_ sqdist = compute_sqdist(point, node.center_of_mass);
+        std::array<Float_, num_dim_> diffs;
+        Float_ sqdist = compute_sqdist(point, node.center_of_mass, diffs);
 
         bool skip_children = node.is_leaf || (node.max_width < theta * std::sqrt(sqdist));
 
         Float_ result_sum = 0;
         if (skip_children) {
-            add_non_edge_forces(point, node.center_of_mass, sqdist, node.number, result_sum, neg_f);
+            add_non_edge_forces(diffs, sqdist, node.number, result_sum, neg_f);
         } else {
             const auto& cur_children = node.children;
             for (int i = 0; i < Node::nchildren; ++i) {

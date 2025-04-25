@@ -48,7 +48,7 @@ namespace internal {
 // Assume that size_t is big enough to hold positional indices to all of the nodes.
 typedef std::size_t SPTreeIndex;
 
-template<int num_dim_, typename Float_>
+template<std::size_t num_dim_, typename Float_>
 class SPTree {
 public:
     SPTree(SPTreeIndex npts, int maxdepth) : my_npts(npts), my_maxdepth(maxdepth), my_locations(my_npts) {
@@ -130,7 +130,7 @@ public:
             auto& mean_Y = my_store[0].midpoint;
             auto copy = Y;
             for (SPTreeIndex n = 0; n < my_npts; ++n) {
-                for (int d = 0; d < num_dim_; ++d) {
+                for (std::size_t d = 0; d < num_dim_; ++d) {
                     auto curval = copy[d];
                     mean_Y[d] += curval;
                     min_Y[d] = std::min(min_Y[d], curval);
@@ -139,12 +139,12 @@ public:
                 copy += num_dim_;
             }
 
-            for (int d = 0; d < num_dim_; ++d) {
+            for (std::size_t d = 0; d < num_dim_; ++d) {
                 mean_Y[d] /= my_npts;
             }
 
             auto& halfwidth = my_store[0].halfwidth;
-            for (int d = 0; d < num_dim_; ++d) {
+            for (std::size_t d = 0; d < num_dim_; ++d) {
                 auto mean = mean_Y[d];
                 halfwidth[d] = std::max(max_Y[d] - mean, mean - min_Y[d]) + static_cast<Float_>(1e-5);
             }
@@ -178,7 +178,7 @@ public:
                     // No need to update the center of mass because it's the same point.
                     int nsame = 0;
                     const auto& center = my_store[current_loc].center_of_mass;
-                    for (int d = 0; d < num_dim_; ++d) {
+                    for (std::size_t d = 0; d < num_dim_; ++d) {
                         nsame += (center[d] == point[d]);
                     }
                     if (nsame == num_dim_) {
@@ -215,7 +215,7 @@ public:
                 const Float_ cum_size = node.number;
                 const Float_ mult1 = (cum_size - 1) / cum_size;
 
-                for (int d = 0; d < num_dim_; ++d) {
+                for (std::size_t d = 0; d < num_dim_; ++d) {
                     node.center_of_mass[d] *= mult1;
                     node.center_of_mass[d] += point[d] / cum_size;
                 }
@@ -246,7 +246,7 @@ private:
     SPTreeIndex find_child (SPTreeIndex parent, const Float_* point, bool * side) const {
         int multiplier = 1;
         SPTreeIndex child = 0;
-        for (int d = 0; d < num_dim_; ++d) {
+        for (std::size_t d = 0; d < num_dim_; ++d) {
             side[d] = (point[d] >= my_store[parent].midpoint[d]);
             child += multiplier * side[d];
             multiplier *= 2;
@@ -257,7 +257,7 @@ private:
     void set_child_boundaries(SPTreeIndex parent, SPTreeIndex child, const bool* keep) {
         auto& current = my_store[child];
         auto& parental = my_store[parent];
-        for (int d = 0; d < num_dim_; ++d) {
+        for (std::size_t d = 0; d < num_dim_; ++d) {
             current.halfwidth[d] = parental.halfwidth[d] / static_cast<Float_>(2);
             if (keep[d]) {
                 current.midpoint[d] = parental.midpoint[d] + current.halfwidth[d];
@@ -280,7 +280,7 @@ private:
 private:
     static Float_ compute_sqdist(const Float_* point, const std::array<Float_, num_dim_>& center, std::array<Float_, num_dim_>& diffs) {
         Float_ sqdist = 0;
-        for (int d = 0; d < num_dim_; ++d) {
+        for (std::size_t d = 0; d < num_dim_; ++d) {
             Float_ delta = point[d] - center[d]; // note that 'diffs' expects to hold 'point - center' on output, not the other way around.
             diffs[d] = delta;
             sqdist += delta * delta;
@@ -293,13 +293,13 @@ private:
         Float_ mult = count * div;
         result_sum += mult;
         mult *= div;
-        for (int d = 0; d < num_dim_; ++d) {
+        for (std::size_t d = 0; d < num_dim_; ++d) {
             neg_f[d] += mult * diffs[d]; // remember, 'diff[d] := point[d] - center[d]' from compute_sqdist().
         }
     }
 
     static void remove_self_from_center(const Float_* point, const std::array<Float_, num_dim_>& center, Float_ count, std::array<Float_, num_dim_>& temp) {
-        for (int d = 0; d < num_dim_; ++d) { 
+        for (std::size_t d = 0; d < num_dim_; ++d) { 
             temp[d] = (center[d] * count - point[d]) / (count - 1);
         }
     }
@@ -307,7 +307,7 @@ private:
 public:
     Float_ compute_non_edge_forces(SPTreeIndex index, Float_ theta, Float_* neg_f) const {
         Float_ result_sum = 0;
-        const Float_ * point = my_data + index * static_cast<SPTreeIndex>(num_dim_); // cast to avoid overflow.
+        const Float_ * point = my_data + static_cast<std::size_t>(index) * num_dim_; // cast to avoid overflow.
         const auto& cur_children = my_store[0].children;
         std::fill_n(neg_f, num_dim_, 0);
 
@@ -428,7 +428,7 @@ public:
 
         const auto& node = my_store[node_loc];
         if (node.number != 1) {
-            const Float_ * point = my_data + index * static_cast<SPTreeIndex>(num_dim_); // cast to avoid overflow.
+            const Float_ * point = my_data + static_cast<std::size_t>(index) * num_dim_; // cast to avoid overflow.
             std::array<Float_, num_dim_> temp;
             remove_self_from_center(point, node.center_of_mass, node.number, temp);
 

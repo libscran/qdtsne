@@ -59,11 +59,11 @@ inline int perplexity_to_k(double perplexity) {
  * @param num_points Number of points in the embedding.
  * @param seed Seed for the random number generator.
  */
-template<int num_dim_, typename Float_ = double>
+template<std::size_t num_dim_, typename Float_ = double>
 void initialize_random(Float_* Y, std::size_t num_points, int seed = 42) {
     std::mt19937_64 rng(seed);
 
-    std::size_t total = num_points * static_cast<std::size_t>(num_dim_); // cast to avoid overflow.
+    std::size_t total = num_points * num_dim_; // already size_t's, so no need to cast to avoid overflow.
     bool odd = total % 2;
     if (odd) {
         --total;
@@ -96,9 +96,9 @@ void initialize_random(Float_* Y, std::size_t num_points, int seed = 42) {
  *
  * @return A vector of length `num_points * num_dim_` containing random draws from a standard normal distribution. 
  */
-template<int num_dim_, typename Float_ = double>
+template<std::size_t num_dim_, typename Float_ = double>
 std::vector<Float_> initialize_random(std::size_t num_points, int seed = 42) {
-    std::vector<Float_> Y(num_points * static_cast<std::size_t>(num_dim_)); // cast to avoid overflow.
+    std::vector<Float_> Y(num_points * num_dim_); // already size_t's, so no need to cast to avoid overflow.
     initialize_random<num_dim_>(Y.data(), num_points, seed);
     return Y;
 }

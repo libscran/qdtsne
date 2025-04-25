@@ -24,7 +24,7 @@ namespace qdtsne {
  */
 namespace internal {
 
-template<int num_dim_, typename Index_, typename Float_>
+template<std::size_t num_dim_, typename Index_, typename Float_>
 Status<num_dim_, Index_, Float_> initialize(NeighborList<Index_, Float_> nn, Float_ perp, const Options& options) {
     compute_gaussian_perplexity(nn, perp, options.num_threads);
     symmetrize_matrix(nn);
@@ -50,7 +50,7 @@ Status<num_dim_, Index_, Float_> initialize(NeighborList<Index_, Float_> nn, Flo
  *
  * @return A `Status` object representing an initial state of the t-SNE algorithm.
  */
-template<int num_dim_, typename Index_, typename Float_>
+template<std::size_t num_dim_, typename Index_, typename Float_>
 Status<num_dim_, Index_, Float_> initialize(NeighborList<Index_, Float_> neighbors, const Options& options) {
     Float_ perp;
     if (options.infer_perplexity && neighbors.size()) {
@@ -76,7 +76,7 @@ Status<num_dim_, Index_, Float_> initialize(NeighborList<Index_, Float_> neighbo
  *
  * @return A `Status` object representing an initial state of the t-SNE algorithm.
  */
-template<int num_dim_, typename Index_, typename Input_, typename Float_>
+template<std::size_t num_dim_, typename Index_, typename Input_, typename Float_>
 Status<num_dim_, Index_, Float_> initialize(const knncolle::Prebuilt<Index_, Input_, Float_>& prebuilt, const Options& options) { 
     const int K = perplexity_to_k(options.perplexity); 
     auto neighbors = find_nearest_neighbors(prebuilt, K, options.num_threads);
@@ -101,7 +101,7 @@ Status<num_dim_, Index_, Float_> initialize(const knncolle::Prebuilt<Index_, Inp
  *
  * @return A `Status` object representing an initial state of the t-SNE algorithm.
  */
-template<int num_dim_, typename Index_, typename Float_, class Matrix_>
+template<std::size_t num_dim_, typename Index_, typename Float_, class Matrix_>
 Status<num_dim_, Index_, Float_> initialize(
     std::size_t data_dim,
     std::size_t num_points,

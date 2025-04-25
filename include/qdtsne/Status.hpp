@@ -61,7 +61,7 @@ namespace qdtsne {
  * This class holds the precomputed structures required to perform the t-SNE iterations.
  * Instances should not be constructed directly but instead created by `initialize()`.
  */
-template<int num_dim_, typename Index_, typename Float_> 
+template<std::size_t num_dim_, typename Index_, typename Float_> 
 class Status {
 public:
     /**
@@ -69,14 +69,16 @@ public:
      */
     Status(NeighborList<Index_, Float_> neighbors, Options options) :
         my_neighbors(std::move(neighbors)),
-        my_dY(my_neighbors.size() * num_dim_), 
-        my_uY(my_neighbors.size() * num_dim_), 
-        my_gains(my_neighbors.size() * num_dim_, 1.0), 
-        my_pos_f(my_neighbors.size() * num_dim_), 
-        my_neg_f(my_neighbors.size() * num_dim_), 
         my_tree(my_neighbors.size(), options.max_depth),
         my_options(std::move(options))
     {
+        std::size_t full_size = static_cast<std::size_t>(my_neighbors.size()) * static_cast<std::size_t>(num_dim_); // cast to avoid overflow.
+        my_dY.resize(full_size);
+        my_uY.resize(full_size);
+        my_gains.resize(full_size, static_cast<Float_>(1));
+        my_pos_f.resize(full_size);
+        my_neg_f.resize(full_size);
+
         if (options.num_threads > 1) {
             my_parallel_buffer.resize(my_neighbors.size());
         }
@@ -202,7 +204,7 @@ private:
 
         // Make solution zero-mean
         std::size_t num_obs = num_observations();
-        for (int d = 0; d < num_dim_; ++d) {
+        for (std::size_t d = 0; d < num_dim_; ++d) {
             auto start = Y + d;
 
             // Compute means from column-major coordinates.
@@ -244,20 +246,20 @@ private:
         parallelize(my_options.num_threads, num_obs, [&](int, std::size_t start, std::size_t length) -> void {
             for (std::size_t n = start, end = start + length; n < end; ++n) {
                 const auto& current = my_neighbors[n];
-                size_t offset = n * static_cast<size_t>(num_dim_); // cast to avoid overflow.
+                size_t offset = n * static_cast<std::size_t>(num_dim_); // cast to avoid overflow.
                 const Float_* self = Y + offset;
                 Float_* pos_out = my_pos_f.data() + offset;
 
                 for (const auto& x : current) {
                     Float_ sqdist = 0; 
-                    const Float_* neighbor = Y + static_cast<std::size_t>(x.first) * num_dim_; // cast to avoid overflow.
-                    for (int d = 0; d < num_dim_; ++d) {
+                    const Float_* neighbor = Y + static_cast<std::size_t>(x.first) * static_cast<std::size_t>(num_dim_); // cast to avoid overflow.
+                    for (std::size_t d = 0; d < num_dim_; ++d) {
                         Float_ delta = self[d] - neighbor[d];
                         sqdist += delta * delta;
                     }
 
                     const Float_ mult = multiplier * x.second / (static_cast<Float_>(1) + sqdist);
-                    for (int d = 0; d < num_dim_; ++d) {
+                    for (std::size_t d = 0; d < num_dim_; ++d) {
                         pos_out[d] += mult * (self[d] - neighbor[d]);
                     }
                 }

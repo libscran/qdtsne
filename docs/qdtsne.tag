@@ -138,7 +138,7 @@
   <compound kind="class">
     <name>qdtsne::Status</name>
     <filename>classqdtsne_1_1Status.html</filename>
-    <templarg>int num_dim_</templarg>
+    <templarg>std::size_t num_dim_</templarg>
     <templarg>typename Index_</templarg>
     <templarg>typename Float_</templarg>
     <member kind="function">

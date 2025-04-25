@@ -126,12 +126,12 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>}</div>
 </div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="keyword">template</span>&lt;<span class="keywordtype">int</span> num_dim_, <span class="keyword">typename</span> Float_ = <span class="keywordtype">double</span>&gt;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="keyword">template</span>&lt;std::<span class="keywordtype">size_t</span> num_dim_, <span class="keyword">typename</span> Float_ = <span class="keywordtype">double</span>&gt;</div>
 <div class="foldopen" id="foldopen00063" data-start="{" data-end="}">
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="namespaceqdtsne.html#a14667d0a76bb759ad69bb39f00da8dd2">   63</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceqdtsne.html#a14667d0a76bb759ad69bb39f00da8dd2">initialize_random</a>(Float_* Y, std::size_t num_points, <span class="keywordtype">int</span> seed = 42) {</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    std::mt19937_64 rng(seed);</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    std::size_t total = num_points * <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(num_dim_); <span class="comment">// cast to avoid overflow.</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    std::size_t total = num_points * num_dim_; <span class="comment">// already size_t&#39;s, so no need to cast to avoid overflow.</span></div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordtype">bool</span> odd = total % 2;</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">if</span> (odd) {</div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        --total;</div>
@@ -154,10 +154,10 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>}</div>
 </div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="keyword">template</span>&lt;<span class="keywordtype">int</span> num_dim_, <span class="keyword">typename</span> Float_ = <span class="keywordtype">double</span>&gt;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="keyword">template</span>&lt;std::<span class="keywordtype">size_t</span> num_dim_, <span class="keyword">typename</span> Float_ = <span class="keywordtype">double</span>&gt;</div>
 <div class="foldopen" id="foldopen00100" data-start="{" data-end="}">
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="namespaceqdtsne.html#ab7a95317899f0c27320d4da806a4929a">  100</a></span>std::vector&lt;Float_&gt; <a class="code hl_function" href="namespaceqdtsne.html#a14667d0a76bb759ad69bb39f00da8dd2">initialize_random</a>(std::size_t num_points, <span class="keywordtype">int</span> seed = 42) {</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    std::vector&lt;Float_&gt; Y(num_points * <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(num_dim_)); <span class="comment">// cast to avoid overflow.</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    std::vector&lt;Float_&gt; Y(num_points * num_dim_); <span class="comment">// already size_t&#39;s, so no need to cast to avoid overflow.</span></div>
 <div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <a class="code hl_function" href="namespaceqdtsne.html#a14667d0a76bb759ad69bb39f00da8dd2">initialize_random&lt;num_dim_&gt;</a>(Y.data(), num_points, seed);</div>
 <div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordflow">return</span> Y;</div>
 <div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>}</div>

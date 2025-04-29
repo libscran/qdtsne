@@ -332,9 +332,9 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>                for (std::size_t i = start, end = start + length; i &lt; end; ++i) {</div>
 <div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>                    auto neg_ptr = my_neg_f.data() + i * num_dim_; <span class="comment">// already size_t&#39;s to avoid overflow.</span></div>
 <div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>                    if (my_options.leaf_approximation) {</div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>                        my_parallel_buffer[n] = my_tree.compute_non_edge_forces_from_leaves(n, neg_ptr, my_leaf_workspace);</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>                        my_parallel_buffer[i] = my_tree.compute_non_edge_forces_from_leaves(n, neg_ptr, my_leaf_workspace);</div>
 <div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>                    } else {</div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>                        my_parallel_buffer[n] = my_tree.compute_non_edge_forces(n, my_options.theta, neg_ptr);</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>                        my_parallel_buffer[i] = my_tree.compute_non_edge_forces(n, my_options.theta, neg_ptr);</div>
 <div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>                    }</div>
 <div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>                }</div>
 <div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>            });</div>

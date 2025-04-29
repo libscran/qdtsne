@@ -72,7 +72,7 @@ public:
         my_tree(my_neighbors.size(), options.max_depth),
         my_options(std::move(options))
     {
-        std::size_t full_size = static_cast<std::size_t>(my_neighbors.size()) * static_cast<std::size_t>(num_dim_); // cast to avoid overflow.
+        std::size_t full_size = static_cast<std::size_t>(my_neighbors.size()) * num_dim_; // cast to avoid overflow.
         my_dY.resize(full_size);
         my_uY.resize(full_size);
         my_gains.resize(full_size, static_cast<Float_>(1));
@@ -202,21 +202,16 @@ private:
             Y[i] += my_uY[i];
         }
 
-        // Make solution zero-mean
+        // Make solution zero-mean for each dimension
         std::size_t num_obs = num_observations();
         for (std::size_t d = 0; d < num_dim_; ++d) {
-            auto start = Y + d;
-
-            // Compute means from column-major coordinates.
             Float_ sum = 0;
-            for (std::size_t i = 0; i < num_obs; ++i, start += num_dim_) {
-                sum += *start;
+            for (std::size_t i = 0; i < num_obs; ++i) {
+                sum += Y[d + i * num_dim_]; // all of these are already size_t to avoid overflow.
             }
             sum /= num_obs;
-
-            start = Y + d;
-            for (std::size_t i = 0; i < num_obs; ++i, start += num_dim_) {
-                *start -= sum;
+            for (std::size_t i = 0; i < num_obs; ++i) {
+                Y[d + i * num_dim_] -= sum; // again, everything here is already a size_t.
             }
         }
 
@@ -233,7 +228,7 @@ private:
         Float_ sum_Q = compute_non_edge_forces();
 
         // Compute final t-SNE gradient
-        std::size_t ntotal = num_obs * static_cast<std::size_t>(num_dim_); // cast to avoid overflow.
+        std::size_t ntotal = num_obs * num_dim_; // already size_t's to avoid overflow.
         for (std::size_t i = 0; i < ntotal; ++i) {
             my_dY[i] = my_pos_f[i] - (my_neg_f[i] / sum_Q);
         }
@@ -244,15 +239,15 @@ private:
         std::size_t num_obs = num_observations();
 
         parallelize(my_options.num_threads, num_obs, [&](int, std::size_t start, std::size_t length) -> void {
-            for (std::size_t n = start, end = start + length; n < end; ++n) {
-                const auto& current = my_neighbors[n];
-                size_t offset = n * static_cast<std::size_t>(num_dim_); // cast to avoid overflow.
+            for (std::size_t i = start, end = start + length; i < end; ++i) {
+                const auto& current = my_neighbors[i];
+                size_t offset = i * num_dim_; // already size_t's to avoid overflow.
                 const Float_* self = Y + offset;
                 Float_* pos_out = my_pos_f.data() + offset;
 
                 for (const auto& x : current) {
                     Float_ sqdist = 0; 
-                    const Float_* neighbor = Y + static_cast<std::size_t>(x.first) * static_cast<std::size_t>(num_dim_); // cast to avoid overflow.
+                    const Float_* neighbor = Y + static_cast<std::size_t>(x.first) * num_dim_; // cast to avoid overflow.
                     for (std::size_t d = 0; d < num_dim_; ++d) {
                         Float_ delta = self[d] - neighbor[d];
                         sqdist += delta * delta;
@@ -279,12 +274,12 @@ private:
             // Don't use reduction methods, otherwise we get numeric imprecision
             // issues (and stochastic results) based on the order of summation.
             parallelize(my_options.num_threads, num_obs, [&](int, std::size_t start, std::size_t length) -> void {
-                for (std::size_t n = start, end = start + length; n < end; ++n) {
-                    auto neg_ptr = my_neg_f.data() + n * static_cast<std::size_t>(num_dim_); // cast to avoid overflow.
+                for (std::size_t i = start, end = start + length; i < end; ++i) {
+                    auto neg_ptr = my_neg_f.data() + i * num_dim_; // already size_t's to avoid overflow.
                     if (my_options.leaf_approximation) {
-                        my_parallel_buffer[n] = my_tree.compute_non_edge_forces_from_leaves(n, neg_ptr, my_leaf_workspace);
+                        my_parallel_buffer[i] = my_tree.compute_non_edge_forces_from_leaves(i, neg_ptr, my_leaf_workspace);
                     } else {
-                        my_parallel_buffer[n] = my_tree.compute_non_edge_forces(n, my_options.theta, neg_ptr);
+                        my_parallel_buffer[i] = my_tree.compute_non_edge_forces(i, my_options.theta, neg_ptr);
                     }
                 }
             });
@@ -292,12 +287,12 @@ private:
         }
 
         Float_ sum_Q = 0;
-        for (std::size_t n = 0; n < num_obs; ++n) {
-            auto neg_ptr = my_neg_f.data() + n * static_cast<std::size_t>(num_dim_); // cast to avoid overflow.
+        for (std::size_t i = 0; i < num_obs; ++i) {
+            auto neg_ptr = my_neg_f.data() + i * num_dim_; // already size_ts to avoid overflow.
             if (my_options.leaf_approximation) {
-                sum_Q += my_tree.compute_non_edge_forces_from_leaves(n, neg_ptr, my_leaf_workspace);
+                sum_Q += my_tree.compute_non_edge_forces_from_leaves(i, neg_ptr, my_leaf_workspace);
             } else {
-                sum_Q += my_tree.compute_non_edge_forces(n, my_options.theta, neg_ptr);
+                sum_Q += my_tree.compute_non_edge_forces(i, my_options.theta, neg_ptr);
             }
         }
         return sum_Q;

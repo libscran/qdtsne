@@ -332,9 +332,9 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>                for (std::size_t i = start, end = start + length; i &lt; end; ++i) {</div>
 <div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>                    auto neg_ptr = my_neg_f.data() + i * num_dim_; <span class="comment">// already size_t&#39;s to avoid overflow.</span></div>
 <div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>                    if (my_options.leaf_approximation) {</div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>                        my_parallel_buffer[i] = my_tree.compute_non_edge_forces_from_leaves(n, neg_ptr, my_leaf_workspace);</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>                        my_parallel_buffer[i] = my_tree.compute_non_edge_forces_from_leaves(i, neg_ptr, my_leaf_workspace);</div>
 <div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>                    } else {</div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>                        my_parallel_buffer[i] = my_tree.compute_non_edge_forces(n, my_options.theta, neg_ptr);</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>                        my_parallel_buffer[i] = my_tree.compute_non_edge_forces(i, my_options.theta, neg_ptr);</div>
 <div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>                    }</div>
 <div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>                }</div>
 <div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>            });</div>
@@ -345,9 +345,9 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>        <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; num_obs; ++i) {</div>
 <div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>            <span class="keyword">auto</span> neg_ptr = my_neg_f.data() + i * num_dim_; <span class="comment">// already size_ts to avoid overflow.</span></div>
 <div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>            <span class="keywordflow">if</span> (my_options.<a class="code hl_variable" href="structqdtsne_1_1Options.html#a69b189230017a5574b41d2cac7780656">leaf_approximation</a>) {</div>
-<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>                sum_Q += my_tree.compute_non_edge_forces_from_leaves(n, neg_ptr, my_leaf_workspace);</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>                sum_Q += my_tree.compute_non_edge_forces_from_leaves(i, neg_ptr, my_leaf_workspace);</div>
 <div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>            } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>                sum_Q += my_tree.compute_non_edge_forces(n, my_options.<a class="code hl_variable" href="structqdtsne_1_1Options.html#ac69fb8679d8fe13ee31e5e06d7425cc6">theta</a>, neg_ptr);</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>                sum_Q += my_tree.compute_non_edge_forces(i, my_options.<a class="code hl_variable" href="structqdtsne_1_1Options.html#ac69fb8679d8fe13ee31e5e06d7425cc6">theta</a>, neg_ptr);</div>
 <div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>            }</div>
 <div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>        }</div>
 <div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>        <span class="keywordflow">return</span> sum_Q;</div>

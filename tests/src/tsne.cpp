@@ -26,9 +26,14 @@ protected:
         X.resize(ndim * nobs);
 
         std::mt19937_64 rng(42);
-        std::normal_distribution<> dist(0, 1);
+        std::uniform_real_distribution<> dist(0, 1);
         for (auto& y : X) {
             y = dist(rng);
+        }
+
+        // Shift every second observation by 10 in the first dimension.
+        for (int o = 1; o < nobs; o += 2) {
+            X[o * ndim] += 10;
         }
 
         builder.reset(new knncolle::VptreeBuilder<int, double, double>(
@@ -117,6 +122,15 @@ TEST_P(TsneTester, Runner) {
         EXPECT_TRUE(std::abs(total/nobs) < 1e-10);
     }
 
+    // Sanity check for separation between the two groups of observations, at least on the first dimension.
+    int odd_above_zero = 0, even_above_zero = 0;
+    for (int i = 0; i < nobs; ++i) {
+        auto& counter = (i % 2 == 0 ? even_above_zero : odd_above_zero);
+        counter += (Y[2 * i] > 0);
+    }
+    EXPECT_TRUE(odd_above_zero == 0 || even_above_zero == 0);
+    EXPECT_EQ(odd_above_zero + even_above_zero, nobs/2);
+
     // Same results when run in parallel.
     opt.num_threads = 3;
     auto pstatus = qdtsne::initialize<2>(ndim, nobs, X.data(), *builder, opt);
@@ -202,6 +216,15 @@ TEST_P(TsneTester, LeafApproximation) {
         }
         EXPECT_TRUE(std::abs(total/nobs) < 1e-10);
     }
+
+    // Sanity check for separation between the two groups of observations, at least on the first dimension.
+    // The approximation does degrade the quality of the global embedding so we can't do a more precise check.
+    double odd_mean = 0, even_mean = 0;
+    for (int i = 0; i < nobs; ++i) {
+        auto& val = (i % 2 == 0 ? even_mean : odd_mean);
+        val += Y[2 * i];
+    }
+    EXPECT_GT(std::abs(odd_mean - even_mean) / (nobs/2), 10);
 
     // Same results when run in parallel.
     opt.num_threads = 3;

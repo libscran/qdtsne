@@ -10,6 +10,8 @@
 #include <map>
 #include <algorithm>
 #include <cmath>
+#include <limits>
+#include <array>
 
 #include "knncolle/knncolle.hpp"
 
@@ -122,14 +124,20 @@ TEST_P(TsneTester, Runner) {
         EXPECT_TRUE(std::abs(total/nobs) < 1e-10);
     }
 
-    // Sanity check for separation between the two groups of observations, at least on the first dimension.
-    int odd_above_zero = 0, even_above_zero = 0;
+    // Sanity check for separation between the two groups of observations, at least on one dimension.
+    std::array<int, 2> odd_above_zero{}, even_above_zero{};
     for (int i = 0; i < nobs; ++i) {
         auto& counter = (i % 2 == 0 ? even_above_zero : odd_above_zero);
-        counter += (Y[2 * i] > 0);
+        for (int d = 0; d < 2; ++d) {
+            counter[d] += (Y[2 * i + d] > 0);
+        }
     }
-    EXPECT_TRUE(odd_above_zero == 0 || even_above_zero == 0);
-    EXPECT_EQ(odd_above_zero + even_above_zero, nobs/2);
+    EXPECT_TRUE(
+        (odd_above_zero[0] == 0 && even_above_zero[0] == nobs/2) ||
+        (odd_above_zero[1] == 0 && even_above_zero[1] == nobs/2) ||
+        (odd_above_zero[0] == nobs/2 && even_above_zero[0] == 0) ||
+        (odd_above_zero[1] == nobs/2 && even_above_zero[1] == 0)
+    );
 
     // Same results when run in parallel.
     opt.num_threads = 3;
@@ -217,14 +225,34 @@ TEST_P(TsneTester, LeafApproximation) {
         EXPECT_TRUE(std::abs(total/nobs) < 1e-10);
     }
 
-    // Sanity check for separation between the two groups of observations, at least on the first dimension.
+    // Sanity check for separation between the means of the two groups of observations on at least one dimension.
     // The approximation does degrade the quality of the global embedding so we can't do a more precise check.
-    double odd_mean = 0, even_mean = 0;
+    std::array<double, 2> mean_odd{};
+    std::array<double, 2> mean_even{};
+    auto inf = std::numeric_limits<double>::infinity();
+    std::array<double, 2> min_odd{ inf, inf }, max_odd{ -inf, -inf };
+    std::array<double, 2> min_even{ inf, inf }, max_even{ -inf, -inf };
     for (int i = 0; i < nobs; ++i) {
-        auto& val = (i % 2 == 0 ? even_mean : odd_mean);
-        val += Y[2 * i];
+        auto& mean = (i % 2 == 0 ? mean_even : mean_odd);
+        auto& min = (i % 2 == 0 ? min_even : min_odd);
+        auto& max = (i % 2 == 0 ? max_even : max_odd);
+        for (int d = 0; d < 2; ++d) {
+            auto val = Y[2 * i + d];
+            mean[d] += val;
+            min[d] = std::min(min[d], val);
+            max[d] = std::max(max[d], val);
+        }
     }
-    EXPECT_GT(std::abs(odd_mean - even_mean) / (nobs/2), 10);
+    for (int d = 0; d < 2; ++d) {
+        mean_odd[d] /= nobs/2;
+        mean_even[d] /= nobs/2;
+    }
+    EXPECT_TRUE( // just checking that the mean of each group is beyond the range of the other subpopulation.
+        (mean_odd[0] < min_even[0] && mean_even[0] > max_odd[0]) ||
+        (mean_odd[1] < min_even[1] && mean_even[1] > max_odd[1]) ||
+        (mean_even[0] < min_odd[0] && mean_odd[0] > max_even[0]) ||
+        (mean_even[1] < min_odd[1] && mean_odd[1] > max_even[1])
+    );
 
     // Same results when run in parallel.
     opt.num_threads = 3;

@@ -203,15 +203,19 @@ private:
         }
 
         // Make solution zero-mean for each dimension
+        std::array<Float_, num_dim_> means{};
         std::size_t num_obs = num_observations();
-        for (std::size_t d = 0; d < num_dim_; ++d) {
-            Float_ sum = 0;
-            for (std::size_t i = 0; i < num_obs; ++i) {
-                sum += Y[d + i * num_dim_]; // all of these are already size_t to avoid overflow.
+        for (std::size_t i = 0; i < num_obs; ++i) {
+            for (std::size_t d = 0; d < num_dim_; ++d) {
+                means[d] += Y[d + i * num_dim_]; // all of these are already size_t to avoid overflow.
             }
-            sum /= num_obs;
-            for (std::size_t i = 0; i < num_obs; ++i) {
-                Y[d + i * num_dim_] -= sum; // again, everything here is already a size_t.
+        }
+        for (std::size_t d = 0; d < num_dim_; ++d) {
+            means[d] /= num_obs;
+        }
+        for (std::size_t i = 0; i < num_obs; ++i) {
+            for (std::size_t d = 0; d < num_dim_; ++d) {
+                Y[d + i * num_dim_] -= means[d]; // again, everything here is already a size_t.
             }
         }
 

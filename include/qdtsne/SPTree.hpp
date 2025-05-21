@@ -73,18 +73,20 @@ public:
     public:
         static constexpr int nchildren = (1 << num_dim_); 
 
+        std::array<Float_, num_dim_> center_of_mass;
+
+        // This should only be used when is_leaf = false, such that the values
+        // have been set by set_child_boundaries().
         std::array<SPTreeIndex, nchildren> children;
         std::array<Float_, num_dim_> midpoint, halfwidth;
-        std::array<Float_, num_dim_> center_of_mass;
         Float_ max_width = 0;
-
-        SPTreeIndex number = 1;
 
         // This should only be used when is_leaf = true. In cases where multiple
         // points are assigned to the same leaf node (e.g., duplicates, max depth
         // truncation), it is the index of the first point for this Node.
         SPTreeIndex index = -1; 
 
+        SPTreeIndex number = 1;
         bool is_leaf = true;
 
     private:
@@ -236,7 +238,7 @@ public:
 
         for (SPTreeIndex i = 0; i < my_npts; ++i) {
             auto tmp = my_locations[my_first_assignment[i]]; // break it up to avoid unsequencing errors when assigning to self.
-            my_locations[i] = tmp;
+            my_locations[i] = tmp; // It is guaranteed that 'my_first_assignment[i] <= i', so there isn't any effect on future iterations of 'i'.
         } 
 
         return;
@@ -266,12 +268,14 @@ private:
             }
         }
 
-        // Compute once for the theta calculations. Note that we double it to obtain
-        // the actual width, not the halfwidth. I suspect that the original sptree.cpp
-        // code in Rtsne was not correct as their 'width' was really a half width.
-        // For us it doesn't matter as we double the default 'theta' to match their
-        // 'theta=0.5', so it all ends up being the same anyway.
-        current.max_width = 2 * *std::max_element(current.halfwidth.begin(), current.halfwidth.end());
+        // Compute once for the theta calculations. Note that the max width is
+        // twice the maximum current.halfwidth, so we just take the max of the
+        // parental halfwidth to avoid loss of precision from an unnecessary
+        // multiplication. I suspect that the original sptree.cpp code in Rtsne
+        // was not correct as their 'width' was really a half width. For us it
+        // doesn't matter as we double the default 'theta' to match their
+        // default 'theta=0.5', so it all ends up being the same anyway.
+        current.max_width = *std::max_element(parental.halfwidth.begin(), parental.halfwidth.end());
     }
 
     /***********************************

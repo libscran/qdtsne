@@ -168,7 +168,7 @@ $(function(){ initResizable(false); });
 <div class="line">FetchContent_Declare(</div>
 <div class="line">  qdtsne </div>
 <div class="line">  GIT_REPOSITORY https://github.com/libscran/qdtsne</div>
-<div class="line">  GIT_TAG master # or any version of interest</div>
+<div class="line">  GIT_TAG master # replace with a pinned release</div>
 <div class="line">)</div>
 <div class="line"> </div>
 <div class="line">FetchContent_MakeAvailable(qdtsne)</div>
@@ -178,14 +178,15 @@ $(function(){ initResizable(false); });
 <div class="line"> </div>
 <div class="line"># For libaries</div>
 <div class="line">target_link_libraries(mylib INTERFACE qdtsne)</div>
-</div><!-- fragment --><h2>CMake with <code>find_package()</code></h2>
+</div><!-- fragment --><p>By default, this will use <code>FetchContent</code> to fetch all external dependencies. Applications should probably pin the version of each dependency themselves - see <a href="extern/CMakeLists.txt"><code>extern/CMakeLists.txt</code></a> for suggested versions. If you want to install them manually, use <code>-DQDTSNE_FETCH_EXTERN=OFF</code>.</p>
+<h2>CMake with <code>find_package()</code></h2>
 <div class="fragment"><div class="line">find_package(libscran_qdtsne CONFIG REQUIRED)</div>
 <div class="line">target_link_libraries(mylib INTERFACE libscran::qdtsne)</div>
 </div><!-- fragment --><p>To install the library, use:</p>
 <div class="fragment"><div class="line">mkdir build &amp;&amp; cd build</div>
 <div class="line">cmake .. -DQDTSNE_TESTS=OFF</div>
 <div class="line">cmake --build . --target install</div>
-</div><!-- fragment --><p>By default, this will use <code>FetchContent</code> to fetch all external dependencies. If you want to install them manually, use <code>-DQDTSNE_FETCH_EXTERN=OFF</code>. See <a href="extern/CMakeLists.txt"><code>extern/CMakeLists.txt</code></a> to find compatible versions of each dependency.</p>
+</div><!-- fragment --><p>Again, this will use <code>FetchContent</code> to fetch all external dependencies, see recommendations above.</p>
 <h2>Manual</h2>
 <p>If you're not using CMake, you can just copy the header files in <code>include/</code> into some location that is visible to your compiler. This requires the manual inclusion of the dependencies listed in <a href="extern/CMakeLists.txt"><code>extern/CMakeLists.txt</code></a>.</p>
 <h1>Comments on licensing</h1>

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 project(qdtsne
-    VERSION 2.0.2
+    VERSION 3.0.0
     DESCRIPTION "Quick and dirty t-SNE implementation in C++"
     LANGUAGES CXX)
 

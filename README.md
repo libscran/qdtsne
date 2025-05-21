@@ -103,7 +103,7 @@ include(FetchContent)
 FetchContent_Declare(
   qdtsne 
   GIT_REPOSITORY https://github.com/libscran/qdtsne
-  GIT_TAG master # or any version of interest
+  GIT_TAG master # replace with a pinned release
 )
 
 FetchContent_MakeAvailable(qdtsne)
@@ -118,6 +118,10 @@ target_link_libraries(myexe qdtsne)
 # For libaries
 target_link_libraries(mylib INTERFACE qdtsne)
 ```
+
+By default, this will use `FetchContent` to fetch all external dependencies.
+Applications should probably pin the version of each dependency themselves - see [`extern/CMakeLists.txt`](extern/CMakeLists.txt) for suggested versions.
+If you want to install them manually, use `-DQDTSNE_FETCH_EXTERN=OFF`.
 
 ### CMake with `find_package()`
 
@@ -134,9 +138,7 @@ cmake .. -DQDTSNE_TESTS=OFF
 cmake --build . --target install
 ```
 
-By default, this will use `FetchContent` to fetch all external dependencies.
-If you want to install them manually, use `-DQDTSNE_FETCH_EXTERN=OFF`.
-See [`extern/CMakeLists.txt`](extern/CMakeLists.txt) to find compatible versions of each dependency.
+Again, this will use `FetchContent` to fetch all external dependencies, see recommendations above.
 
 ### Manual
 
@@ -158,4 +160,3 @@ _Journal of Machine Learning Research_, 9, 2579-2605.
 van der Maaten, L.J.P. (2014). 
 Accelerating t-SNE using tree-based algorithms. 
 _Journal of Machine Learning Research_, 15, 3221-3245.
-

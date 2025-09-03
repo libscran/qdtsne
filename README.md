@@ -1,4 +1,4 @@
-# C++ library for t-SNE
+# Quick and dirty t-SNE in C++
 
 ![Unit tests](https://github.com/libscran/qdtsne/actions/workflows/run-tests.yaml/badge.svg)
 ![Documentation](https://github.com/libscran/qdtsne/actions/workflows/doxygenate.yaml/badge.svg)

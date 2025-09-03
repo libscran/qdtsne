@@ -28,8 +28,7 @@ namespace qdtsne {
  *
  * This is a convenient alias for the `knncolle::NeighborList` class.
  * Each inner vector corresponds to an observation and contains the list of nearest neighbors for that observation, sorted by increasing distance.
- * Neighbors for each observation should be unique - there should be no more than one occurrence of each index in each inner vector.
- * Also, the inner vector for observation `i` should not contain any `Neighbor` with index `i`.
+ * Neighbors for each observation should be unique, and the list of neighbors for observation `i` should not contain itself.
  *
  * @tparam Index_ Integer type of the observation indices.
  * @tparam Float_ Floating-point type of the neighbor distances.
@@ -42,7 +41,7 @@ using NeighborList = knncolle::NeighborList<Index_, Float_>;
  * Useful when the neighbor search is conducted outside of `initialize()`.
  *
  * @tparam Index_ Integer type of the number of neighbors.
- * @param perplexity Perplexity to use in the t-SNE algorithm.
+ * @param perplexity Perplexity value, see `Options::perplexity`.
  * @return Number of nearest neighbors to find.
  */
 template<typename Index_ = int>
@@ -110,7 +109,7 @@ std::vector<Float_> initialize_random(const std::size_t num_points, const unsign
 }
 
 /**
- * @tparam Task_ Integer type for the number of tasks.
+ * @tparam Task_ Integer type of the number of tasks.
  * @tparam Run_ Function to execute a range of tasks.
  *
  * @param num_workers Number of workers.

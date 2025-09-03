@@ -110,8 +110,7 @@ public:
     }
 
     /**
-     * @return The maximum number of iterations. 
-     * This can be modified to `run()` the algorithm for more iterations.
+     * @return The maximum number of iterations, as specified in `Options::max_iterations`.
      */
     int max_iterations() const {
         return my_options.max_iterations;
@@ -167,12 +166,12 @@ public:
 
     /**
      * Run the algorithm to the maximum number of iterations.
-     * If `run()` has already been invoked with an iteration limit, this method will only perform the remaining iterations required for `iteration()` to reach `max_iter()`.
-     * If `iteration()` is already greater than `max_iter()`, this method is a no-op.
+     * If `run()` has already been invoked with an iteration limit, this method will only perform the remaining iterations required for `iteration()` to reach `max_iterations()`.
+     * If `iteration()` is already greater than `max_iterations()`, this method is a no-op.
      *
      * @param[in, out] Y Pointer to a array containing a column-major matrix with number of rows and columns equal to `num_dim_` and `num_observations()`, respectively.
      * Each row corresponds to a dimension of the embedding while each column corresponds to an observation.
-     * On input, this should contain the initial location of each observation; on output, it is updated to the t-SNE location at the specified number of iterations.
+     * On input, this should contain the initial location of each observation; on output, it is updated to the t-SNE location at the maximum number of iterations.
      */
     void run(Float_* const Y) {
         run(Y, my_options.max_iterations);

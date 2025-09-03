@@ -3,7 +3,6 @@
 
 /**
  * @file qdtsne.hpp
- *
  * @brief Umbrella header for all **qdtsne** files.
  */
 

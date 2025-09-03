@@ -11,9 +11,11 @@
 #include <cmath>
 #include <vector>
 #include <cstddef>
+#include <type_traits>
 
 #include "aarand/aarand.hpp"
 #include "knncolle/knncolle.hpp"
+#include "sanisizer/sanisizer.hpp"
 
 #ifndef QDTSNE_CUSTOM_PARALLEL
 #include "subpar/subpar.hpp"
@@ -39,11 +41,13 @@ using NeighborList = knncolle::NeighborList<Index_, Float_>;
  * Determines the appropriate number of neighbors, given a perplexity value.
  * Useful when the neighbor search is conducted outside of `initialize()`.
  *
+ * @tparam Index_ Integer type of the number of neighbors.
  * @param perplexity Perplexity to use in the t-SNE algorithm.
  * @return Number of nearest neighbors to find.
  */
-inline int perplexity_to_k(double perplexity) {
-    return std::ceil(perplexity * 3);
+template<typename Index_ = int>
+Index_ perplexity_to_k(const double perplexity) {
+    return sanisizer::from_float<Index_>(std::ceil(perplexity * 3));
 }
 
 /**
@@ -60,17 +64,19 @@ inline int perplexity_to_k(double perplexity) {
  * @param seed Seed for the random number generator.
  */
 template<std::size_t num_dim_, typename Float_ = double>
-void initialize_random(Float_* Y, std::size_t num_points, int seed = 42) {
+void initialize_random(Float_* const Y, const std::size_t num_points, const unsigned long long seed = 42) {
+    // The constructor accepts an unsigned type, so any overflow should just wrap around harmlessly. 
     std::mt19937_64 rng(seed);
 
-    std::size_t total = num_points * num_dim_; // already size_t's, so no need to cast to avoid overflow.
-    bool odd = total % 2;
+    // Presumably a size_t can store the product in order to allocate Y in the first place.
+    std::size_t num_total = sanisizer::product_unsafe<std::size_t>(num_points, num_dim_);
+    const bool odd = num_total % 2;
     if (odd) {
-        --total;
+        --num_total;
     }
 
     // Box-Muller gives us two random values at a time.
-    for (std::size_t i = 0; i < total; i += 2) {
+    for (std::size_t i = 0; i < num_total; i += 2) {
         auto paired = aarand::standard_normal<Float_>(rng);
         Y[i] = paired.first;
         Y[i + 1] = paired.second;
@@ -79,7 +85,7 @@ void initialize_random(Float_* Y, std::size_t num_points, int seed = 42) {
     if (odd) {
         // Adding the poor extra for odd total lengths.
         auto paired = aarand::standard_normal<Float_>(rng);
-        Y[total] = paired.first;
+        Y[num_total] = paired.first;
     }
 
     return;
@@ -97,8 +103,8 @@ void initialize_random(Float_* Y, std::size_t num_points, int seed = 42) {
  * @return A vector of length `num_points * num_dim_` containing random draws from a standard normal distribution. 
  */
 template<std::size_t num_dim_, typename Float_ = double>
-std::vector<Float_> initialize_random(std::size_t num_points, int seed = 42) {
-    std::vector<Float_> Y(num_points * num_dim_); // already size_t's, so no need to cast to avoid overflow.
+std::vector<Float_> initialize_random(const std::size_t num_points, const unsigned long long seed = 42) {
+    std::vector<Float_> Y(sanisizer::product<typename std::vector<Float_>::size_type>(num_points, num_dim_));
     initialize_random<num_dim_>(Y.data(), num_points, seed);
     return Y;
 }
@@ -116,7 +122,7 @@ std::vector<Float_> initialize_random(std::size_t num_points, int seed = 42) {
  * Any user-defined macro should accept the same arguments as `subpar::parallelize_range()`.
  */
 template<typename Task_, class Run_>
-void parallelize(int num_workers, Task_ num_tasks, Run_ run_task_range) {
+void parallelize(const int num_workers, const Task_ num_tasks, Run_ run_task_range) {
 #ifndef QDTSNE_CUSTOM_PARALLEL
     // Don't make this nothrow_ = true, there's too many allocations and the
     // derived methods for the nearest neighbors search could do anything...
@@ -125,6 +131,17 @@ void parallelize(int num_workers, Task_ num_tasks, Run_ run_task_range) {
     QDTSNE_CUSTOM_PARALLEL(num_workers, num_tasks, run_task_range);
 #endif
 }
+
+/**
+ * @cond
+ */
+template<typename Input_>
+std::remove_cv_t<std::remove_reference_t<Input_> > I(const Input_ x) {
+    return x;
+}
+/**
+ * @endcond
+ */
 
 }
 

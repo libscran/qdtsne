@@ -38,6 +38,7 @@
 #include <algorithm>
 #include <vector>
 #include <cstddef>
+#include <limits>
 
 #include "utils.hpp"
 
@@ -51,14 +52,40 @@ typedef std::size_t SPTreeIndex;
 template<std::size_t num_dim_, typename Float_>
 class SPTree {
 public:
-    SPTree(SPTreeIndex npts, int maxdepth) : my_npts(npts), my_maxdepth(maxdepth), my_locations(my_npts) {
-        my_store.reserve(std::min(static_cast<Float_>(my_npts), std::pow(static_cast<Float_>(4.0), static_cast<Float_>(my_maxdepth))) * 2);
+    SPTree(const SPTreeIndex npts, const int maxdepth) :
+        my_npts(npts),
+        my_maxdepth(maxdepth),
+        my_locations(sanisizer::cast<decltype(I(my_locations.size()))>(my_npts))
+    {
+        my_store.reserve(get_max_nnodes(my_npts, my_maxdepth));
+        sanisizer::resize(my_first_assignment, my_npts);
+        sanisizer::resize(my_locations, my_npts);
         return;
+    }
+
+    static SPTreeIndex get_max_nnodes(const SPTreeIndex npts, const int maxdepth) {
+        // Basically return 'min(nchildren^maxdepth, npts)', to avoid reserving more space than is required for the leaf nodes.
+        SPTreeIndex nleafs = 1;
+        for (decltype(I(maxdepth)) d = 0; d < maxdepth; ++d) {
+            if (nleafs > npts / Node::nchildren) {
+                nleafs = npts;
+                break;
+            }
+            nleafs *= Node::nchildren;
+        }
+
+        // Multiply this by two to support storage of the intermediate nodes.
+        constexpr auto maxed = std::numeric_limits<SPTreeIndex>::max();
+        if (sanisizer::is_greater_than(nleafs, maxed / 2)) {
+            return maxed; 
+        } else {
+            return nleafs * 2;
+        }
     }
 
 public:
     struct Node {
-        Node(SPTreeIndex i, const Float_* point) : index(i) {
+        Node(const SPTreeIndex i, const Float_* const point) : index(i) {
             std::copy_n(point, num_dim_, center_of_mass.data());
             fill();
             return;
@@ -71,6 +98,7 @@ public:
         }
 
     public:
+        static_assert(sanisizer::is_greater_than(std::numeric_limits<int>::digits, num_dim_));
         static constexpr int nchildren = (1 << num_dim_); 
 
         std::array<Float_, num_dim_> center_of_mass;
@@ -114,7 +142,7 @@ private:
      *** Construction methods ***
      ****************************/
 public:
-    void set(const Float_* Y) {
+    void set(const Float_* const Y) {
         my_data = Y;
 
         {
@@ -130,15 +158,13 @@ public:
             // Setting the initial midpoint to the center of mass of all points
             // so that the partitioning effectively divides up the points.
             auto& mean_Y = my_store[0].midpoint;
-            auto copy = Y;
             for (SPTreeIndex n = 0; n < my_npts; ++n) {
                 for (std::size_t d = 0; d < num_dim_; ++d) {
-                    auto curval = copy[d];
+                    const auto curval = Y[sanisizer::nd_offset<std::size_t>(d, num_dim_, n)];
                     mean_Y[d] += curval;
                     min_Y[d] = std::min(min_Y[d], curval);
                     max_Y[d] = std::max(max_Y[d], curval);
                 }
-                copy += num_dim_;
             }
 
             for (std::size_t d = 0; d < num_dim_; ++d) {
@@ -152,14 +178,13 @@ public:
             }
         }
 
-        auto point = Y;
-        my_first_assignment.resize(my_npts);
-        for (SPTreeIndex i = 0; i < my_npts; ++i, point += num_dim_) {
+        for (SPTreeIndex i = 0; i < my_npts; ++i) {
             std::array<bool, num_dim_> side;
             SPTreeIndex parent = 0;
+            const auto point = Y + sanisizer::product_unsafe<std::size_t>(i, num_dim_);
 
-            for (int depth = 1; depth <= my_maxdepth; ++depth) {
-                SPTreeIndex child_idx = find_child(parent, point, side.data());
+            for (int depth = 0; depth < my_maxdepth; ++depth) {
+                const SPTreeIndex child_idx = find_child(parent, point, side.data());
 
                 // Be careful with persistent references to my_store's contents,
                 // as the vector may be reallocated when a push_back() occurs.
@@ -178,7 +203,7 @@ public:
                 if (my_store[current_loc].is_leaf) {
                     // Check if it's a duplicate, in which case we quit immediately.
                     // No need to update the center of mass because it's the same point.
-                    int nsame = 0;
+                    std::size_t nsame = 0;
                     const auto& center = my_store[current_loc].center_of_mass;
                     for (std::size_t d = 0; d < num_dim_; ++d) {
                         nsame += (center[d] == point[d]);
@@ -189,12 +214,12 @@ public:
                         break;
                     }
 
-                    if (depth == my_maxdepth) {
+                    if (depth + 1 == my_maxdepth) {
                         my_first_assignment[i] = my_store[current_loc].index;
                     } else {
                         // Otherwise, we convert the current node into a non-leaf node to
                         // accommodate further recursion.
-                        SPTreeIndex new_loc = my_store.size();
+                        const SPTreeIndex new_loc = my_store.size();
 
                         // Push the entire Node! Don't emplace_back() with the
                         // pointer for the child's center of mass, as any potential
@@ -227,9 +252,8 @@ public:
         }
 
         // Populating the on-tree locations for each node.
-        my_locations.resize(my_npts);
-        SPTreeIndex nnodes = my_store.size();
-        for (SPTreeIndex n = 0; n < nnodes; ++n) {
+        const SPTreeIndex nnodes = my_store.size();
+        for (decltype(I(nnodes)) n = 0; n < nnodes; ++n) {
             const auto& node = my_store[n];
             if (node.is_leaf) {
                 my_locations[node.index] = n;
@@ -237,7 +261,7 @@ public:
         }
 
         for (SPTreeIndex i = 0; i < my_npts; ++i) {
-            auto tmp = my_locations[my_first_assignment[i]]; // break it up to avoid unsequencing errors when assigning to self.
+            const auto tmp = my_locations[my_first_assignment[i]]; // break it up to avoid unsequencing errors when assigning to self.
             my_locations[i] = tmp; // It is guaranteed that 'my_first_assignment[i] <= i', so there isn't any effect on future iterations of 'i'.
         } 
 
@@ -245,18 +269,18 @@ public:
     }
 
 private:
-    SPTreeIndex find_child (SPTreeIndex parent, const Float_* point, bool * side) const {
+    SPTreeIndex find_child(const SPTreeIndex parent, const Float_* const point, bool* const side) const {
         int multiplier = 1;
         SPTreeIndex child = 0;
         for (std::size_t d = 0; d < num_dim_; ++d) {
             side[d] = (point[d] >= my_store[parent].midpoint[d]);
             child += multiplier * side[d];
-            multiplier *= 2;
+            multiplier *= 2; // this won't overflow as we already static_assert'd that an int can hold 2^num_dim_ above.
         }
         return child;
     }
 
-    void set_child_boundaries(SPTreeIndex parent, SPTreeIndex child, const bool* keep) {
+    void set_child_boundaries(const SPTreeIndex parent, const SPTreeIndex child, const bool* const keep) {
         auto& current = my_store[child];
         auto& parental = my_store[parent];
         for (std::size_t d = 0; d < num_dim_; ++d) {
@@ -282,36 +306,36 @@ private:
      *** Non-edge force calculations ***
      ***********************************/
 private:
-    static Float_ compute_sqdist(const Float_* point, const std::array<Float_, num_dim_>& center, std::array<Float_, num_dim_>& diffs) {
+    static Float_ compute_sqdist(const Float_* const point, const std::array<Float_, num_dim_>& center, std::array<Float_, num_dim_>& diffs) {
         Float_ sqdist = 0;
         for (std::size_t d = 0; d < num_dim_; ++d) {
-            Float_ delta = point[d] - center[d]; // note that 'diffs' expects to hold 'point - center' on output, not the other way around.
+            const Float_ delta = point[d] - center[d]; // note that 'diffs' expects to hold 'point - center' on output, not the other way around.
             diffs[d] = delta;
             sqdist += delta * delta;
         }
         return sqdist;
     }
 
-    static void add_non_edge_forces(const std::array<Float_, num_dim_>& diffs, Float_ sqdist, Float_ count, Float_& result_sum, Float_* neg_f) {
+    static void add_non_edge_forces(const std::array<Float_, num_dim_>& diffs, const Float_ sqdist, const Float_ count, Float_& result_sum, Float_* const neg_f) {
         const Float_ div = static_cast<Float_>(1) / (static_cast<Float_>(1) + sqdist);
         Float_ mult = count * div;
         result_sum += mult;
         mult *= div;
         for (std::size_t d = 0; d < num_dim_; ++d) {
-            neg_f[d] += mult * diffs[d]; // remember, 'diff[d] := point[d] - center[d]' from compute_sqdist().
+            neg_f[d] += mult * diffs[d]; // remember, 'diffs[d] := point[d] - center[d]' from compute_sqdist().
         }
     }
 
-    static void remove_self_from_center(const Float_* point, const std::array<Float_, num_dim_>& center, Float_ count, std::array<Float_, num_dim_>& temp) {
+    static void remove_self_from_center(const Float_* const point, const std::array<Float_, num_dim_>& center, Float_ count, std::array<Float_, num_dim_>& temp) {
         for (std::size_t d = 0; d < num_dim_; ++d) { 
             temp[d] = (center[d] * count - point[d]) / (count - 1);
         }
     }
 
 public:
-    Float_ compute_non_edge_forces(SPTreeIndex index, Float_ theta, Float_* neg_f) const {
+    Float_ compute_non_edge_forces(const SPTreeIndex index, const Float_ theta, Float_* const neg_f) const {
         Float_ result_sum = 0;
-        const Float_ * point = my_data + static_cast<std::size_t>(index) * num_dim_; // cast to avoid overflow.
+        const auto point = my_data + sanisizer::product_unsafe<std::size_t>(index, num_dim_);
         const auto& cur_children = my_store[0].children;
         std::fill_n(neg_f, num_dim_, 0);
 
@@ -325,7 +349,7 @@ public:
     }
 
 private:
-    Float_ compute_non_edge_forces(SPTreeIndex index, const Float_* point, Float_ theta, Float_* neg_f, SPTreeIndex position) const {
+    Float_ compute_non_edge_forces(const SPTreeIndex index, const Float_* const point, const Float_ theta, Float_* const neg_f, const SPTreeIndex position) const {
         const auto& node = my_store[position];
 
         std::array<Float_, num_dim_> temp;
@@ -345,11 +369,11 @@ private:
         }
 
         std::array<Float_, num_dim_> diffs;
-        Float_ sqdist = compute_sqdist(point, *center, diffs);
+        const Float_ sqdist = compute_sqdist(point, *center, diffs);
 
         // Check whether we can use skip this node's children, either because
         // it's already a leaf or because we can use the BH approximation.
-        bool skip_children = node.is_leaf || (node.max_width < theta * std::sqrt(sqdist));
+        const bool skip_children = node.is_leaf || (node.max_width < theta * std::sqrt(sqdist));
 
         Float_ result_sum = 0;
         if (skip_children) {
@@ -376,14 +400,14 @@ public:
         std::vector<Float_> leaf_sums;
     };
 
-    void compute_non_edge_forces_for_leaves(Float_ theta, LeafApproxWorkspace& workspace, [[maybe_unused]] int num_threads) const {
-        SPTreeIndex nnodes = my_store.size();
-        workspace.leaf_neg_f.resize(nnodes);
-        workspace.leaf_sums.resize(nnodes);
+    void compute_non_edge_forces_for_leaves(const Float_ theta, LeafApproxWorkspace& workspace, const int num_threads) const {
+        const SPTreeIndex nnodes = my_store.size();
+        sanisizer::resize(workspace.leaf_neg_f, nnodes);
+        sanisizer::resize(workspace.leaf_sums, nnodes);
 
         auto process_leaf_node = [&](SPTreeIndex leaf) -> void {
             Float_ result_sum = 0;
-            auto neg_f = workspace.leaf_neg_f[leaf].data();
+            Float_* const neg_f = workspace.leaf_neg_f[leaf].data();
             std::fill_n(neg_f, num_dim_, 0);
 
             const auto& cur_children = my_store[0].children;
@@ -397,26 +421,26 @@ public:
         };
 
         if (num_threads == 1) {
-            for (SPTreeIndex n = 0; n < nnodes; ++n) {
+            for (decltype(I(nnodes)) n = 0; n < nnodes; ++n) {
                 if (my_store[n].is_leaf) {
                     process_leaf_node(n);
                 }
             }
 
         } else {
-            // Identifying the indices of leaf nods so that the processing is
+            // Identifying the indices of leaf nodes so that the processing is
             // more balanced between threads, otherwise the last thread is
             // going to have to process all the leaf nodes.
             workspace.leaf_indices.clear();
             workspace.leaf_indices.reserve(nnodes);
-            for (SPTreeIndex n = 0; n < nnodes; ++n) {
+            for (decltype(I(nnodes)) n = 0; n < nnodes; ++n) {
                 if (my_store[n].is_leaf) {
                     workspace.leaf_indices.push_back(n);
                 }
             }
 
-            SPTreeIndex nleaves = workspace.leaf_indices.size();
-            parallelize(num_threads, nleaves, [&](int, SPTreeIndex start, SPTreeIndex length) -> void {
+            const SPTreeIndex nleafs = workspace.leaf_indices.size();
+            parallelize(num_threads, nleafs, [&](const int, const SPTreeIndex start, const SPTreeIndex length) -> void {
                 for (SPTreeIndex n = start, end = start + length; n < end; ++n) {
                     process_leaf_node(workspace.leaf_indices[n]);
                 }
@@ -424,20 +448,20 @@ public:
         }
     }
 
-    Float_ compute_non_edge_forces_from_leaves(SPTreeIndex index, Float_* neg_f, const LeafApproxWorkspace& workspace) const {
-        auto node_loc = my_locations[index];
-        Float_ result_sum = workspace.leaf_sums[node_loc];
+    Float_ compute_non_edge_forces_from_leaves(const SPTreeIndex index, Float_* const neg_f, const LeafApproxWorkspace& workspace) const {
+        const auto node_loc = my_locations[index];
         const auto& leaf_neg_f = workspace.leaf_neg_f[node_loc];
         std::copy(leaf_neg_f.begin(), leaf_neg_f.end(), neg_f);
 
+        Float_ result_sum = workspace.leaf_sums[node_loc];
         const auto& node = my_store[node_loc];
         if (node.number != 1) {
-            const Float_ * point = my_data + static_cast<std::size_t>(index) * num_dim_; // cast to avoid overflow.
+            const auto point = my_data + sanisizer::product_unsafe<std::size_t>(index, num_dim_);
             std::array<Float_, num_dim_> temp;
             remove_self_from_center(point, node.center_of_mass, node.number, temp);
 
             std::array<Float_, num_dim_> diffs;
-            Float_ sqdist = compute_sqdist(point, temp, diffs);
+            const Float_ sqdist = compute_sqdist(point, temp, diffs);
             add_non_edge_forces(diffs, sqdist, node.number - 1, result_sum, neg_f);
         }
 
@@ -445,15 +469,15 @@ public:
     }
 
 private:
-    Float_ compute_non_edge_forces_for_leaves(SPTreeIndex self_position, Float_ theta, Float_* neg_f, SPTreeIndex position) const {
+    Float_ compute_non_edge_forces_for_leaves(const SPTreeIndex self_position, const Float_ theta, Float_* const neg_f, SPTreeIndex position) const {
         const auto& self_node = my_store[self_position];
-        auto point = self_node.center_of_mass.data();
+        const auto point = self_node.center_of_mass.data();
 
         const auto& node = my_store[position];
         std::array<Float_, num_dim_> diffs;
-        Float_ sqdist = compute_sqdist(point, node.center_of_mass, diffs);
+        const Float_ sqdist = compute_sqdist(point, node.center_of_mass, diffs);
 
-        bool skip_children = node.is_leaf || (node.max_width < theta * std::sqrt(sqdist));
+        const bool skip_children = node.is_leaf || (node.max_width < theta * std::sqrt(sqdist));
 
         Float_ result_sum = 0;
         if (skip_children) {

@@ -1,11 +1,9 @@
 #ifndef QDTSNE_INITIALIZE_HPP
 #define QDTSNE_INITIALIZE_HPP
 
-#include "knncolle/knncolle.hpp"
-
-#include <vector>
-#include <stdexcept>
 #include <cstddef>
+
+#include "knncolle/knncolle.hpp"
 
 #include "Status.hpp"
 #include "Options.hpp"
@@ -25,7 +23,7 @@ namespace qdtsne {
 namespace internal {
 
 template<std::size_t num_dim_, typename Index_, typename Float_>
-Status<num_dim_, Index_, Float_> initialize(NeighborList<Index_, Float_> nn, Float_ perp, const Options& options) {
+Status<num_dim_, Index_, Float_> initialize(NeighborList<Index_, Float_> nn, const Float_ perp, const Options& options) {
     compute_gaussian_perplexity(nn, perp, options.num_threads);
     symmetrize_matrix(nn);
     return Status<num_dim_, Index_, Float_>(std::move(nn), options);
@@ -78,7 +76,7 @@ Status<num_dim_, Index_, Float_> initialize(NeighborList<Index_, Float_> neighbo
  */
 template<std::size_t num_dim_, typename Index_, typename Input_, typename Float_>
 Status<num_dim_, Index_, Float_> initialize(const knncolle::Prebuilt<Index_, Input_, Float_>& prebuilt, const Options& options) { 
-    const int K = perplexity_to_k(options.perplexity); 
+    const Index_ K = perplexity_to_k<Index_>(options.perplexity); 
     auto neighbors = knncolle::find_nearest_neighbors(prebuilt, K, options.num_threads);
     return internal::initialize<num_dim_>(std::move(neighbors), static_cast<Float_>(options.perplexity), options);
 }
@@ -103,9 +101,9 @@ Status<num_dim_, Index_, Float_> initialize(const knncolle::Prebuilt<Index_, Inp
  */
 template<std::size_t num_dim_, typename Index_, typename Float_, class Matrix_>
 Status<num_dim_, Index_, Float_> initialize(
-    std::size_t data_dim,
-    std::size_t num_points,
-    const Float_* data,
+    const std::size_t data_dim,
+    const std::size_t num_points,
+    const Float_* const data,
     const knncolle::Builder<Index_, Float_, Float_, Matrix_>& builder,
     const Options& options) 
 {

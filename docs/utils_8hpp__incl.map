@@ -1,17 +1,21 @@
 <map id="qdtsne/utils.hpp" name="qdtsne/utils.hpp">
-<area shape="rect" id="Node000001" title="Utilities for running t&#45;SNE." alt="" coords="233,5,346,31"/>
+<area shape="rect" id="Node000001" title="Utilities for running t&#45;SNE." alt="" coords="331,5,443,31"/>
 <area shape="rect" id="Node000002" title=" " alt="" coords="5,79,70,105"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="247,34,85,80,83,75,246,29"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="331,32,86,81,85,76,330,27"/>
 <area shape="rect" id="Node000003" title=" " alt="" coords="94,79,152,105"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="262,34,166,75,164,70,260,29"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="341,34,167,81,166,75,339,29"/>
 <area shape="rect" id="Node000004" title=" " alt="" coords="176,79,233,105"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="277,34,232,71,228,67,273,29"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="357,34,248,76,246,71,355,29"/>
 <area shape="rect" id="Node000005" title=" " alt="" coords="257,79,322,105"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="292,31,292,63,287,63,287,31"/>
-<area shape="rect" id="Node000006" title=" " alt="" coords="346,79,473,105"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="311,29,377,68,375,73,308,34"/>
-<area shape="rect" id="Node000007" href="/github/workspace/docs/knncolle.tag$knncolle_8hpp.html" title=" " alt="" coords="497,79,642,105"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="338,29,508,72,507,77,336,34"/>
-<area shape="rect" id="Node000008" href="/github/workspace/docs/subpar.tag$subpar_8hpp.html" title=" " alt="" coords="666,79,793,105"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="347,26,651,75,650,80,346,31"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="372,34,319,72,316,68,369,29"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="346,79,428,105"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="390,31,390,63,384,63,384,31"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="451,79,578,105"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="410,29,481,69,478,73,407,34"/>
+<area shape="rect" id="Node000008" href="/github/workspace/docs/knncolle.tag$knncolle_8hpp.html" title=" " alt="" coords="602,79,748,105"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="436,29,612,72,610,77,435,34"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="771,79,922,105"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="444,26,756,74,755,79,443,31"/>
+<area shape="rect" id="Node000010" href="/github/workspace/docs/subpar.tag$subpar_8hpp.html" title=" " alt="" coords="947,79,1074,105"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="444,22,654,44,932,76,931,81,653,49,443,27"/>
 </map>

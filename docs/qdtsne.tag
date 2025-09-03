@@ -156,25 +156,25 @@
       <arglist>() const</arglist>
     </member>
     <member kind="function">
-      <type>std::size_t</type>
+      <type>Index_</type>
       <name>num_observations</name>
       <anchorfile>classqdtsne_1_1Status.html</anchorfile>
-      <anchor>ac867022bd3620c23e831c2c37f20f656</anchor>
+      <anchor>a77523d2a0d5aaad8db433efc2dd8c4cc</anchor>
       <arglist>() const</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>run</name>
       <anchorfile>classqdtsne_1_1Status.html</anchorfile>
-      <anchor>a56714ad4a50f6a467599fbcf2ce69d51</anchor>
-      <arglist>(Float_ *Y, int limit)</arglist>
+      <anchor>a04b541369258a61abd5bef8d89dc5d7f</anchor>
+      <arglist>(Float_ *const Y, const int limit)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>run</name>
       <anchorfile>classqdtsne_1_1Status.html</anchorfile>
-      <anchor>a73f99b3c064d4054396373543cb57820</anchor>
-      <arglist>(Float_ *Y)</arglist>
+      <anchor>aee7b3da21eb4af05d26e5acff71cbd7b</anchor>
+      <arglist>(Float_ *const Y)</arglist>
     </member>
   </compound>
   <compound kind="namespace">
@@ -207,36 +207,36 @@
       <type>Status&lt; num_dim_, Index_, Float_ &gt;</type>
       <name>initialize</name>
       <anchorfile>namespaceqdtsne.html</anchorfile>
-      <anchor>a0dccf6763d0c02f24026c8c8ddfc50c2</anchor>
-      <arglist>(std::size_t data_dim, std::size_t num_points, const Float_ *data, const knncolle::Builder&lt; Index_, Float_, Float_, Matrix_ &gt; &amp;builder, const Options &amp;options)</arglist>
+      <anchor>a12cf18082795e84760fc947f1c7547c9</anchor>
+      <arglist>(const std::size_t data_dim, const std::size_t num_points, const Float_ *const data, const knncolle::Builder&lt; Index_, Float_, Float_, Matrix_ &gt; &amp;builder, const Options &amp;options)</arglist>
     </member>
     <member kind="function">
-      <type>int</type>
+      <type>Index_</type>
       <name>perplexity_to_k</name>
       <anchorfile>namespaceqdtsne.html</anchorfile>
-      <anchor>a673dd037719d1b1824da29e20fd1618d</anchor>
-      <arglist>(double perplexity)</arglist>
+      <anchor>a74ac9034c403a269170cf638d46b95e5</anchor>
+      <arglist>(const double perplexity)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>initialize_random</name>
       <anchorfile>namespaceqdtsne.html</anchorfile>
-      <anchor>a14667d0a76bb759ad69bb39f00da8dd2</anchor>
-      <arglist>(Float_ *Y, std::size_t num_points, int seed=42)</arglist>
+      <anchor>aef04d8843d9a4a611868107efc6990a7</anchor>
+      <arglist>(Float_ *const Y, const std::size_t num_points, const unsigned long long seed=42)</arglist>
     </member>
     <member kind="function">
       <type>std::vector&lt; Float_ &gt;</type>
       <name>initialize_random</name>
       <anchorfile>namespaceqdtsne.html</anchorfile>
-      <anchor>ab7a95317899f0c27320d4da806a4929a</anchor>
-      <arglist>(std::size_t num_points, int seed=42)</arglist>
+      <anchor>a320f37a0f1ba77edd186158a967f8a9b</anchor>
+      <arglist>(const std::size_t num_points, const unsigned long long seed=42)</arglist>
     </member>
     <member kind="function">
       <type>void</type>
       <name>parallelize</name>
       <anchorfile>namespaceqdtsne.html</anchorfile>
-      <anchor>abfd3b53975731fd9df83eac1cc99fada</anchor>
-      <arglist>(int num_workers, Task_ num_tasks, Run_ run_task_range)</arglist>
+      <anchor>a1d3f2500838138042a25dc8081a30e10</anchor>
+      <arglist>(const int num_workers, const Task_ num_tasks, Run_ run_task_range)</arglist>
     </member>
   </compound>
   <compound kind="page">

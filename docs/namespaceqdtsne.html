@@ -128,20 +128,21 @@ Functions</h2></td></tr>
 <tr class="memitem:ae63cd82791c5b13f110050b28d3fffbd" id="r_ae63cd82791c5b13f110050b28d3fffbd"><td class="memTemplParams" colspan="2">template&lt;std::size_t num_dim_, typename Index_ , typename Input_ , typename Float_ &gt; </td></tr>
 <tr class="memitem:ae63cd82791c5b13f110050b28d3fffbd"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classqdtsne_1_1Status.html">Status</a>&lt; num_dim_, Index_, Float_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ae63cd82791c5b13f110050b28d3fffbd">initialize</a> (const <a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Prebuilt.html">knncolle::Prebuilt</a>&lt; Index_, Input_, Float_ &gt; &amp;prebuilt, const <a class="el" href="structqdtsne_1_1Options.html">Options</a> &amp;options)</td></tr>
 <tr class="separator:ae63cd82791c5b13f110050b28d3fffbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0dccf6763d0c02f24026c8c8ddfc50c2" id="r_a0dccf6763d0c02f24026c8c8ddfc50c2"><td class="memTemplParams" colspan="2">template&lt;std::size_t num_dim_, typename Index_ , typename Float_ , class Matrix_ &gt; </td></tr>
-<tr class="memitem:a0dccf6763d0c02f24026c8c8ddfc50c2"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classqdtsne_1_1Status.html">Status</a>&lt; num_dim_, Index_, Float_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a0dccf6763d0c02f24026c8c8ddfc50c2">initialize</a> (std::size_t data_dim, std::size_t num_points, const Float_ *data, const <a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Builder.html">knncolle::Builder</a>&lt; Index_, Float_, Float_, Matrix_ &gt; &amp;builder, const <a class="el" href="structqdtsne_1_1Options.html">Options</a> &amp;options)</td></tr>
-<tr class="separator:a0dccf6763d0c02f24026c8c8ddfc50c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a673dd037719d1b1824da29e20fd1618d" id="r_a673dd037719d1b1824da29e20fd1618d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a673dd037719d1b1824da29e20fd1618d">perplexity_to_k</a> (double perplexity)</td></tr>
-<tr class="separator:a673dd037719d1b1824da29e20fd1618d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a14667d0a76bb759ad69bb39f00da8dd2" id="r_a14667d0a76bb759ad69bb39f00da8dd2"><td class="memTemplParams" colspan="2">template&lt;std::size_t num_dim_, typename Float_  = double&gt; </td></tr>
-<tr class="memitem:a14667d0a76bb759ad69bb39f00da8dd2"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a14667d0a76bb759ad69bb39f00da8dd2">initialize_random</a> (Float_ *Y, std::size_t num_points, int seed=42)</td></tr>
-<tr class="separator:a14667d0a76bb759ad69bb39f00da8dd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7a95317899f0c27320d4da806a4929a" id="r_ab7a95317899f0c27320d4da806a4929a"><td class="memTemplParams" colspan="2">template&lt;std::size_t num_dim_, typename Float_  = double&gt; </td></tr>
-<tr class="memitem:ab7a95317899f0c27320d4da806a4929a"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; Float_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ab7a95317899f0c27320d4da806a4929a">initialize_random</a> (std::size_t num_points, int seed=42)</td></tr>
-<tr class="separator:ab7a95317899f0c27320d4da806a4929a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abfd3b53975731fd9df83eac1cc99fada" id="r_abfd3b53975731fd9df83eac1cc99fada"><td class="memTemplParams" colspan="2">template&lt;typename Task_ , class Run_ &gt; </td></tr>
-<tr class="memitem:abfd3b53975731fd9df83eac1cc99fada"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#abfd3b53975731fd9df83eac1cc99fada">parallelize</a> (int num_workers, Task_ num_tasks, Run_ run_task_range)</td></tr>
-<tr class="separator:abfd3b53975731fd9df83eac1cc99fada"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a12cf18082795e84760fc947f1c7547c9" id="r_a12cf18082795e84760fc947f1c7547c9"><td class="memTemplParams" colspan="2">template&lt;std::size_t num_dim_, typename Index_ , typename Float_ , class Matrix_ &gt; </td></tr>
+<tr class="memitem:a12cf18082795e84760fc947f1c7547c9"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classqdtsne_1_1Status.html">Status</a>&lt; num_dim_, Index_, Float_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a12cf18082795e84760fc947f1c7547c9">initialize</a> (const std::size_t data_dim, const std::size_t num_points, const Float_ *const data, const <a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Builder.html">knncolle::Builder</a>&lt; Index_, Float_, Float_, Matrix_ &gt; &amp;builder, const <a class="el" href="structqdtsne_1_1Options.html">Options</a> &amp;options)</td></tr>
+<tr class="separator:a12cf18082795e84760fc947f1c7547c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74ac9034c403a269170cf638d46b95e5" id="r_a74ac9034c403a269170cf638d46b95e5"><td class="memTemplParams" colspan="2">template&lt;typename Index_  = int&gt; </td></tr>
+<tr class="memitem:a74ac9034c403a269170cf638d46b95e5"><td class="memTemplItemLeft" align="right" valign="top">Index_&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a74ac9034c403a269170cf638d46b95e5">perplexity_to_k</a> (const double perplexity)</td></tr>
+<tr class="separator:a74ac9034c403a269170cf638d46b95e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef04d8843d9a4a611868107efc6990a7" id="r_aef04d8843d9a4a611868107efc6990a7"><td class="memTemplParams" colspan="2">template&lt;std::size_t num_dim_, typename Float_  = double&gt; </td></tr>
+<tr class="memitem:aef04d8843d9a4a611868107efc6990a7"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aef04d8843d9a4a611868107efc6990a7">initialize_random</a> (Float_ *const Y, const std::size_t num_points, const unsigned long long seed=42)</td></tr>
+<tr class="separator:aef04d8843d9a4a611868107efc6990a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a320f37a0f1ba77edd186158a967f8a9b" id="r_a320f37a0f1ba77edd186158a967f8a9b"><td class="memTemplParams" colspan="2">template&lt;std::size_t num_dim_, typename Float_  = double&gt; </td></tr>
+<tr class="memitem:a320f37a0f1ba77edd186158a967f8a9b"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; Float_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a320f37a0f1ba77edd186158a967f8a9b">initialize_random</a> (const std::size_t num_points, const unsigned long long seed=42)</td></tr>
+<tr class="separator:a320f37a0f1ba77edd186158a967f8a9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d3f2500838138042a25dc8081a30e10" id="r_a1d3f2500838138042a25dc8081a30e10"><td class="memTemplParams" colspan="2">template&lt;typename Task_ , class Run_ &gt; </td></tr>
+<tr class="memitem:a1d3f2500838138042a25dc8081a30e10"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a1d3f2500838138042a25dc8081a30e10">parallelize</a> (const int num_workers, const Task_ num_tasks, Run_ run_task_range)</td></tr>
+<tr class="separator:a1d3f2500838138042a25dc8081a30e10"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Quick and dirty t-SNE. </p>
@@ -214,8 +215,67 @@ template&lt;std::size_t num_dim_, typename Index_ , typename Input_ , typename F
 
 </div>
 </div>
+<a id="a12cf18082795e84760fc947f1c7547c9" name="a12cf18082795e84760fc947f1c7547c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12cf18082795e84760fc947f1c7547c9">&#9670;&#160;</a></span>initialize() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;std::size_t num_dim_, typename Index_ , typename Float_ , class Matrix_ &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classqdtsne_1_1Status.html">Status</a>&lt; num_dim_, Index_, Float_ &gt; qdtsne::initialize </td>
+          <td>(</td>
+          <td class="paramtype">const std::size_t</td>          <td class="paramname"><span class="paramname"><em>data_dim</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::size_t</td>          <td class="paramname"><span class="paramname"><em>num_points</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Float_ *const</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Builder.html">knncolle::Builder</a>&lt; Index_, Float_, Float_, Matrix_ &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>builder</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structqdtsne_1_1Options.html">Options</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>options</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Overload that accepts a column-major matrix of coordinates and computes the nearest neighbors for each observation, before proceeding with the initialization of the t-SNE algorithm.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">num_dim_</td><td>Number of dimensions of the final embedding. </td></tr>
+    <tr><td class="paramname">Index_</td><td>Integer type of the observation indices. </td></tr>
+    <tr><td class="paramname">Float_</td><td>Floating-point type of the input data, neighbor distances and output embedding. </td></tr>
+    <tr><td class="paramname">Matrix_</td><td>Class of the input matrix for the neighbor search. This should be a <code><a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1SimpleMatrix.html">knncolle::SimpleMatrix</a></code> or its base class (i.e., <code><a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Matrix.html">knncolle::Matrix</a></code>).</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">data_dim</td><td>Number of rows of the matrix at <code>data</code>, corresponding to the dimensions of the input dataset. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">num_points</td><td>Number of columns of the matrix at <code>data</code>, corresponding to the points of the input dataset. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">data</td><td>Pointer to an array containing a column-major matrix with <code>data_dim</code> rows and <code>num_points</code> columns. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">builder</td><td>A <code><a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Builder.html">knncolle::Builder</a></code> instance specifying the nearest-neighbor algorithm to use. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">options</td><td>Further options.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A <code><a class="el" href="classqdtsne_1_1Status.html" title="Status of the t-SNE iterations.">Status</a></code> object representing an initial state of the t-SNE algorithm. </dd></dl>
+
+</div>
+</div>
 <a id="ac7386895ff09abfb4c792a0ffdd9e170" name="ac7386895ff09abfb4c792a0ffdd9e170"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac7386895ff09abfb4c792a0ffdd9e170">&#9670;&#160;</a></span>initialize() <span class="overload">[2/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7386895ff09abfb4c792a0ffdd9e170">&#9670;&#160;</a></span>initialize() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -254,111 +314,8 @@ template&lt;std::size_t num_dim_, typename Index_ , typename Float_ &gt; </div>
 
 </div>
 </div>
-<a id="a0dccf6763d0c02f24026c8c8ddfc50c2" name="a0dccf6763d0c02f24026c8c8ddfc50c2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0dccf6763d0c02f24026c8c8ddfc50c2">&#9670;&#160;</a></span>initialize() <span class="overload">[3/3]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;std::size_t num_dim_, typename Index_ , typename Float_ , class Matrix_ &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classqdtsne_1_1Status.html">Status</a>&lt; num_dim_, Index_, Float_ &gt; qdtsne::initialize </td>
-          <td>(</td>
-          <td class="paramtype">std::size_t</td>          <td class="paramname"><span class="paramname"><em>data_dim</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::size_t</td>          <td class="paramname"><span class="paramname"><em>num_points</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Float_ *</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Builder.html">knncolle::Builder</a>&lt; Index_, Float_, Float_, Matrix_ &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>builder</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="structqdtsne_1_1Options.html">Options</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>options</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Overload that accepts a column-major matrix of coordinates and computes the nearest neighbors for each observation, before proceeding with the initialization of the t-SNE algorithm.</p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">num_dim_</td><td>Number of dimensions of the final embedding. </td></tr>
-    <tr><td class="paramname">Index_</td><td>Integer type of the observation indices. </td></tr>
-    <tr><td class="paramname">Float_</td><td>Floating-point type of the input data, neighbor distances and output embedding. </td></tr>
-    <tr><td class="paramname">Matrix_</td><td>Class of the input matrix for the neighbor search. This should be a <code><a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1SimpleMatrix.html">knncolle::SimpleMatrix</a></code> or its base class (i.e., <code><a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Matrix.html">knncolle::Matrix</a></code>).</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">data_dim</td><td>Number of rows of the matrix at <code>data</code>, corresponding to the dimensions of the input dataset. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">num_points</td><td>Number of columns of the matrix at <code>data</code>, corresponding to the points of the input dataset. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">data</td><td>Pointer to an array containing a column-major matrix with <code>data_dim</code> rows and <code>num_points</code> columns. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">builder</td><td>A <code><a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Builder.html">knncolle::Builder</a></code> instance specifying the nearest-neighbor algorithm to use. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">options</td><td>Further options.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>A <code><a class="el" href="classqdtsne_1_1Status.html" title="Status of the t-SNE iterations.">Status</a></code> object representing an initial state of the t-SNE algorithm. </dd></dl>
-
-</div>
-</div>
-<a id="a14667d0a76bb759ad69bb39f00da8dd2" name="a14667d0a76bb759ad69bb39f00da8dd2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a14667d0a76bb759ad69bb39f00da8dd2">&#9670;&#160;</a></span>initialize_random() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;std::size_t num_dim_, typename Float_  = double&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void qdtsne::initialize_random </td>
-          <td>(</td>
-          <td class="paramtype">Float_ *</td>          <td class="paramname"><span class="paramname"><em>Y</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::size_t</td>          <td class="paramname"><span class="paramname"><em>num_points</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>seed</em></span><span class="paramdefsep"> = </span><span class="paramdefval">42</span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Initializes the starting locations of each observation in the embedding. We do so using our own implementation of the Box-Muller transform, to avoid problems with differences in the distribution functions across C++ standard library implementations.</p>
-<dl class="tparams"><dt>Template Parameters</dt><dd>
-  <table class="tparams">
-    <tr><td class="paramname">num_dim_</td><td>Number of embedding dimensions. </td></tr>
-    <tr><td class="paramname">Float_</td><td>Floating-point type of the embedding.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">Y</td><td>Pointer to a 2D array with number of rows and columns equal to <code>num_dim</code> and <code>num_points</code>, respectively. On output, <code>Y</code> is filled with random draws from a standard normal distribution. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">num_points</td><td>Number of points in the embedding. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">seed</td><td>Seed for the random number generator. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ab7a95317899f0c27320d4da806a4929a" name="ab7a95317899f0c27320d4da806a4929a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab7a95317899f0c27320d4da806a4929a">&#9670;&#160;</a></span>initialize_random() <span class="overload">[2/2]</span></h2>
+<a id="a320f37a0f1ba77edd186158a967f8a9b" name="a320f37a0f1ba77edd186158a967f8a9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a320f37a0f1ba77edd186158a967f8a9b">&#9670;&#160;</a></span>initialize_random() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -368,12 +325,12 @@ template&lt;std::size_t num_dim_, typename Float_  = double&gt; </div>
         <tr>
           <td class="memname">std::vector&lt; Float_ &gt; qdtsne::initialize_random </td>
           <td>(</td>
-          <td class="paramtype">std::size_t</td>          <td class="paramname"><span class="paramname"><em>num_points</em></span>, </td>
+          <td class="paramtype">const std::size_t</td>          <td class="paramname"><span class="paramname"><em>num_points</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>seed</em></span><span class="paramdefsep"> = </span><span class="paramdefval">42</span>&#160;)</td>
+          <td class="paramtype">const unsigned long long</td>          <td class="paramname"><span class="paramname"><em>seed</em></span><span class="paramdefsep"> = </span><span class="paramdefval">42</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -396,8 +353,52 @@ template&lt;std::size_t num_dim_, typename Float_  = double&gt; </div>
 
 </div>
 </div>
-<a id="abfd3b53975731fd9df83eac1cc99fada" name="abfd3b53975731fd9df83eac1cc99fada"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abfd3b53975731fd9df83eac1cc99fada">&#9670;&#160;</a></span>parallelize()</h2>
+<a id="aef04d8843d9a4a611868107efc6990a7" name="aef04d8843d9a4a611868107efc6990a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef04d8843d9a4a611868107efc6990a7">&#9670;&#160;</a></span>initialize_random() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;std::size_t num_dim_, typename Float_  = double&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void qdtsne::initialize_random </td>
+          <td>(</td>
+          <td class="paramtype">Float_ *const</td>          <td class="paramname"><span class="paramname"><em>Y</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::size_t</td>          <td class="paramname"><span class="paramname"><em>num_points</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const unsigned long long</td>          <td class="paramname"><span class="paramname"><em>seed</em></span><span class="paramdefsep"> = </span><span class="paramdefval">42</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Initializes the starting locations of each observation in the embedding. We do so using our own implementation of the Box-Muller transform, to avoid problems with differences in the distribution functions across C++ standard library implementations.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">num_dim_</td><td>Number of embedding dimensions. </td></tr>
+    <tr><td class="paramname">Float_</td><td>Floating-point type of the embedding.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">Y</td><td>Pointer to a 2D array with number of rows and columns equal to <code>num_dim</code> and <code>num_points</code>, respectively. On output, <code>Y</code> is filled with random draws from a standard normal distribution. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">num_points</td><td>Number of points in the embedding. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">seed</td><td>Seed for the random number generator. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a1d3f2500838138042a25dc8081a30e10" name="a1d3f2500838138042a25dc8081a30e10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d3f2500838138042a25dc8081a30e10">&#9670;&#160;</a></span>parallelize()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -407,12 +408,12 @@ template&lt;typename Task_ , class Run_ &gt; </div>
         <tr>
           <td class="memname">void qdtsne::parallelize </td>
           <td>(</td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>num_workers</em></span>, </td>
+          <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>num_workers</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Task_</td>          <td class="paramname"><span class="paramname"><em>num_tasks</em></span>, </td>
+          <td class="paramtype">const Task_</td>          <td class="paramname"><span class="paramname"><em>num_tasks</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -440,29 +441,29 @@ template&lt;typename Task_ , class Run_ &gt; </div>
 
 </div>
 </div>
-<a id="a673dd037719d1b1824da29e20fd1618d" name="a673dd037719d1b1824da29e20fd1618d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a673dd037719d1b1824da29e20fd1618d">&#9670;&#160;</a></span>perplexity_to_k()</h2>
+<a id="a74ac9034c403a269170cf638d46b95e5" name="a74ac9034c403a269170cf638d46b95e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74ac9034c403a269170cf638d46b95e5">&#9670;&#160;</a></span>perplexity_to_k()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
+<div class="memtemplate">
+template&lt;typename Index_  = int&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">int qdtsne::perplexity_to_k </td>
+          <td class="memname">Index_ qdtsne::perplexity_to_k </td>
           <td>(</td>
-          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>perplexity</em></span></td><td>)</td>
+          <td class="paramtype">const double</td>          <td class="paramname"><span class="paramname"><em>perplexity</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 <p>Determines the appropriate number of neighbors, given a perplexity value. Useful when the neighbor search is conducted outside of <code><a class="el" href="#ac7386895ff09abfb4c792a0ffdd9e170">initialize()</a></code>.</p>
+<dl class="tparams"><dt>Template Parameters</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">Index_</td><td>Integer type of the number of neighbors. </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">perplexity</td><td>Perplexity to use in the t-SNE algorithm. </td></tr>

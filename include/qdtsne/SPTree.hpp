@@ -57,10 +57,7 @@ public:
         my_maxdepth(maxdepth),
         my_locations(sanisizer::cast<decltype(I(my_locations.size()))>(my_npts))
     {
-        const auto max_nnodes = get_max_nnodes(npts, maxdepth);
-        my_store.reserve(sanisizer::cap<decltype(I(my_store.size()))>(max_nnodes));
-
-        // Pre-allocate vectors to be used in set().
+        my_store.reserve(get_max_nnodes(my_npts, my_maxdepth));
         sanisizer::resize(my_first_assignment, my_npts);
         sanisizer::resize(my_locations, my_npts);
         return;
@@ -184,7 +181,7 @@ public:
         for (SPTreeIndex i = 0; i < my_npts; ++i) {
             std::array<bool, num_dim_> side;
             SPTreeIndex parent = 0;
-            const Float_* const point = Y + sanisizer::product_unsafe<std::size_t>(i, num_dim_);
+            const auto point = Y + sanisizer::product_unsafe<std::size_t>(i, num_dim_);
 
             for (int depth = 1; depth <= my_maxdepth; ++depth) {
                 const SPTreeIndex child_idx = find_child(parent, point, side.data());
@@ -338,7 +335,7 @@ private:
 public:
     Float_ compute_non_edge_forces(const SPTreeIndex index, const Float_ theta, Float_* const neg_f) const {
         Float_ result_sum = 0;
-        const Float_* const point = my_data + sanisizer::product_unsafe<std::size_t>(index, num_dim_);
+        const auto point = my_data + sanisizer::product_unsafe<std::size_t>(index, num_dim_);
         const auto& cur_children = my_store[0].children;
         std::fill_n(neg_f, num_dim_, 0);
 
@@ -459,7 +456,7 @@ public:
         Float_ result_sum = workspace.leaf_sums[node_loc];
         const auto& node = my_store[node_loc];
         if (node.number != 1) {
-            const Float_* const point = my_data + sanisizer::product_unsafe<std::size_t>(index, num_dim_);
+            const auto point = my_data + sanisizer::product_unsafe<std::size_t>(index, num_dim_);
             std::array<Float_, num_dim_> temp;
             remove_self_from_center(point, node.center_of_mass, node.number, temp);
 
@@ -474,7 +471,7 @@ public:
 private:
     Float_ compute_non_edge_forces_for_leaves(const SPTreeIndex self_position, const Float_ theta, Float_* const neg_f, SPTreeIndex position) const {
         const auto& self_node = my_store[self_position];
-        const Float_* const point = self_node.center_of_mass.data();
+        const auto point = self_node.center_of_mass.data();
 
         const auto& node = my_store[position];
         std::array<Float_, num_dim_> diffs;

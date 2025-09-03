@@ -72,7 +72,7 @@ public:
         my_tree(sanisizer::cast<internal::SPTreeIndex>(my_neighbors.size()), options.max_depth),
         my_options(std::move(options))
     {
-        const auto nobs = sanisizer::cast<Index_>(my_neighbors.size());
+        const auto nobs = sanisizer::cast<Index_>(my_neighbors.size()); // use Index_ to check safety of cast in num_observations().
         const std::size_t buffer_size = sanisizer::product<std::size_t>(nobs, num_dim_);
 
         sanisizer::resize(my_dY, buffer_size);
@@ -238,7 +238,7 @@ private:
         }
     }
 
-    void compute_edge_forces(const Float_* Y, Float_ multiplier) {
+    void compute_edge_forces(const Float_* const Y, Float_ multiplier) {
         std::fill(my_pos_f.begin(), my_pos_f.end(), 0);
         const Index_ num_obs = num_observations();
 
@@ -246,12 +246,12 @@ private:
             for (Index_ i = start, end = start + length; i < end; ++i) {
                 const auto& current = my_neighbors[i];
                 const auto offset = sanisizer::product_unsafe<std::size_t>(i, num_dim_);
-                const Float_* const self = Y + offset;
-                Float_* const pos_out = my_pos_f.data() + offset;
+                const auto self = Y + offset;
+                const auto pos_out = my_pos_f.data() + offset;
 
                 for (const auto& x : current) {
                     Float_ sqdist = 0; 
-                    const Float_* const neighbor = Y + sanisizer::product_unsafe<std::size_t>(x.first, num_dim_);
+                    const auto neighbor = Y + sanisizer::product_unsafe<std::size_t>(x.first, num_dim_);
                     for (std::size_t d = 0; d < num_dim_; ++d) {
                         Float_ delta = self[d] - neighbor[d];
                         sqdist += delta * delta;
@@ -292,7 +292,7 @@ private:
 
         Float_ sum_Q = 0;
         for (Index_ i = 0; i < num_obs; ++i) {
-            Float_* const neg_ptr = my_neg_f.data() + sanisizer::product_unsafe<std::size_t>(i, num_dim_);
+            const auto neg_ptr = my_neg_f.data() + sanisizer::product_unsafe<std::size_t>(i, num_dim_);
             if (my_options.leaf_approximation) {
                 sum_Q += my_tree.compute_non_edge_forces_from_leaves(i, neg_ptr, my_leaf_workspace);
             } else {

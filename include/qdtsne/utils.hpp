@@ -69,14 +69,14 @@ void initialize_random(Float_* const Y, const std::size_t num_points, const unsi
     std::mt19937_64 rng(seed);
 
     // Presumably a size_t can store the product in order to allocate Y in the first place.
-    std::size_t total = sanisizer::product_unsafe<std::size_t>(num_points, num_dim_);
-    const bool odd = total % 2;
+    std::size_t num_total = sanisizer::product_unsafe<std::size_t>(num_points, num_dim_);
+    const bool odd = num_total % 2;
     if (odd) {
-        --total;
+        --num_total;
     }
 
     // Box-Muller gives us two random values at a time.
-    for (std::size_t i = 0; i < total; i += 2) {
+    for (std::size_t i = 0; i < num_total; i += 2) {
         auto paired = aarand::standard_normal<Float_>(rng);
         Y[i] = paired.first;
         Y[i + 1] = paired.second;
@@ -85,7 +85,7 @@ void initialize_random(Float_* const Y, const std::size_t num_points, const unsi
     if (odd) {
         // Adding the poor extra for odd total lengths.
         auto paired = aarand::standard_normal<Float_>(rng);
-        Y[total] = paired.first;
+        Y[num_total] = paired.first;
     }
 
     return;

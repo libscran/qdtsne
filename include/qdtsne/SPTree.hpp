@@ -57,23 +57,33 @@ public:
         my_maxdepth(maxdepth),
         my_locations(sanisizer::cast<decltype(I(my_locations.size()))>(my_npts))
     {
-        // Basically 'nleafs = min(nchildren^maxdepth, npts)', to avoid reserving more space than is required for the leaf nodes.
-        SPTreeIndex nleafs = 1;
-        for (decltype(I(my_maxdepth)) d = 0; d < my_maxdepth; ++d) {
-            if (nleafs > my_npts / Node::nchildren) {
-                nleafs = my_npts;
-                break;
-            }
-            nleafs *= Node::nchildren;
-        }
-
-        // Multiply this by two to support the intermediate nodes.
-        my_store.reserve(nleafs * 2);
+        const auto max_nnodes = get_max_nnodes(npts, maxdepth);
+        my_store.reserve(sanisizer::cap<decltype(I(my_store.size()))>(max_nnodes));
 
         // Pre-allocate vectors to be used in set().
         sanisizer::resize(my_first_assignment, my_npts);
         sanisizer::resize(my_locations, my_npts);
         return;
+    }
+
+    static SPTreeIndex get_max_nnodes(const SPTreeIndex npts, const int maxdepth) {
+        // Basically return 'min(nchildren^maxdepth, npts)', to avoid reserving more space than is required for the leaf nodes.
+        SPTreeIndex nleafs = 1;
+        for (decltype(I(maxdepth)) d = 0; d < maxdepth; ++d) {
+            if (nleafs > npts / Node::nchildren) {
+                nleafs = npts;
+                break;
+            }
+            nleafs *= Node::nchildren;
+        }
+
+        // Multiply this by two to support storage of the intermediate nodes.
+        constexpr auto maxed = std::numeric_limits<SPTreeIndex>::max();
+        if (sanisizer::is_greater_than(nleafs, maxed / 2)) {
+            return maxed; 
+        } else {
+            return nleafs * 2;
+        }
     }
 
 public:

@@ -455,3 +455,28 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Values(3, 7, 20) // max depth
     )
 );
+
+TEST(SPTree, GetMaxNNodes) {
+    auto x = qdtsne::internal::SPTree<2, double>::get_max_nnodes(3, 1);
+    EXPECT_EQ(x, 3 * 2);
+    x = qdtsne::internal::SPTree<2, double>::get_max_nnodes(5, 1);
+    EXPECT_EQ(x, 4 * 2);
+
+    x = qdtsne::internal::SPTree<2, double>::get_max_nnodes(5, 2);
+    EXPECT_EQ(x, 5 * 2);
+    x = qdtsne::internal::SPTree<2, double>::get_max_nnodes(10, 2);
+    EXPECT_EQ(x, 10 * 2);
+    x = qdtsne::internal::SPTree<2, double>::get_max_nnodes(20, 2);
+    EXPECT_EQ(x, 16 * 2);
+
+    x = qdtsne::internal::SPTree<2, double>::get_max_nnodes(100, 5);
+    EXPECT_EQ(x, 100 * 2);
+    x = qdtsne::internal::SPTree<2, double>::get_max_nnodes(1000, 5);
+    EXPECT_EQ(x, 1000 * 2);
+    x = qdtsne::internal::SPTree<2, double>::get_max_nnodes(100000, 5);
+    EXPECT_EQ(x, 1024 * 2);
+
+    constexpr auto maxed = std::numeric_limits<qdtsne::internal::SPTreeIndex>::max();
+    x = qdtsne::internal::SPTree<2, double>::get_max_nnodes(maxed - 1, 1000);
+    EXPECT_EQ(x, maxed);
+}

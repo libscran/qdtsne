@@ -279,7 +279,7 @@ private:
             // issues (and stochastic results) based on the order of summation.
             parallelize(my_options.num_threads, num_obs, [&](const int, const Index_ start, const Index_ length) -> void {
                 for (Index_ i = start, end = start + length; i < end; ++i) {
-                    const Float_* const neg_ptr = my_neg_f.data() + sanisizer::product_unsafe<std::size_t>(i, num_dim_);
+                    Float_* const neg_ptr = my_neg_f.data() + sanisizer::product_unsafe<std::size_t>(i, num_dim_);
                     if (my_options.leaf_approximation) {
                         my_parallel_buffer[i] = my_tree.compute_non_edge_forces_from_leaves(i, neg_ptr, my_leaf_workspace);
                     } else {
@@ -292,7 +292,7 @@ private:
 
         Float_ sum_Q = 0;
         for (Index_ i = 0; i < num_obs; ++i) {
-            const Float_* const neg_ptr = my_neg_f.data() + sanisizer::product_unsafe<std::size_t>(i, num_dim_);
+            Float_* const neg_ptr = my_neg_f.data() + sanisizer::product_unsafe<std::size_t>(i, num_dim_);
             if (my_options.leaf_approximation) {
                 sum_Q += my_tree.compute_non_edge_forces_from_leaves(i, neg_ptr, my_leaf_workspace);
             } else {

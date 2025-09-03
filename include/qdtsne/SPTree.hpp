@@ -315,7 +315,7 @@ private:
         result_sum += mult;
         mult *= div;
         for (std::size_t d = 0; d < num_dim_; ++d) {
-            neg_f[d] += mult * diffs[d]; // remember, 'diff[d] := point[d] - center[d]' from compute_sqdist().
+            neg_f[d] += mult * diffs[d]; // remember, 'diffs[d] := point[d] - center[d]' from compute_sqdist().
         }
     }
 
@@ -400,7 +400,7 @@ public:
 
         auto process_leaf_node = [&](SPTreeIndex leaf) -> void {
             Float_ result_sum = 0;
-            const Float_* const neg_f = workspace.leaf_neg_f[leaf].data();
+            Float_* const neg_f = workspace.leaf_neg_f[leaf].data();
             std::fill_n(neg_f, num_dim_, 0);
 
             const auto& cur_children = my_store[0].children;
@@ -421,7 +421,7 @@ public:
             }
 
         } else {
-            // Identifying the indices of leaf nods so that the processing is
+            // Identifying the indices of leaf nodes so that the processing is
             // more balanced between threads, otherwise the last thread is
             // going to have to process all the leaf nodes.
             workspace.leaf_indices.clear();
@@ -462,7 +462,7 @@ public:
     }
 
 private:
-    Float_ compute_non_edge_forces_for_leaves(SPTreeIndex self_position, Float_ theta, Float_* neg_f, SPTreeIndex position) const {
+    Float_ compute_non_edge_forces_for_leaves(const SPTreeIndex self_position, const Float_ theta, Float_* const neg_f, SPTreeIndex position) const {
         const auto& self_node = my_store[self_position];
         const Float_* const point = self_node.center_of_mass.data();
 

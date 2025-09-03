@@ -35,7 +35,7 @@ MathJax.Hub.Config({
   <td id="projectalign">
    <div id="projectname">qdtsne
    </div>
-   <div id="projectbrief">A quick and dirty t-SNE C++ library</div>
+   <div id="projectbrief">Quick and dirty t-SNE in C++</div>
   </td>
  </tr>
  </tbody>
@@ -152,7 +152,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The learning rate, used to scale the updates. Larger values yield larger updates that speed up convergence to a local minima at the cost of stability. </p>
+<p>The learning rate, used to scale the updates. Larger values can speed up convergence at the cost of skipping over local minima in the Kullback-Leibler divergence. </p>
 
 </div>
 </div>
@@ -167,7 +167,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Factor to scale the probabilities during the early exaggeration phase (see <code><a class="el" href="#af352392082ebac2046b5679b218d6594">Options::stop_lying_iter</a></code>). </p>
+<p>Exaggeration factor to scale the probabilities during the early exaggeration phase (see <code><a class="el" href="#af352392082ebac2046b5679b218d6594">Options::stop_lying_iter</a></code>). </p>
 
 </div>
 </div>
@@ -182,7 +182,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Final momentum, to be used in the later iterations after the momentum switch. </p>
+<p>Final momentum, to be used in the later iterations after the momentum switch at <code><a class="el" href="#a0efc1892882f473e5e38e5ab11d5d604">Options::mom_switch_iter</a></code>. </p>
 
 </div>
 </div>
@@ -197,7 +197,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Whether to infer the perplexity in <code><a class="el" href="namespaceqdtsne.html#ac7386895ff09abfb4c792a0ffdd9e170">initialize()</a></code> methods that accept a <code>NeighborList</code> object. In such cases, the value in <code><a class="el" href="#ae485ba64f2ff5379f09a75fb89447628">Options::perplexity</a></code> is ignored. The perplexity is instead defined from the <code>NeighborList</code> as the number of nearest neighbors for the first point divided by 3. (It is assumed that all points have the same number of neighbors.) </p>
+<p>Whether to infer the perplexity in the <code><a class="el" href="namespaceqdtsne.html#ac7386895ff09abfb4c792a0ffdd9e170">initialize()</a></code> overload that accepts a <code>NeighborList</code> object. If true, the value in <code><a class="el" href="#ae485ba64f2ff5379f09a75fb89447628">Options::perplexity</a></code> is ignored. The perplexity is instead defined from the <code>NeighborList</code> as the number of nearest neighbors for the first observation divided by 3. (It is assumed that all observations have the same number of neighbors.) This effectively performs the inverse calculation of <code><a class="el" href="namespaceqdtsne.html#a74ac9034c403a269170cf638d46b95e5">perplexity_to_k()</a></code>. </p>
 
 </div>
 </div>
@@ -212,7 +212,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Whether to replace a point with the center of mass of its leaf node when computing the repulsive forces to all other points. This allows the repulsive forces to be computed once per leaf node and then re-used across all points in that leaf node. The effectiveness of this option depends on <code><a class="el" href="#a3202c4085c933353f0fbfb9cc1825f64">Options::max_depth</a></code>, which needs to be small enough so that many leaf nodes have multiple assigned points. </p>
+<p>Whether to replace a observation with the center of mass of its leaf node when computing the repulsive forces to all other observations. This allows the repulsive forces to be computed once per leaf node and then re-used across all observations in that leaf node. The effectiveness of this option depends on <code><a class="el" href="#a3202c4085c933353f0fbfb9cc1825f64">Options::max_depth</a></code>, which needs to be small enough so that many leaf nodes have multiple assigned observations. </p>
 
 </div>
 </div>
@@ -227,8 +227,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Maximum depth of the tree used in the Barnes-Hut approximation of the repulsive forces. This effectively replaces each point with the center of mass of the most fine-grained partition at the leaves of the tree. Setting this to a smaller value (e.g., 7 - 10) improves speed by bounding the depth of recursion, at the cost of some accuracy.</p>
-<p>The default is to use a large value, which means that the tree's depth is unbounded for most practical applications. This aims to be consistent with the original implementation of the BH search, but with some protection against near-duplicate points that would otherwise result in unnecessary recursion. </p>
+<p>Maximum depth of the tree used in the Barnes-Hut approximation of the repulsive forces. This effectively replaces each observation with the center of mass of the most fine-grained partition (i.e., the leaf of the tree) to which it belongs. Setting this to a smaller value (e.g., 7 - 10) improves speed by bounding the depth of recursion, at the cost of some accuracy.</p>
+<p>The default is to use a large value, which means that the tree's depth is unbounded for most practical applications. This aims to be consistent with the original implementation of the BH search, but with some protection against near-duplicate observations that would otherwise result in unnecessary recursion. </p>
 
 </div>
 </div>
@@ -243,7 +243,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Maximum number of iterations to perform. </p>
+<p>Maximum number of iterations to perform. Larger values improve convergence of the algorithm at the cost of increased compute time. </p>
 
 </div>
 </div>
@@ -259,7 +259,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Number of iterations to perform before switching from the starting momentum to the final momentum.</p>
-<p>The update to each point includes a small step in the direction of its previous update, i.e., there is some "momentum" from the previous update. This aims to speed up the optimization and to avoid local minima by effectively smoothing the updates. The starting momentum is usually smaller than the final momentum, to give a chance for the points to improve their organization before encouraging iteration to a specific local minima. </p>
+<p>The update to each observation's position includes a small step in the direction of its previous update, i.e., there is some "momentum" from the previous iteration. This can speed up convergence at the cost of skipping over local minima in the Kullback-Leibler divergence. By default, the starting momentum (<code><a class="el" href="#ab5e4ad0d2dc1daf15e48d193bb3c3d8f">Options::start_momentum</a></code>) is lower than the final momentum (<code><a class="el" href="#aade824422084ecfb009f600c38c58abe">Options::final_momentum</a></code>). The former ensures that local minima are not bypassed when the steps are already large in the initial iterations, while the latter accelerates convergence to the local optimum when the steps are small. </p>
 
 </div>
 </div>
@@ -289,8 +289,9 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Perplexity value that determines the balance between local and global structure. Higher perplexities will focus on global structure, at the cost of increased runtime and decreased local resolution.</p>
-<p>This option affects all <code><a class="el" href="namespaceqdtsne.html#ac7386895ff09abfb4c792a0ffdd9e170">initialize()</a></code> methods except if precomputed neighbor search results are supplied <em>and</em> <code><a class="el" href="#a824d9599d7ea23dcfdffc871afca0d49">Options::infer_perplexity</a> = true</code>. In such cases, the perplexity is inferred from the number of neighbors in the supplied search results. </p>
+<p>Perplexity value that determines how distances between neighbors are converted into conditional probabilities, i.e., given an observation, the probability of reaching its neighbor based on the distance.</p>
+<p>Increasing the perplexity will reduce the changes in probability with repect to distance (i.e., greater entropy). In practice, this controls the balance between local and global structure in the final embedding. Higher perplexities will focus on global structure, at the cost of increased runtime and decreased local resolution.</p>
+<p>This option affects all <code><a class="el" href="namespaceqdtsne.html#ac7386895ff09abfb4c792a0ffdd9e170">initialize()</a></code> functions except for the overload where precomputed neighbor search results are supplied <em>and</em> <code><a class="el" href="#a824d9599d7ea23dcfdffc871afca0d49">Options::infer_perplexity</a> = true</code>. In that scenarios, the perplexity is inferred from the number of neighbors in the precomputed search results and this setting is ignored. </p>
 
 </div>
 </div>
@@ -305,7 +306,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Starting momentum, to be used in the early iterations before the momentum switch. </p>
+<p>Starting momentum, to be used in the early iterations before the momentum switch at <code><a class="el" href="#a0efc1892882f473e5e38e5ab11d5d604">Options::mom_switch_iter</a></code>. </p>
 
 </div>
 </div>
@@ -321,7 +322,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Number of iterations to perform with exaggerated probabilities, as part of the early exaggeration phase.</p>
-<p>In the early exaggeration phase, the probabilities are multiplied by <code><a class="el" href="#ab0f96457fa0b6d05dd32b8ab3fdf31b6">Options::exaggeration_factor</a></code>. This forces the algorithm to minimize the distances between neighbors, creating an embedding containing tight, well-separated clusters of neighboring cells. Because there is so much empty space, these clusters have an opportunity to move around to find better global positions before the phase ends and they are forced to settle down. </p>
+<p>In the early exaggeration phase, the conditional probabilities are multiplied by <code><a class="el" href="#ab0f96457fa0b6d05dd32b8ab3fdf31b6">Options::exaggeration_factor</a></code>. This increases the attractive forces between neighboring observations and encourages the algorithm to put nearest neighbors next to each other. The aim is to obtain a good initial embedding with the correct neighborhoods before considering the contribution of non-neighboring observations. </p>
 
 </div>
 </div>
@@ -336,7 +337,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Amount of approximation to use in the Barnes-Hut calculation of repulsive forces. This is defined as the maximum \(s/d\) at which a group of points can be approximated by their center of mass, where \(s\) is the maximum width of the box containing all points in the group (i.e., the longest side across all dimensions) and \(d\) is the distance from a point to the center of mass. Lower values increase accuracy at the cost of computational time. </p>
+<p>Approximation level for the Barnes-Hut calculation of repulsive forces.</p>
+<p>Given an observation \(i\), we wish to compute repulsive forces to multiple other observations. <code>theta</code> is defined as the maximum \(s/d\) at which a group of observations can be approximated by their center of mass, where \(s\) is the maximum width of the box containing all observations in the group (i.e., the longest side across all dimensions) and \(d\) is the distance from \(x\) to that center of mass. Lower values increase accuracy at the cost of increased compute time. </p>
 
 </div>
 </div>

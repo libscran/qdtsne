@@ -35,7 +35,7 @@ MathJax.Hub.Config({
   <td id="projectalign">
    <div id="projectname">qdtsne
    </div>
-   <div id="projectbrief">A quick and dirty t-SNE C++ library</div>
+   <div id="projectbrief">Quick and dirty t-SNE in C++</div>
   </td>
  </tr>
  </tbody>
@@ -187,7 +187,7 @@ template&lt;std::size_t num_dim_, typename Index_ , typename Float_ &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<dl class="section return"><dt>Returns</dt><dd>The maximum number of iterations. This can be modified to <code><a class="el" href="#a04b541369258a61abd5bef8d89dc5d7f">run()</a></code> the algorithm for more iterations. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The maximum number of iterations, as specified in <code><a class="el" href="structqdtsne_1_1Options.html#a5caa0c9124703fd6220dfb51e0aa10e1">Options::max_iterations</a></code>. </dd></dl>
 
 </div>
 </div>
@@ -243,10 +243,10 @@ template&lt;std::size_t num_dim_, typename Index_ , typename Float_ &gt; </div>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Run the algorithm to the maximum number of iterations. If <code><a class="el" href="#a04b541369258a61abd5bef8d89dc5d7f">run()</a></code> has already been invoked with an iteration limit, this method will only perform the remaining iterations required for <code><a class="el" href="#a2e5fbb69b89a43b2deea5c46374b642b">iteration()</a></code> to reach <code>max_iter()</code>. If <code><a class="el" href="#a2e5fbb69b89a43b2deea5c46374b642b">iteration()</a></code> is already greater than <code>max_iter()</code>, this method is a no-op.</p>
+<p>Run the algorithm to the maximum number of iterations. If <code><a class="el" href="#a04b541369258a61abd5bef8d89dc5d7f">run()</a></code> has already been invoked with an iteration limit, this method will only perform the remaining iterations required for <code><a class="el" href="#a2e5fbb69b89a43b2deea5c46374b642b">iteration()</a></code> to reach <code><a class="el" href="#af67e41bd74305fbeba6f486bda76813f">max_iterations()</a></code>. If <code><a class="el" href="#a2e5fbb69b89a43b2deea5c46374b642b">iteration()</a></code> is already greater than <code><a class="el" href="#af67e41bd74305fbeba6f486bda76813f">max_iterations()</a></code>, this method is a no-op.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">Y</td><td>Pointer to a array containing a column-major matrix with number of rows and columns equal to <code>num_dim_</code> and <code><a class="el" href="#a77523d2a0d5aaad8db433efc2dd8c4cc">num_observations()</a></code>, respectively. Each row corresponds to a dimension of the embedding while each column corresponds to an observation. On input, this should contain the initial location of each observation; on output, it is updated to the t-SNE location at the specified number of iterations. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">Y</td><td>Pointer to a array containing a column-major matrix with number of rows and columns equal to <code>num_dim_</code> and <code><a class="el" href="#a77523d2a0d5aaad8db433efc2dd8c4cc">num_observations()</a></code>, respectively. Each row corresponds to a dimension of the embedding while each column corresponds to an observation. On input, this should contain the initial location of each observation; on output, it is updated to the t-SNE location at the maximum number of iterations. </td></tr>
   </table>
   </dd>
 </dl>

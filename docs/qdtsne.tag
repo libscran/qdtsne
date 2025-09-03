@@ -207,8 +207,8 @@
       <type>Status&lt; num_dim_, Index_, Float_ &gt;</type>
       <name>initialize</name>
       <anchorfile>namespaceqdtsne.html</anchorfile>
-      <anchor>a12cf18082795e84760fc947f1c7547c9</anchor>
-      <arglist>(const std::size_t data_dim, const std::size_t num_points, const Float_ *const data, const knncolle::Builder&lt; Index_, Float_, Float_, Matrix_ &gt; &amp;builder, const Options &amp;options)</arglist>
+      <anchor>ac2bbf464d20eaeefd7df7ddc881affaa</anchor>
+      <arglist>(const std::size_t data_dim, const Index_ num_obs, const Float_ *const data, const knncolle::Builder&lt; Index_, Float_, Float_, Matrix_ &gt; &amp;builder, const Options &amp;options)</arglist>
     </member>
     <member kind="function">
       <type>Index_</type>
@@ -241,7 +241,7 @@
   </compound>
   <compound kind="page">
     <name>index</name>
-    <title>C++ library for t-SNE</title>
+    <title>Quick and dirty t-SNE in C++</title>
     <filename>index.html</filename>
     <docanchor file="index.html">md__2github_2workspace_2README</docanchor>
   </compound>

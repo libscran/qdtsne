@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['t_20sne_0',['C++ library for t-SNE',['../index.html',1,'']]]
+  ['quick_20and_20dirty_20t_20sne_20in_20c_0',['Quick and dirty t-SNE in C++',['../index.html',1,'']]]
 ];

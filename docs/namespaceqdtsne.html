@@ -35,7 +35,7 @@ MathJax.Hub.Config({
   <td id="projectalign">
    <div id="projectname">qdtsne
    </div>
-   <div id="projectbrief">A quick and dirty t-SNE C++ library</div>
+   <div id="projectbrief">Quick and dirty t-SNE in C++</div>
   </td>
  </tr>
  </tbody>
@@ -128,9 +128,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ae63cd82791c5b13f110050b28d3fffbd" id="r_ae63cd82791c5b13f110050b28d3fffbd"><td class="memTemplParams" colspan="2">template&lt;std::size_t num_dim_, typename Index_ , typename Input_ , typename Float_ &gt; </td></tr>
 <tr class="memitem:ae63cd82791c5b13f110050b28d3fffbd"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classqdtsne_1_1Status.html">Status</a>&lt; num_dim_, Index_, Float_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ae63cd82791c5b13f110050b28d3fffbd">initialize</a> (const <a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Prebuilt.html">knncolle::Prebuilt</a>&lt; Index_, Input_, Float_ &gt; &amp;prebuilt, const <a class="el" href="structqdtsne_1_1Options.html">Options</a> &amp;options)</td></tr>
 <tr class="separator:ae63cd82791c5b13f110050b28d3fffbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a12cf18082795e84760fc947f1c7547c9" id="r_a12cf18082795e84760fc947f1c7547c9"><td class="memTemplParams" colspan="2">template&lt;std::size_t num_dim_, typename Index_ , typename Float_ , class Matrix_ &gt; </td></tr>
-<tr class="memitem:a12cf18082795e84760fc947f1c7547c9"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classqdtsne_1_1Status.html">Status</a>&lt; num_dim_, Index_, Float_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a12cf18082795e84760fc947f1c7547c9">initialize</a> (const std::size_t data_dim, const std::size_t num_points, const Float_ *const data, const <a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Builder.html">knncolle::Builder</a>&lt; Index_, Float_, Float_, Matrix_ &gt; &amp;builder, const <a class="el" href="structqdtsne_1_1Options.html">Options</a> &amp;options)</td></tr>
-<tr class="separator:a12cf18082795e84760fc947f1c7547c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2bbf464d20eaeefd7df7ddc881affaa" id="r_ac2bbf464d20eaeefd7df7ddc881affaa"><td class="memTemplParams" colspan="2">template&lt;std::size_t num_dim_, typename Index_ , typename Float_ , class Matrix_ &gt; </td></tr>
+<tr class="memitem:ac2bbf464d20eaeefd7df7ddc881affaa"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classqdtsne_1_1Status.html">Status</a>&lt; num_dim_, Index_, Float_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ac2bbf464d20eaeefd7df7ddc881affaa">initialize</a> (const std::size_t data_dim, const Index_ num_obs, const Float_ *const data, const <a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Builder.html">knncolle::Builder</a>&lt; Index_, Float_, Float_, Matrix_ &gt; &amp;builder, const <a class="el" href="structqdtsne_1_1Options.html">Options</a> &amp;options)</td></tr>
+<tr class="separator:ac2bbf464d20eaeefd7df7ddc881affaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a74ac9034c403a269170cf638d46b95e5" id="r_a74ac9034c403a269170cf638d46b95e5"><td class="memTemplParams" colspan="2">template&lt;typename Index_  = int&gt; </td></tr>
 <tr class="memitem:a74ac9034c403a269170cf638d46b95e5"><td class="memTemplItemLeft" align="right" valign="top">Index_&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a74ac9034c403a269170cf638d46b95e5">perplexity_to_k</a> (const double perplexity)</td></tr>
 <tr class="separator:a74ac9034c403a269170cf638d46b95e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -162,7 +162,7 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
 </div><div class="memdoc">
 
 <p>Lists of neighbors for each observation. </p>
-<p>This is a convenient alias for the <code><a class="elRef" href="https://knncolle.github.io/knncolle/namespaceknncolle.html#a97693d779b6041859ffa0ef2d9c1500b">knncolle::NeighborList</a></code> class. Each inner vector corresponds to an observation and contains the list of nearest neighbors for that observation, sorted by increasing distance. Neighbors for each observation should be unique - there should be no more than one occurrence of each index in each inner vector. Also, the inner vector for observation <code>i</code> should not contain any <code>Neighbor</code> with index <code>i</code>.</p>
+<p>This is a convenient alias for the <code><a class="elRef" href="https://knncolle.github.io/knncolle/namespaceknncolle.html#a97693d779b6041859ffa0ef2d9c1500b">knncolle::NeighborList</a></code> class. Each inner vector corresponds to an observation and contains the list of nearest neighbors for that observation, sorted by increasing distance. Neighbors for each observation should be unique, and the list of neighbors for observation <code>i</code> should not contain itself.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">Index_</td><td>Integer type of the observation indices. </td></tr>
@@ -194,19 +194,19 @@ template&lt;std::size_t num_dim_, typename Index_ , typename Input_ , typename F
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Overload that accepts a neighbor search index and computes the nearest neighbors for each observation, before proceeding with the initialization of the t-SNE algorithm.</p>
+<p>Overload of <code><a class="el" href="#ac7386895ff09abfb4c792a0ffdd9e170">initialize()</a></code> that accepts a neighbor search index and computes the nearest neighbors for each observation, before proceeding with the initialization of the t-SNE algorithm.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">num_dim_</td><td>Number of dimensions of the final embedding. </td></tr>
     <tr><td class="paramname">Index_</td><td>Integer type of the observation indices. </td></tr>
-    <tr><td class="paramname">Input_</td><td>Floating-point type of the input data for the neighbor search. This is not used other than to define the <code><a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Prebuilt.html">knncolle::Prebuilt</a></code> type. </td></tr>
+    <tr><td class="paramname">Input_</td><td>Floating-point type of the input data for the neighbor search. This is only used to define the <code><a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Prebuilt.html">knncolle::Prebuilt</a></code> type and is otherwise ignored. </td></tr>
     <tr><td class="paramname">Float_</td><td>Floating-point type of the neighbor distances and output embedding.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">prebuilt</td><td>A neighbor search index built on the dataset of interest. </td></tr>
+    <tr><td class="paramname">prebuilt</td><td>A pre-built neighbor search index for the dataset of interest. </td></tr>
     <tr><td class="paramname">options</td><td>Further options.</td></tr>
   </table>
   </dd>
@@ -215,8 +215,8 @@ template&lt;std::size_t num_dim_, typename Index_ , typename Input_ , typename F
 
 </div>
 </div>
-<a id="a12cf18082795e84760fc947f1c7547c9" name="a12cf18082795e84760fc947f1c7547c9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a12cf18082795e84760fc947f1c7547c9">&#9670;&#160;</a></span>initialize() <span class="overload">[2/3]</span></h2>
+<a id="ac2bbf464d20eaeefd7df7ddc881affaa" name="ac2bbf464d20eaeefd7df7ddc881affaa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2bbf464d20eaeefd7df7ddc881affaa">&#9670;&#160;</a></span>initialize() <span class="overload">[2/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -231,7 +231,7 @@ template&lt;std::size_t num_dim_, typename Index_ , typename Float_ , class Matr
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::size_t</td>          <td class="paramname"><span class="paramname"><em>num_points</em></span>, </td>
+          <td class="paramtype">const Index_</td>          <td class="paramname"><span class="paramname"><em>num_obs</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -250,21 +250,21 @@ template&lt;std::size_t num_dim_, typename Index_ , typename Float_ , class Matr
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Overload that accepts a column-major matrix of coordinates and computes the nearest neighbors for each observation, before proceeding with the initialization of the t-SNE algorithm.</p>
+<p>Overload of <code><a class="el" href="#ac7386895ff09abfb4c792a0ffdd9e170">initialize()</a></code> that accepts a column-major matrix of coordinates and computes the nearest neighbors for each observation, before proceeding with the initialization of the t-SNE algorithm.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">num_dim_</td><td>Number of dimensions of the final embedding. </td></tr>
     <tr><td class="paramname">Index_</td><td>Integer type of the observation indices. </td></tr>
     <tr><td class="paramname">Float_</td><td>Floating-point type of the input data, neighbor distances and output embedding. </td></tr>
-    <tr><td class="paramname">Matrix_</td><td>Class of the input matrix for the neighbor search. This should be a <code><a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1SimpleMatrix.html">knncolle::SimpleMatrix</a></code> or its base class (i.e., <code><a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Matrix.html">knncolle::Matrix</a></code>).</td></tr>
+    <tr><td class="paramname">Matrix_</td><td>Class of the input matrix for the neighbor search. This should be <code><a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1SimpleMatrix.html">knncolle::SimpleMatrix</a></code> or <code><a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Matrix.html">knncolle::Matrix</a></code>.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir"></td><td class="paramname">data_dim</td><td>Number of rows of the matrix at <code>data</code>, corresponding to the dimensions of the input dataset. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">num_points</td><td>Number of columns of the matrix at <code>data</code>, corresponding to the points of the input dataset. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">data</td><td>Pointer to an array containing a column-major matrix with <code>data_dim</code> rows and <code>num_points</code> columns. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">num_obs</td><td>Number of columns of the matrix at <code>data</code>, corresponding to the observations of the input dataset. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">data</td><td>Pointer to an array containing a column-major matrix with <code>data_dim</code> rows and <code>num_obs</code> columns. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">builder</td><td>A <code><a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Builder.html">knncolle::Builder</a></code> instance specifying the nearest-neighbor algorithm to use. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">options</td><td>Further options.</td></tr>
   </table>
@@ -294,7 +294,7 @@ template&lt;std::size_t num_dim_, typename Index_ , typename Float_ &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Initialize the data structures for t-SNE algorithm, given the nearest neighbors of each observation.</p>
+<p>Initialize the data structures for t-SNE algorithm, given the nearest neighbors of each observation in the dataset.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">num_dim_</td><td>Number of dimensions of the final embedding. </td></tr>
@@ -305,7 +305,7 @@ template&lt;std::size_t num_dim_, typename Index_ , typename Float_ &gt; </div>
 </dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">neighbors</td><td>List of indices and distances to nearest neighbors for each observation. Each observation should have the same number of neighbors, sorted by increasing distance, which should not include itself. </td></tr>
+    <tr><td class="paramname">neighbors</td><td>List of indices and distances to nearest neighbors for each observation. Each observation should have the same number of neighbors, sorted by increasing distance. Each observation should not be included in its own list of neighbors. It is assumed that <code>neighbors.size()</code> will fit in an <code>Index_</code>. </td></tr>
     <tr><td class="paramname">options</td><td>Further options. If <code><a class="el" href="structqdtsne_1_1Options.html#a824d9599d7ea23dcfdffc871afca0d49">Options::infer_perplexity</a> = true</code>, the perplexity is determined from <code>neighbors</code> and the value in <code><a class="el" href="structqdtsne_1_1Options.html#ae485ba64f2ff5379f09a75fb89447628">Options::perplexity</a></code> is ignored.</td></tr>
   </table>
   </dd>
@@ -424,7 +424,7 @@ template&lt;typename Task_ , class Run_ &gt; </div>
 </div><div class="memdoc">
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
-    <tr><td class="paramname">Task_</td><td>Integer type for the number of tasks. </td></tr>
+    <tr><td class="paramname">Task_</td><td>Integer type of the number of tasks. </td></tr>
     <tr><td class="paramname">Run_</td><td>Function to execute a range of tasks.</td></tr>
   </table>
   </dd>
@@ -466,7 +466,7 @@ template&lt;typename Index_  = int&gt; </div>
 </dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">perplexity</td><td>Perplexity to use in the t-SNE algorithm. </td></tr>
+    <tr><td class="paramname">perplexity</td><td>Perplexity value, see <code><a class="el" href="structqdtsne_1_1Options.html#ae485ba64f2ff5379f09a75fb89447628">Options::perplexity</a></code>. </td></tr>
   </table>
   </dd>
 </dl>

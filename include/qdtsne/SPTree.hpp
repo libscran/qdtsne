@@ -183,7 +183,7 @@ public:
             SPTreeIndex parent = 0;
             const auto point = Y + sanisizer::product_unsafe<std::size_t>(i, num_dim_);
 
-            for (int depth = 1; depth <= my_maxdepth; ++depth) {
+            for (int depth = 0; depth < my_maxdepth; ++depth) {
                 const SPTreeIndex child_idx = find_child(parent, point, side.data());
 
                 // Be careful with persistent references to my_store's contents,
@@ -214,7 +214,7 @@ public:
                         break;
                     }
 
-                    if (depth == my_maxdepth) {
+                    if (depth + 1 == my_maxdepth) {
                         my_first_assignment[i] = my_store[current_loc].index;
                     } else {
                         // Otherwise, we convert the current node into a non-leaf node to

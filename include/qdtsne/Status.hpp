@@ -189,8 +189,8 @@ private:
         compute_gradient(Y, multiplier);
 
         // Update gains
-        const auto ngains = my_gains.size(); 
-        for (decltype(I(ngains)) i = 0; i < ngains; ++i) {
+        const auto buffer_size = my_gains.size(); 
+        for (decltype(I(buffer_size)) i = 0; i < buffer_size; ++i) {
             Float_& g = my_gains[i];
             constexpr Float_ lower_bound = 0.01;
             constexpr Float_ to_add = 0.2;
@@ -199,7 +199,7 @@ private:
         }
 
         // Perform gradient update (with momentum and gains)
-        for (decltype(I(ngains)) i = 0; i < ngains; ++i) {
+        for (decltype(I(buffer_size)) i = 0; i < buffer_size; ++i) {
             my_uY[i] = momentum * my_uY[i] - my_options.eta * my_gains[i] * my_dY[i];
             Y[i] += my_uY[i];
         }
@@ -279,7 +279,7 @@ private:
             // issues (and stochastic results) based on the order of summation.
             parallelize(my_options.num_threads, num_obs, [&](const int, const Index_ start, const Index_ length) -> void {
                 for (Index_ i = start, end = start + length; i < end; ++i) {
-                    Float_* const neg_ptr = my_neg_f.data() + sanisizer::product_unsafe<std::size_t>(i, num_dim_);
+                    const auto neg_ptr = my_neg_f.data() + sanisizer::product_unsafe<std::size_t>(i, num_dim_);
                     if (my_options.leaf_approximation) {
                         my_parallel_buffer[i] = my_tree.compute_non_edge_forces_from_leaves(i, neg_ptr, my_leaf_workspace);
                     } else {

@@ -7,12 +7,13 @@
 #include <numeric>
 #include <algorithm>
 
+#include "sanisizer/sanisizer.hpp"
+
 #include "utils.hpp"
 
 namespace qdtsne {
 
 namespace internal {
-
 
 /**
  * The aim of this function is to convert distances into probabilities
@@ -43,24 +44,24 @@ true
 false
 #endif
 , typename Index_, typename Float_>
-void compute_gaussian_perplexity(NeighborList<Index_, Float_>& neighbors, Float_ perplexity, int nthreads) {
-    Index_ num_points = neighbors.size();
+void compute_gaussian_perplexity(NeighborList<Index_, Float_>& neighbors, const Float_ perplexity, const int nthreads) {
+    const Index_ num_points = neighbors.size(); // assume that Index_ is sufficient to hold the number of observations.
     const Float_ log_perplexity = std::log(perplexity);
 
-    parallelize(nthreads, num_points, [&](int, Index_ start, Index_ length) -> void {
+    parallelize(nthreads, num_points, [&](const int, const Index_ start, const Index_ length) -> void {
         std::vector<Float_> squared_delta_dist;
         std::vector<Float_> quad_delta_dist;
         std::vector<Float_> prob_numerator; // i.e., the numerator of the probability.
 
         for (Index_ n = start, end = start + length; n < end; ++n) {
             auto& current = neighbors[n];
-            const int K = current.size();
+            const auto K = current.size();
             if (K == 0) {
                 continue;
             }
 
-            squared_delta_dist.resize(K);
-            quad_delta_dist.resize(K);
+            sanisizer::resize(squared_delta_dist, K);
+            sanisizer::resize(quad_delta_dist, K);
 
             // We adjust the probabilities by subtracting the first squared
             // distance from everything. This avoids problems with underflow
@@ -71,14 +72,14 @@ void compute_gaussian_perplexity(NeighborList<Index_, Float_>& neighbors, Float_
             const Float_ first = current[0].second;
             const Float_ first2 = first * first;
 
-            for (int m = 1; m < K; ++m) {
-                Float_ dist = current[m].second;
-                Float_ squared_delta_dist_raw = dist * dist - first2; 
+            for (decltype(I(K)) m = 1; m < K; ++m) {
+                const Float_ dist = current[m].second;
+                const Float_ squared_delta_dist_raw = dist * dist - first2; 
                 squared_delta_dist[m] = squared_delta_dist_raw;
                 quad_delta_dist[m] = squared_delta_dist_raw * squared_delta_dist_raw;
             }
 
-            auto last_squared_delta = squared_delta_dist.back();
+            const auto last_squared_delta = squared_delta_dist.back();
             if (last_squared_delta == 0) { // quitting early as entropy doesn't depend on beta.
                 for (auto& x : current) {
                     x.second = 1.0 / K;
@@ -100,7 +101,7 @@ void compute_gaussian_perplexity(NeighborList<Index_, Float_>& neighbors, Float_
             constexpr Float_ max_value = std::numeric_limits<Float_>::max();
             Float_ min_beta = 0, max_beta = max_value;
             Float_ sum_P = 0;
-            prob_numerator.resize(K);
+            sanisizer::resize(prob_numerator, K);
             prob_numerator[0] = 1;
 
             constexpr int max_iter = 200;
@@ -108,7 +109,7 @@ void compute_gaussian_perplexity(NeighborList<Index_, Float_>& neighbors, Float_
                 // We skip the first value because we know that squared_delta_dist[0] = 0
                 // (as we subtracted 'first') and thus prob_numerator[0] = 1. We repeat this for
                 // all iterations from [1, K), e.g., squared_delta_dist, quad_delta_dist.
-                for (int m = 1; m < K; ++m) {
+                for (decltype(I(K)) m = 1; m < K; ++m) {
                     prob_numerator[m] = std::exp(-beta * squared_delta_dist[m]); 
                 }
 
@@ -166,7 +167,7 @@ void compute_gaussian_perplexity(NeighborList<Index_, Float_>& neighbors, Float_
 
                 if (std::isinf(beta)) {
                     // Avoid propagation of NaNs via Inf * 0. 
-                    for (int m = 1; m < K; ++m) {
+                    for (decltype(I(K)) m = 1; m < K; ++m) {
                         prob_numerator[m] = (squared_delta_dist[m] == 0);
                     }
                     sum_P = std::accumulate(prob_numerator.begin(), prob_numerator.end(), static_cast<Float_>(0));
@@ -174,7 +175,7 @@ void compute_gaussian_perplexity(NeighborList<Index_, Float_>& neighbors, Float_
                 }
             }
 
-            for (int m = 0; m < K; ++m) {
+            for (decltype(I(K)) m = 0; m < K; ++m) {
                 current[m].second = prob_numerator[m] / sum_P;
             }
         }

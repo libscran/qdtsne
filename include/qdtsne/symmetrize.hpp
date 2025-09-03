@@ -4,6 +4,8 @@
 #include <vector>
 #include <algorithm>
 
+#include "sanisizer/sanisizer.hpp"
+
 #include "utils.hpp"
 
 namespace qdtsne {
@@ -12,8 +14,9 @@ namespace internal {
 
 template<typename Index_, typename Float_>
 void symmetrize_matrix(NeighborList<Index_, Float_>& x) {
-    Index_ num_points = x.size();
-    std::vector<decltype(x[0].size())> last(num_points), original(num_points);
+    const Index_ num_points = x.size(); // assume that Index_ is sufficient to hold the number of observations.
+    auto last = sanisizer::create<std::vector<Index_> >(num_points);
+    auto original = sanisizer::create<std::vector<Index_> >(num_points);
 
     Float_ total = 0;
     for (Index_ i = 0; i < num_points; ++i) {
@@ -49,7 +52,7 @@ void symmetrize_matrix(NeighborList<Index_, Float_>& x) {
                     // would have already been done in a previous iteration of
                     // the outermost loop where i and y.first swap values. So
                     // we skip this to avoid adding it twice.
-                    Float_ combined = y.second + target[curlast].second;
+                    const Float_ combined = y.second + target[curlast].second;
                     y.second = combined;
                     target[curlast].second = combined;
                 }

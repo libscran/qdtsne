@@ -212,7 +212,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Whether to replace a observation with the center of mass of its leaf node when computing the repulsive forces to all other observations. This allows the repulsive forces to be computed once per leaf node and then re-used across all observations in that leaf node. The effectiveness of this option depends on <code><a class="el" href="#a3202c4085c933353f0fbfb9cc1825f64">Options::max_depth</a></code>, which needs to be small enough so that many leaf nodes have multiple assigned observations. </p>
+<p>Whether to replace a observation with the center of mass of its leaf node when computing the repulsive forces to all other observations. This speeds up the calculation at the cost of some accuracy.</p>
+<p>By default, repulsive forces <em>from</em> an observation are computed separately for each observation, even if the repulsive forces <em>to</em> an observation might be approximated by its assigned node's center of mass. If the leaf approximation is used, repulsive forces are computed <em>from</em> each leaf node and used to approximate the respulsive force <em>from</em> each observation in that leaf node. This reduces compute time as it skips near-redundant repulsive force calculations for neighboring observations assigned to the same leaf node. However, its effectiveness depends on <code><a class="el" href="#a3202c4085c933353f0fbfb9cc1825f64">Options::max_depth</a></code>, which needs to be small enough so that many leaf nodes have multiple assigned observations. </p>
 
 </div>
 </div>
@@ -227,7 +228,8 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Maximum depth of the tree used in the Barnes-Hut approximation of the repulsive forces. This effectively replaces each observation with the center of mass of the most fine-grained partition (i.e., the leaf of the tree) to which it belongs. Setting this to a smaller value (e.g., 7 - 10) improves speed by bounding the depth of recursion, at the cost of some accuracy.</p>
+<p>Maximum depth of the tree used in the Barnes-Hut approximation of the repulsive forces. Setting <code>max_depth</code> to a smaller value (typically 7 - 10) improves speed by bounding the depth of recursion, at the cost of some accuracy.</p>
+<p>If neighboring observations cannot be separated before the maximum depth is reached, they will be assigned to the same leaf node. This effectively approximates each observation's coordinates with the center of mass of its leaf node. Repulsive forces can then be calculated once against the leaf's center of mass instead of each individual observation assigned to that leaf.</p>
 <p>The default is to use a large value, which means that the tree's depth is unbounded for most practical applications. This aims to be consistent with the original implementation of the BH search, but with some protection against near-duplicate observations that would otherwise result in unnecessary recursion. </p>
 
 </div>

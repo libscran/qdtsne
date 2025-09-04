@@ -11,8 +11,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // run_tsne
-Rcpp::NumericMatrix run_tsne(Rcpp::IntegerMatrix indices, Rcpp::NumericMatrix distances, Rcpp::NumericMatrix init, double theta, int iter, int lie_iter, double exaggeration, int mom_iter, double eta, double start_mom, double final_mom, int max_depth, bool leaf_approx, int num_threads);
-RcppExport SEXP _qdtsne_run_tsne(SEXP indicesSEXP, SEXP distancesSEXP, SEXP initSEXP, SEXP thetaSEXP, SEXP iterSEXP, SEXP lie_iterSEXP, SEXP exaggerationSEXP, SEXP mom_iterSEXP, SEXP etaSEXP, SEXP start_momSEXP, SEXP final_momSEXP, SEXP max_depthSEXP, SEXP leaf_approxSEXP, SEXP num_threadsSEXP) {
+Rcpp::NumericMatrix run_tsne(Rcpp::IntegerMatrix indices, Rcpp::NumericMatrix distances, Rcpp::NumericMatrix init, double theta, int iter, int exaggeration_iter, double exaggeration_factor, int mom_iter, double eta, double start_mom, double final_mom, int max_depth, bool leaf_approx, int num_threads);
+RcppExport SEXP _qdtsne_run_tsne(SEXP indicesSEXP, SEXP distancesSEXP, SEXP initSEXP, SEXP thetaSEXP, SEXP iterSEXP, SEXP exaggeration_iterSEXP, SEXP exaggeration_factorSEXP, SEXP mom_iterSEXP, SEXP etaSEXP, SEXP start_momSEXP, SEXP final_momSEXP, SEXP max_depthSEXP, SEXP leaf_approxSEXP, SEXP num_threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type indices(indicesSEXP);
@@ -20,8 +20,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type init(initSEXP);
     Rcpp::traits::input_parameter< double >::type theta(thetaSEXP);
     Rcpp::traits::input_parameter< int >::type iter(iterSEXP);
-    Rcpp::traits::input_parameter< int >::type lie_iter(lie_iterSEXP);
-    Rcpp::traits::input_parameter< double >::type exaggeration(exaggerationSEXP);
+    Rcpp::traits::input_parameter< int >::type exaggeration_iter(exaggeration_iterSEXP);
+    Rcpp::traits::input_parameter< double >::type exaggeration_factor(exaggeration_factorSEXP);
     Rcpp::traits::input_parameter< int >::type mom_iter(mom_iterSEXP);
     Rcpp::traits::input_parameter< double >::type eta(etaSEXP);
     Rcpp::traits::input_parameter< double >::type start_mom(start_momSEXP);
@@ -29,7 +29,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type max_depth(max_depthSEXP);
     Rcpp::traits::input_parameter< bool >::type leaf_approx(leaf_approxSEXP);
     Rcpp::traits::input_parameter< int >::type num_threads(num_threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(run_tsne(indices, distances, init, theta, iter, lie_iter, exaggeration, mom_iter, eta, start_mom, final_mom, max_depth, leaf_approx, num_threads));
+    rcpp_result_gen = Rcpp::wrap(run_tsne(indices, distances, init, theta, iter, exaggeration_iter, exaggeration_factor, mom_iter, eta, start_mom, final_mom, max_depth, leaf_approx, num_threads));
     return rcpp_result_gen;
 END_RCPP
 }

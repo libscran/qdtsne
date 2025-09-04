@@ -10,8 +10,8 @@ Rcpp::NumericMatrix run_tsne(
     Rcpp::NumericMatrix init,
     double theta,
     int iter,
-    int lie_iter,
-    double exaggeration,
+    int exaggeration_iter,
+    double exaggeration_factor,
     int mom_iter,
     double eta,
     double start_mom,
@@ -23,9 +23,9 @@ Rcpp::NumericMatrix run_tsne(
     qdtsne::Options opt;
     opt.theta = theta;
     opt.max_iterations = iter;
-    opt.stop_lying_iter = lie_iter;
-    opt.exaggeration_factor = exaggeration;
-    opt.mom_switch_iter = mom_iter;
+    opt.early_exaggeration_iterations = exaggeration_iter;
+    opt.exaggeration_factor = exaggeration_factor;
+    opt.momentum_switch_iterations = mom_iter;
     opt.start_momentum = start_mom;
     opt.final_momentum = final_mom;
     opt.eta = eta;

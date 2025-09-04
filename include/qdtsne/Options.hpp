@@ -55,7 +55,13 @@ struct Options {
      * As a result, the embedding will have a lot of empty space so that clusters can easily relocate to find a good global organization.
      * Larger values improve convergence within this phase at the cost of reducing the remaining iterations in `Options::max_iterations`.
      */
-    int stop_lying_iter = 250;
+    int early_exaggeration_iterations = 250;
+
+    /**
+     * Exaggeration factor to scale the probabilities during the early exaggeration phase (see `Options::early_exaggeration_iterations`).
+     * Larger values increase the attraction between nearest neighbors to favor local structure during this phase.
+     */
+    double exaggeration_factor = 12;
 
     /**
      * Number of iterations to perform before switching from the starting momentum to the final momentum.
@@ -64,31 +70,25 @@ struct Options {
      * Greater momentum can improve convergence by increasing the step size and smoothing over local oscillations, at the risk of potentially skipping over relevant minima.
      * The magnitude of this momentum switches from `Options::start_momentum` to `Options::final_momentum` at the specified number of iterations.
      */
-    int mom_switch_iter = 250;
+    int momentum_switch_iterations = 250;
 
     /**
-     * Starting momentum in \f$[0, 1)\$f, to be used in the iterations before the momentum switch at `Options::mom_switch_iter`.
+     * Starting momentum in \f$[0, 1)\$f, to be used in the iterations before the momentum switch at `Options::momentum_switch_iterations`.
      * This is usually lower than `Options::final_momentum` to avoid skipping over suitable local minima.
      */
     double start_momentum = 0.5;
 
     /**
-     * Final momentum in \f$[0, 1)\$f, to be used in the iterations after the momentum switch at `Options::mom_switch_iter`.
+     * Final momentum in \f$[0, 1)\$f, to be used in the iterations after the momentum switch at `Options::momentum_switch_iterations`.
      * This is usually higher than `Options::start_momentum` to accelerate convergence to the local minima once the observations are moderately well-organized.
      */
     double final_momentum = 0.8;
 
     /**
-     * The learning rate, used to scale the updates.
+     * The learning rate, used to scale the updates to the coordinates at each iteration.
      * Larger values can speed up convergence at the cost of potentially skipping over local minima.
      */
     double eta = 200;
-
-    /**
-     * Exaggeration factor to scale the probabilities during the early exaggeration phase (see `Options::stop_lying_iter`).
-     * Larger values increase the attraction between nearest neighbors to favor local structure during this phase.
-     */
-    double exaggeration_factor = 12;
 
     /**
      * Maximum depth of the tree used in the Barnes-Hut approximation of the repulsive forces.

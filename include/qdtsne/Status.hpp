@@ -148,18 +148,16 @@ public:
      * `limit` may be greater than `max_iterations()`, to run the algorithm for more iterations than specified during construction of this `Status` object.
      */
     void run(Float_* const Y, const int limit) {
-        Float_ multiplier = (my_iter < my_options.stop_lying_iter ? my_options.exaggeration_factor : 1);
-        Float_ momentum = (my_iter < my_options.mom_switch_iter ? my_options.start_momentum : my_options.final_momentum);
+        Float_ multiplier = (my_iter < my_options.early_exaggeration_iterations ? my_options.exaggeration_factor : 1);
+        Float_ momentum = (my_iter < my_options.momentum_switch_iterations ? my_options.start_momentum : my_options.final_momentum);
 
         for(; my_iter < limit; ++my_iter) {
-            // Stop lying about the P-values after a while, and switch momentum
-            if (my_iter == my_options.stop_lying_iter) {
+            if (my_iter == my_options.early_exaggeration_iterations) {
                 multiplier = 1;
             }
-            if (my_iter == my_options.mom_switch_iter) {
+            if (my_iter == my_options.momentum_switch_iterations) {
                 momentum = my_options.final_momentum;
             }
-
             iterate(Y, multiplier, momentum);
         }
     }

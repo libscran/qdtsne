@@ -10,10 +10,8 @@ var searchData=
   ['simplematrix_7',['SimpleMatrix',['https://knncolle.github.io/knncolle/classknncolle_1_1SimpleMatrix.html',1,'knncolle::SimpleMatrix&lt; typename Index_, typename Data_ &gt;'],['https://knncolle.github.io/knncolle/classknncolle_1_1SimpleMatrix.html#afe415d2e6adc07aecffab4e8b75ca9e5',1,'knncolle::SimpleMatrix::SimpleMatrix()']]],
   ['simplematrixextractor_8',['SimpleMatrixExtractor',['https://knncolle.github.io/knncolle/classknncolle_1_1SimpleMatrixExtractor.html',1,'knncolle']]],
   ['sne_20in_20c_9',['Quick and dirty t-SNE in C++',['../index.html',1,'']]],
-  ['start_5fmomentum_10',['start_momentum',['../structqdtsne_1_1Options.html#ab5e4ad0d2dc1daf15e48d193bb3c3d8f',1,'qdtsne::Options']]],
-  ['status_11',['Status',['../classqdtsne_1_1Status.html',1,'qdtsne']]],
-  ['status_2ehpp_12',['Status.hpp',['../Status_8hpp.html',1,'']]],
-  ['stop_5flying_5fiter_13',['stop_lying_iter',['../structqdtsne_1_1Options.html#af352392082ebac2046b5679b218d6594',1,'qdtsne::Options']]],
-  ['subpar_14',['subpar',['https://ltla.github.io/subpar/namespacesubpar.html',1,'']]],
-  ['subpar_2ehpp_15',['subpar.hpp',['https://ltla.github.io/subpar/subpar_8hpp.html',1,'']]]
+  ['status_10',['Status',['../classqdtsne_1_1Status.html',1,'qdtsne']]],
+  ['status_2ehpp_11',['Status.hpp',['../Status_8hpp.html',1,'']]],
+  ['subpar_12',['subpar',['https://ltla.github.io/subpar/namespacesubpar.html',1,'']]],
+  ['subpar_2ehpp_13',['subpar.hpp',['https://ltla.github.io/subpar/subpar_8hpp.html',1,'']]]
 ];

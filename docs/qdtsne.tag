@@ -73,23 +73,23 @@
     </member>
     <member kind="variable">
       <type>int</type>
-      <name>stop_lying_iter</name>
+      <name>early_exaggeration_iterations</name>
       <anchorfile>structqdtsne_1_1Options.html</anchorfile>
-      <anchor>af352392082ebac2046b5679b218d6594</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>int</type>
-      <name>mom_switch_iter</name>
-      <anchorfile>structqdtsne_1_1Options.html</anchorfile>
-      <anchor>a0efc1892882f473e5e38e5ab11d5d604</anchor>
+      <anchor>a515a249305d1d101b7350e7d2520277d</anchor>
       <arglist></arglist>
     </member>
     <member kind="variable">
       <type>double</type>
-      <name>start_momentum</name>
+      <name>exaggeration_factor</name>
       <anchorfile>structqdtsne_1_1Options.html</anchorfile>
-      <anchor>ab5e4ad0d2dc1daf15e48d193bb3c3d8f</anchor>
+      <anchor>ab0f96457fa0b6d05dd32b8ab3fdf31b6</anchor>
+      <arglist></arglist>
+    </member>
+    <member kind="variable">
+      <type>int</type>
+      <name>momentum_switch_iterations</name>
+      <anchorfile>structqdtsne_1_1Options.html</anchorfile>
+      <anchor>a355518eea7a6b2a92ba4b9afd6629a07</anchor>
       <arglist></arglist>
     </member>
     <member kind="variable">
@@ -104,13 +104,6 @@
       <name>eta</name>
       <anchorfile>structqdtsne_1_1Options.html</anchorfile>
       <anchor>a7f0dcada1addd28c257f0074727f9eae</anchor>
-      <arglist></arglist>
-    </member>
-    <member kind="variable">
-      <type>double</type>
-      <name>exaggeration_factor</name>
-      <anchorfile>structqdtsne_1_1Options.html</anchorfile>
-      <anchor>ab0f96457fa0b6d05dd32b8ab3fdf31b6</anchor>
       <arglist></arglist>
     </member>
     <member kind="variable">

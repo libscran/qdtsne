@@ -130,10 +130,9 @@ $(function(){ initResizable(false); });
 <div class="ttc" id="astructqdtsne_1_1Options_html"><div class="ttname"><a href="structqdtsne_1_1Options.html">qdtsne::Options</a></div><div class="ttdoc">Options for initialize().</div><div class="ttdef"><b>Definition</b> Options.hpp:14</div></div>
 </div><!-- fragment --><p>You can change the parameters with the relevant setters:</p>
 <div class="fragment"><div class="line">opt.<a class="code hl_variable" href="structqdtsne_1_1Options.html#ae485ba64f2ff5379f09a75fb89447628">perplexity</a> = 10;</div>
-<div class="line">opt.<a class="code hl_variable" href="structqdtsne_1_1Options.html#a0efc1892882f473e5e38e5ab11d5d604">mom_switch_iter</a> = 100;</div>
+<div class="line">opt.mom_switch_iter = 100;</div>
 <div class="line"><span class="keyword">auto</span> status2 = <a class="code hl_function" href="namespaceqdtsne.html#ac7386895ff09abfb4c792a0ffdd9e170">qdtsne::initialize&lt;2&gt;</a>(nrow, ncol, data.data(), nnalg, opt);</div>
-<div class="ttc" id="astructqdtsne_1_1Options_html_a0efc1892882f473e5e38e5ab11d5d604"><div class="ttname"><a href="structqdtsne_1_1Options.html#a0efc1892882f473e5e38e5ab11d5d604">qdtsne::Options::mom_switch_iter</a></div><div class="ttdeci">int mom_switch_iter</div><div class="ttdef"><b>Definition</b> Options.hpp:72</div></div>
-<div class="ttc" id="astructqdtsne_1_1Options_html_ae485ba64f2ff5379f09a75fb89447628"><div class="ttname"><a href="structqdtsne_1_1Options.html#ae485ba64f2ff5379f09a75fb89447628">qdtsne::Options::perplexity</a></div><div class="ttdeci">double perplexity</div><div class="ttdef"><b>Definition</b> Options.hpp:26</div></div>
+<div class="ttc" id="astructqdtsne_1_1Options_html_ae485ba64f2ff5379f09a75fb89447628"><div class="ttname"><a href="structqdtsne_1_1Options.html#ae485ba64f2ff5379f09a75fb89447628">qdtsne::Options::perplexity</a></div><div class="ttdeci">double perplexity</div><div class="ttdef"><b>Definition</b> Options.hpp:24</div></div>
 </div><!-- fragment --><p>You can also stop and start the algorithm:</p>
 <div class="fragment"><div class="line">status2.run(Y.data(), 200); <span class="comment">// run up to 200 iterations</span></div>
 <div class="line">status2.run(Y.data(), 500); <span class="comment">// run up to 500 iterations</span></div>

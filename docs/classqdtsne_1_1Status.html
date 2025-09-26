@@ -121,6 +121,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a04b541369258a61abd5bef8d89dc5d7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aee7b3da21eb4af05d26e5acff71cbd7b" id="r_aee7b3da21eb4af05d26e5acff71cbd7b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aee7b3da21eb4af05d26e5acff71cbd7b">run</a> (Float_ *const Y)</td></tr>
 <tr class="separator:aee7b3da21eb4af05d26e5acff71cbd7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38f7a8c2c513c56c405e4b3200256255" id="r_a38f7a8c2c513c56c405e4b3200256255"><td class="memItemLeft" align="right" valign="top">Float_&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a38f7a8c2c513c56c405e4b3200256255">cost</a> (const Float_ *const Y)</td></tr>
+<tr class="separator:a38f7a8c2c513c56c405e4b3200256255"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;std::size_t num_dim_, typename Index_, typename Float_&gt;<br />
@@ -135,6 +137,42 @@ class qdtsne::Status&lt; num_dim_, Index_, Float_ &gt;</div><p><a class="el" hre
 </dl>
 <p>This class holds the precomputed structures required to perform the t-SNE iterations. Instances should not be constructed directly but instead created by <code><a class="el" href="namespaceqdtsne.html#ac7386895ff09abfb4c792a0ffdd9e170">initialize()</a></code>. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a38f7a8c2c513c56c405e4b3200256255" name="a38f7a8c2c513c56c405e4b3200256255"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38f7a8c2c513c56c405e4b3200256255">&#9670;&#160;</a></span>cost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;std::size_t num_dim_, typename Index_ , typename Float_ &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Float_ <a class="el" href="classqdtsne_1_1Status.html">qdtsne::Status</a>&lt; num_dim_, Index_, Float_ &gt;::cost </td>
+          <td>(</td>
+          <td class="paramtype">const Float_ *const</td>          <td class="paramname"><span class="paramname"><em>Y</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">Y</td><td>Pointer to a array containing a column-major matrix with number of rows and columns equal to <code>num_dim_</code> and <code><a class="el" href="#a77523d2a0d5aaad8db433efc2dd8c4cc">num_observations()</a></code>, respectively. This should contain the location of each observation.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The Kullback-Leibler divergence for the current embedding.</dd></dl>
+<p>This method is not <code>const</code> as it re-uses some of the pre-allocated buffers in the <code><a class="el" href="classqdtsne_1_1Status.html" title="Status of the t-SNE iterations.">Status</a></code> object for efficiency. Calling <code><a class="el" href="#a38f7a8c2c513c56c405e4b3200256255">cost()</a></code> at any time will not affect the results of subsequent calls to <code><a class="el" href="#a04b541369258a61abd5bef8d89dc5d7f">run()</a></code>.</p>
+<p>This method does not consider any exaggeration of the conditional probabilities for iterations at or before <code><a class="el" href="structqdtsne_1_1Options.html#a515a249305d1d101b7350e7d2520277d">Options::early_exaggeration_iterations</a></code>. That is, all probabilities used here will not be exaggerated, regardless of the iteration. </p>
+
+</div>
+</div>
 <a id="a2e5fbb69b89a43b2deea5c46374b642b" name="a2e5fbb69b89a43b2deea5c46374b642b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2e5fbb69b89a43b2deea5c46374b642b">&#9670;&#160;</a></span>iteration()</h2>
 

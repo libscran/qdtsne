@@ -169,6 +169,13 @@
       <anchor>aee7b3da21eb4af05d26e5acff71cbd7b</anchor>
       <arglist>(Float_ *const Y)</arglist>
     </member>
+    <member kind="function">
+      <type>Float_</type>
+      <name>cost</name>
+      <anchorfile>classqdtsne_1_1Status.html</anchorfile>
+      <anchor>a38f7a8c2c513c56c405e4b3200256255</anchor>
+      <arglist>(const Float_ *const Y)</arglist>
+    </member>
   </compound>
   <compound kind="namespace">
     <name>qdtsne</name>

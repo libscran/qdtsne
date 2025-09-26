@@ -316,17 +316,17 @@ private:
         return sqdist;
     }
 
-    static void add_non_edge_forces(const std::array<Float_, num_dim_>& diffs, const Float_ sqdist, const Float_ count, Float_& result_sum, Float_* const neg_f) {
+    static Float_ add_non_edge_forces(const std::array<Float_, num_dim_>& diffs, const Float_ sqdist, const Float_ count, Float_* const neg_f) {
         const Float_ div = static_cast<Float_>(1) / (static_cast<Float_>(1) + sqdist);
-        Float_ mult = count * div;
-        result_sum += mult;
-        mult *= div;
+        const auto total_prob = count * div;
+        const auto mult = total_prob * div;
         for (std::size_t d = 0; d < num_dim_; ++d) {
             neg_f[d] += mult * diffs[d]; // remember, 'diffs[d] := point[d] - center[d]' from compute_sqdist().
         }
+        return total_prob;
     }
 
-    static void remove_self_from_center(const Float_* const point, const std::array<Float_, num_dim_>& center, Float_ count, std::array<Float_, num_dim_>& temp) {
+    static void remove_self_from_center(const Float_* const point, const std::array<Float_, num_dim_>& center, const Float_ count, std::array<Float_, num_dim_>& temp) {
         for (std::size_t d = 0; d < num_dim_; ++d) { 
             temp[d] = (center[d] * count - point[d]) / (count - 1);
         }
@@ -334,18 +334,18 @@ private:
 
 public:
     Float_ compute_non_edge_forces(const SPTreeIndex index, const Float_ theta, Float_* const neg_f) const {
-        Float_ result_sum = 0;
+        Float_ sum_prob = 0;
         const auto point = my_data + sanisizer::product_unsafe<std::size_t>(index, num_dim_);
         const auto& cur_children = my_store[0].children;
         std::fill_n(neg_f, num_dim_, 0);
 
         for (int i = 0; i < Node::nchildren; ++i) {
             if (cur_children[i]) {
-                result_sum += compute_non_edge_forces(index, point, theta, neg_f, cur_children[i]);
+                sum_prob += compute_non_edge_forces(index, point, theta, neg_f, cur_children[i]);
             }
         }
 
-        return result_sum;
+        return sum_prob;
     }
 
 private:
@@ -374,20 +374,18 @@ private:
         // Check whether we can use skip this node's children, either because
         // it's already a leaf or because we can use the BH approximation.
         const bool skip_children = node.is_leaf || (node.max_width < theta * std::sqrt(sqdist));
-
-        Float_ result_sum = 0;
         if (skip_children) {
-            add_non_edge_forces(diffs, sqdist, count, result_sum, neg_f);
-        } else {
-            const auto& cur_children = node.children;
-            for (int i = 0; i < Node::nchildren; ++i) {
-                if (cur_children[i]) {
-                    result_sum += compute_non_edge_forces(index, point, theta, neg_f, cur_children[i]);
-                }
-            }
+            return add_non_edge_forces(diffs, sqdist, count, neg_f);
         }
 
-        return result_sum;
+        Float_ sum_prob = 0;
+        const auto& cur_children = node.children;
+        for (int i = 0; i < Node::nchildren; ++i) {
+            if (cur_children[i]) {
+                sum_prob += compute_non_edge_forces(index, point, theta, neg_f, cur_children[i]);
+            }
+        }
+        return sum_prob;
     }
 
     /*************************************************************
@@ -406,18 +404,18 @@ public:
         sanisizer::resize(workspace.leaf_sums, nnodes);
 
         auto process_leaf_node = [&](SPTreeIndex leaf) -> void {
-            Float_ result_sum = 0;
+            Float_ sum_prob = 0;
             Float_* const neg_f = workspace.leaf_neg_f[leaf].data();
             std::fill_n(neg_f, num_dim_, 0);
 
             const auto& cur_children = my_store[0].children;
             for (int i = 0; i < Node::nchildren; ++i) {
                 if (cur_children[i] && cur_children[i] != leaf) {
-                    result_sum += compute_non_edge_forces_for_leaves(leaf, theta, neg_f, cur_children[i]);
+                    sum_prob += compute_non_edge_forces_for_leaves(leaf, theta, neg_f, cur_children[i]);
                 }
             }
 
-            workspace.leaf_sums[leaf] = result_sum;
+            workspace.leaf_sums[leaf] = sum_prob;
         };
 
         if (num_threads == 1) {
@@ -453,7 +451,7 @@ public:
         const auto& leaf_neg_f = workspace.leaf_neg_f[node_loc];
         std::copy(leaf_neg_f.begin(), leaf_neg_f.end(), neg_f);
 
-        Float_ result_sum = workspace.leaf_sums[node_loc];
+        Float_ sum_prob = workspace.leaf_sums[node_loc];
         const auto& node = my_store[node_loc];
         if (node.number != 1) {
             const auto point = my_data + sanisizer::product_unsafe<std::size_t>(index, num_dim_);
@@ -462,10 +460,10 @@ public:
 
             std::array<Float_, num_dim_> diffs;
             const Float_ sqdist = compute_sqdist(point, temp, diffs);
-            add_non_edge_forces(diffs, sqdist, node.number - 1, result_sum, neg_f);
+            sum_prob += add_non_edge_forces(diffs, sqdist, node.number - 1, neg_f);
         }
 
-        return result_sum;
+        return sum_prob;
     }
 
 private:
@@ -478,22 +476,19 @@ private:
         const Float_ sqdist = compute_sqdist(point, node.center_of_mass, diffs);
 
         const bool skip_children = node.is_leaf || (node.max_width < theta * std::sqrt(sqdist));
-
-        Float_ result_sum = 0;
         if (skip_children) {
-            add_non_edge_forces(diffs, sqdist, node.number, result_sum, neg_f);
-        } else {
-            const auto& cur_children = node.children;
-            for (int i = 0; i < Node::nchildren; ++i) {
-                if (cur_children[i] && cur_children[i] != self_position) {
-                    result_sum += compute_non_edge_forces_for_leaves(self_position, theta, neg_f, cur_children[i]);
-                }
-            }
+            return add_non_edge_forces(diffs, sqdist, node.number, neg_f);
         }
 
-        return result_sum;
+        Float_ sum_prob = 0;
+        const auto& cur_children = node.children;
+        for (int i = 0; i < Node::nchildren; ++i) {
+            if (cur_children[i] && cur_children[i] != self_position) {
+                sum_prob += compute_non_edge_forces_for_leaves(self_position, theta, neg_f, cur_children[i]);
+            }
+        }
+        return sum_prob;
     }
-
 
 public:
 #ifndef NDEBUG

@@ -251,7 +251,7 @@ private:
                     Float_ sqdist = 0; 
                     const auto neighbor = Y + sanisizer::product_unsafe<std::size_t>(x.first, num_dim_);
                     for (std::size_t d = 0; d < num_dim_; ++d) {
-                        Float_ delta = self[d] - neighbor[d];
+                        const Float_ delta = self[d] - neighbor[d];
                         sqdist += delta * delta;
                     }
 

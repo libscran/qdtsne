@@ -4,7 +4,7 @@
 #include "qdtsne/qdtsne.hpp"
 
 // [[Rcpp::export(rng=false)]]
-Rcpp::NumericMatrix run_tsne(
+Rcpp::List run_tsne(
     Rcpp::IntegerMatrix indices,
     Rcpp::NumericMatrix distances,
     Rcpp::NumericMatrix init,
@@ -47,6 +47,10 @@ Rcpp::NumericMatrix run_tsne(
 
     auto status = qdtsne::initialize<2>(std::move(neighbors), opt);
     status.run(static_cast<double*>(output.begin()));
+    double cost = status.cost(static_cast<double*>(output.begin()));
 
-    return Rcpp::transpose(output);
+    return Rcpp::List::create(
+        Rcpp::Named("embedding") = Rcpp::transpose(output),
+        Rcpp::Named("cost") = Rcpp::NumericVector::create(cost)
+    );
 }

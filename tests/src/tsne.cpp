@@ -281,6 +281,29 @@ TEST_P(TsneTester, Float32) {
     EXPECT_EQ(status.iteration(), 1000); // actually ran through the specified iterations
 }
 
+TEST_P(TsneTester, Cost) {
+    int K = GetParam();
+
+    qdtsne::Options opt;
+    opt.perplexity = K / 3.0;
+    auto status = qdtsne::initialize<2>(ndim, nobs, X.data(), *builder, opt);
+
+    auto Y = qdtsne::initialize_random<2>(nobs);
+    auto copy = Y;
+    status.run(Y.data());
+    auto cost = status.cost(Y.data());
+
+    // Checking that cost_norun doesn't affect the results.
+    auto restatus = qdtsne::initialize<2>(ndim, nobs, X.data(), *builder, opt);
+    EXPECT_EQ(cost, restatus.cost(Y.data()));
+    restatus.run(copy.data(), 500);
+    EXPECT_EQ(cost, restatus.cost(Y.data()));
+    restatus.run(copy.data(), 1000);
+
+    EXPECT_EQ(copy, Y);
+    EXPECT_EQ(cost, restatus.cost(Y.data()));
+}
+
 INSTANTIATE_TEST_SUITE_P(
     TsneTests,
     TsneTester,

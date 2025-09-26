@@ -11,7 +11,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // run_tsne
-Rcpp::NumericMatrix run_tsne(Rcpp::IntegerMatrix indices, Rcpp::NumericMatrix distances, Rcpp::NumericMatrix init, double theta, int iter, int exaggeration_iter, double exaggeration_factor, int mom_iter, double eta, double start_mom, double final_mom, int max_depth, bool leaf_approx, int num_threads);
+Rcpp::List run_tsne(Rcpp::IntegerMatrix indices, Rcpp::NumericMatrix distances, Rcpp::NumericMatrix init, double theta, int iter, int exaggeration_iter, double exaggeration_factor, int mom_iter, double eta, double start_mom, double final_mom, int max_depth, bool leaf_approx, int num_threads);
 RcppExport SEXP _qdtsne_run_tsne(SEXP indicesSEXP, SEXP distancesSEXP, SEXP initSEXP, SEXP thetaSEXP, SEXP iterSEXP, SEXP exaggeration_iterSEXP, SEXP exaggeration_factorSEXP, SEXP mom_iterSEXP, SEXP etaSEXP, SEXP start_momSEXP, SEXP final_momSEXP, SEXP max_depthSEXP, SEXP leaf_approxSEXP, SEXP num_threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

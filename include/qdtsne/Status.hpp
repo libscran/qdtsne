@@ -92,6 +92,7 @@ public:
 private:
     NeighborList<Index_, Float_> my_neighbors; 
     std::vector<Float_> my_dY, my_uY, my_gains, my_pos_f, my_neg_f;
+    Float_ my_non_edge_sum = 0;
 
     internal::SPTree<num_dim_, Float_> my_tree;
     std::vector<Float_> my_parallel_buffer; // Buffer to hold parallel-computed results prior to reduction.
@@ -227,11 +228,11 @@ private:
         compute_edge_forces(Y, multiplier);
 
         std::fill(my_neg_f.begin(), my_neg_f.end(), 0);
-        const Float_ sum_Q = compute_non_edge_forces();
+        compute_non_edge_forces();
 
         const auto buffer_size = my_dY.size();
         for (decltype(I(buffer_size)) i = 0; i < buffer_size; ++i) {
-            my_dY[i] = my_pos_f[i] - (my_neg_f[i] / sum_Q);
+            my_dY[i] = my_pos_f[i] - (my_neg_f[i] / my_non_edge_sum);
         }
     }
 
@@ -265,7 +266,7 @@ private:
         return;
     }
 
-    Float_ compute_non_edge_forces() {
+    void compute_non_edge_forces() {
         if (my_options.leaf_approximation) {
             my_tree.compute_non_edge_forces_for_leaves(my_options.theta, my_leaf_workspace, my_options.num_threads);
         }
@@ -284,19 +285,61 @@ private:
                     }
                 }
             });
-            return std::accumulate(my_parallel_buffer.begin(), my_parallel_buffer.end(), static_cast<Float_>(0));
+
+            my_non_edge_sum = std::accumulate(my_parallel_buffer.begin(), my_parallel_buffer.end(), static_cast<Float_>(0));
+            return;
         }
 
-        Float_ sum_Q = 0;
+        my_non_edge_sum = 0;
         for (Index_ i = 0; i < num_obs; ++i) {
             const auto neg_ptr = my_neg_f.data() + sanisizer::product_unsafe<std::size_t>(i, num_dim_);
             if (my_options.leaf_approximation) {
-                sum_Q += my_tree.compute_non_edge_forces_from_leaves(i, neg_ptr, my_leaf_workspace);
+                my_non_edge_sum += my_tree.compute_non_edge_forces_from_leaves(i, neg_ptr, my_leaf_workspace);
             } else {
-                sum_Q += my_tree.compute_non_edge_forces(i, my_options.theta, neg_ptr);
+                my_non_edge_sum += my_tree.compute_non_edge_forces(i, my_options.theta, neg_ptr);
             }
         }
-        return sum_Q;
+    }
+
+public:
+    /**
+     * @param[in] Y Pointer to a array containing a column-major matrix with number of rows and columns equal to `num_dim_` and `num_observations()`, respectively.
+     * This should contain the location of each observation. 
+     *
+     * @return The Kullback-Leibler divergence for the current embedding.
+     *
+     * This method is not `const` as it re-uses some of the pre-allocated buffers in the `Status` object for efficiency.
+     * Calling `cost()` at any time will not affect the results of subsequent calls to `run()`.
+     *
+     * This method does not consider any exaggeration of the conditional probabilities for iterations at or before `Options::early_exaggeration_iterations`.
+     * That is, all probabilities used here will not be exaggerated, regardless of the iteration.
+     */
+    Float_ cost(const Float_* const Y) {
+        my_tree.set(Y);
+        std::fill(my_neg_f.begin(), my_neg_f.end(), 0);
+        compute_non_edge_forces();
+
+        const Index_ num_obs = num_observations();
+        Float_ total = 0;
+        for (Index_ i = 0; i < num_obs; ++i) {
+            const auto& cur_neighbors = my_neighbors[i];
+            const auto self = Y + sanisizer::product_unsafe<std::size_t>(i, num_dim_);
+
+            for (const auto& x : cur_neighbors) {
+                const auto neighbor = Y + sanisizer::product_unsafe<std::size_t>(x.first, num_dim_);
+                Float_ sqdist = 0;
+                for (std::size_t d = 0; d < num_dim_; ++d) {
+                    const Float_ delta = self[d] - neighbor[d];
+                    sqdist += delta * delta;
+                }
+
+                const Float_ qprob = (static_cast<Float_>(1) / (static_cast<Float_>(1) + sqdist)) / my_non_edge_sum;
+                constexpr Float_ lim = std::numeric_limits<Float_>::min();
+                total += x.second * std::log(std::max(lim, x.second) / std::max(lim, qprob));
+            }
+        }
+
+        return total;
     }
 };
 

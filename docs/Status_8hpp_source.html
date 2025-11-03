@@ -181,7 +181,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <a class="code hl_struct" href="structqdtsne_1_1Options.html">Options</a> my_options;</div>
 <div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordtype">int</span> my_iter = 0;</div>
 <div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keyword">typename</span> <span class="keyword">decltype</span>(I(my_tree))::LeafApproxWorkspace my_leaf_workspace;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keyword">typename</span> I&lt;<span class="keyword">decltype</span>(my_tree)&gt;::LeafApproxWorkspace my_leaf_workspace;</div>
 <div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
 <div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span><span class="keyword">public</span>:</div>
 <div class="foldopen" id="foldopen00109" data-start="{" data-end="}">
@@ -244,7 +244,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span> </div>
 <div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <span class="comment">// Update gains</span></div>
 <div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        <span class="keyword">const</span> <span class="keyword">auto</span> buffer_size = my_gains.size(); </div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        <span class="keywordflow">for</span> (<span class="keyword">decltype</span>(I(buffer_size)) i = 0; i &lt; buffer_size; ++i) {</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        <span class="keywordflow">for</span> (I&lt;<span class="keyword">decltype</span>(buffer_size)&gt; i = 0; i &lt; buffer_size; ++i) {</div>
 <div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>            Float_&amp; g = my_gains[i];</div>
 <div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>            <span class="keyword">constexpr</span> Float_ lower_bound = 0.01;</div>
 <div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>            <span class="keyword">constexpr</span> Float_ to_add = 0.2;</div>
@@ -253,7 +253,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        }</div>
 <div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
 <div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <span class="comment">// Perform gradient update (with momentum and gains)</span></div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <span class="keywordflow">for</span> (<span class="keyword">decltype</span>(I(buffer_size)) i = 0; i &lt; buffer_size; ++i) {</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <span class="keywordflow">for</span> (I&lt;<span class="keyword">decltype</span>(buffer_size)&gt; i = 0; i &lt; buffer_size; ++i) {</div>
 <div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>            my_uY[i] = momentum * my_uY[i] - my_options.<a class="code hl_variable" href="structqdtsne_1_1Options.html#a7f0dcada1addd28c257f0074727f9eae">eta</a> * my_gains[i] * my_dY[i];</div>
 <div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>            Y[i] += my_uY[i];</div>
 <div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        }</div>
@@ -287,7 +287,7 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>        compute_non_edge_forces();</div>
 <div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span> </div>
 <div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>        <span class="keyword">const</span> <span class="keyword">auto</span> buffer_size = my_dY.size();</div>
-<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>        <span class="keywordflow">for</span> (<span class="keyword">decltype</span>(I(buffer_size)) i = 0; i &lt; buffer_size; ++i) {</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>        <span class="keywordflow">for</span> (I&lt;<span class="keyword">decltype</span>(buffer_size)&gt; i = 0; i &lt; buffer_size; ++i) {</div>
 <div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>            my_dY[i] = my_pos_f[i] - (my_neg_f[i] / my_non_edge_sum);</div>
 <div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        }</div>
 <div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    }</div>
@@ -403,7 +403,7 @@ $(function(){ initResizable(false); });
 <div class="ttc" id="aclassqdtsne_1_1Status_html_af67e41bd74305fbeba6f486bda76813f"><div class="ttname"><a href="classqdtsne_1_1Status.html#af67e41bd74305fbeba6f486bda76813f">qdtsne::Status::max_iterations</a></div><div class="ttdeci">int max_iterations() const</div><div class="ttdef"><b>Definition</b> Status.hpp:116</div></div>
 <div class="ttc" id="anamespaceqdtsne_html"><div class="ttname"><a href="namespaceqdtsne.html">qdtsne</a></div><div class="ttdoc">Quick and dirty t-SNE.</div></div>
 <div class="ttc" id="anamespaceqdtsne_html_a06453be45faea3c21c0a66a0564bd084"><div class="ttname"><a href="namespaceqdtsne.html#a06453be45faea3c21c0a66a0564bd084">qdtsne::NeighborList</a></div><div class="ttdeci">knncolle::NeighborList&lt; Index_, Float_ &gt; NeighborList</div><div class="ttdoc">Lists of neighbors for each observation.</div><div class="ttdef"><b>Definition</b> utils.hpp:37</div></div>
-<div class="ttc" id="anamespaceqdtsne_html_a1d3f2500838138042a25dc8081a30e10"><div class="ttname"><a href="namespaceqdtsne.html#a1d3f2500838138042a25dc8081a30e10">qdtsne::parallelize</a></div><div class="ttdeci">void parallelize(const int num_workers, const Task_ num_tasks, Run_ run_task_range)</div><div class="ttdef"><b>Definition</b> utils.hpp:124</div></div>
+<div class="ttc" id="anamespaceqdtsne_html_a1d3f2500838138042a25dc8081a30e10"><div class="ttname"><a href="namespaceqdtsne.html#a1d3f2500838138042a25dc8081a30e10">qdtsne::parallelize</a></div><div class="ttdeci">void parallelize(const int num_workers, const Task_ num_tasks, Run_ run_task_range)</div><div class="ttdef"><b>Definition</b> utils.hpp:128</div></div>
 <div class="ttc" id="astructqdtsne_1_1Options_html"><div class="ttname"><a href="structqdtsne_1_1Options.html">qdtsne::Options</a></div><div class="ttdoc">Options for initialize().</div><div class="ttdef"><b>Definition</b> Options.hpp:14</div></div>
 <div class="ttc" id="astructqdtsne_1_1Options_html_a3202c4085c933353f0fbfb9cc1825f64"><div class="ttname"><a href="structqdtsne_1_1Options.html#a3202c4085c933353f0fbfb9cc1825f64">qdtsne::Options::max_depth</a></div><div class="ttdeci">int max_depth</div><div class="ttdef"><b>Definition</b> Options.hpp:105</div></div>
 <div class="ttc" id="astructqdtsne_1_1Options_html_a355518eea7a6b2a92ba4b9afd6629a07"><div class="ttname"><a href="structqdtsne_1_1Options.html#a355518eea7a6b2a92ba4b9afd6629a07">qdtsne::Options::momentum_switch_iterations</a></div><div class="ttdeci">int momentum_switch_iterations</div><div class="ttdef"><b>Definition</b> Options.hpp:73</div></div>

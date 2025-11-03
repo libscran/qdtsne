@@ -189,6 +189,13 @@
       <anchor>a06453be45faea3c21c0a66a0564bd084</anchor>
       <arglist></arglist>
     </member>
+    <member kind="typedef">
+      <type>std::mt19937_64</type>
+      <name>RngEngine</name>
+      <anchorfile>namespaceqdtsne.html</anchorfile>
+      <anchor>a5dfacfe9c1710fce71aeb4a574c79b8a</anchor>
+      <arglist></arglist>
+    </member>
     <member kind="function">
       <type>Status&lt; num_dim_, Index_, Float_ &gt;</type>
       <name>initialize</name>
@@ -221,15 +228,15 @@
       <type>void</type>
       <name>initialize_random</name>
       <anchorfile>namespaceqdtsne.html</anchorfile>
-      <anchor>aef04d8843d9a4a611868107efc6990a7</anchor>
-      <arglist>(Float_ *const Y, const std::size_t num_points, const unsigned long long seed=42)</arglist>
+      <anchor>aaf5f6db40579ef62c5b1f5f273e42243</anchor>
+      <arglist>(Float_ *const Y, const std::size_t num_points, const typename RngEngine::result_type seed=42)</arglist>
     </member>
     <member kind="function">
       <type>std::vector&lt; Float_ &gt;</type>
       <name>initialize_random</name>
       <anchorfile>namespaceqdtsne.html</anchorfile>
-      <anchor>a320f37a0f1ba77edd186158a967f8a9b</anchor>
-      <arglist>(const std::size_t num_points, const unsigned long long seed=42)</arglist>
+      <anchor>a595627321ef8f7dc7d8b8a4c7ab00b1d</anchor>
+      <arglist>(const std::size_t num_points, const typename RngEngine::result_type seed=42)</arglist>
     </member>
     <member kind="function">
       <type>void</type>

@@ -119,6 +119,8 @@ Typedefs</h2></td></tr>
 <tr class="memitem:a06453be45faea3c21c0a66a0564bd084"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a06453be45faea3c21c0a66a0564bd084">NeighborList</a> = <a class="elRef" href="https://knncolle.github.io/knncolle/namespaceknncolle.html#a97693d779b6041859ffa0ef2d9c1500b">knncolle::NeighborList</a>&lt;Index_, Float_&gt;</td></tr>
 <tr class="memdesc:a06453be45faea3c21c0a66a0564bd084"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lists of neighbors for each observation.  <br /></td></tr>
 <tr class="separator:a06453be45faea3c21c0a66a0564bd084"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5dfacfe9c1710fce71aeb4a574c79b8a" id="r_a5dfacfe9c1710fce71aeb4a574c79b8a"><td class="memItemLeft" align="right" valign="top">typedef std::mt19937_64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5dfacfe9c1710fce71aeb4a574c79b8a">RngEngine</a></td></tr>
+<tr class="separator:a5dfacfe9c1710fce71aeb4a574c79b8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
@@ -134,12 +136,12 @@ Functions</h2></td></tr>
 <tr class="memitem:a74ac9034c403a269170cf638d46b95e5" id="r_a74ac9034c403a269170cf638d46b95e5"><td class="memTemplParams" colspan="2">template&lt;typename Index_  = int&gt; </td></tr>
 <tr class="memitem:a74ac9034c403a269170cf638d46b95e5"><td class="memTemplItemLeft" align="right" valign="top">Index_&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a74ac9034c403a269170cf638d46b95e5">perplexity_to_k</a> (const double perplexity)</td></tr>
 <tr class="separator:a74ac9034c403a269170cf638d46b95e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aef04d8843d9a4a611868107efc6990a7" id="r_aef04d8843d9a4a611868107efc6990a7"><td class="memTemplParams" colspan="2">template&lt;std::size_t num_dim_, typename Float_  = double&gt; </td></tr>
-<tr class="memitem:aef04d8843d9a4a611868107efc6990a7"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aef04d8843d9a4a611868107efc6990a7">initialize_random</a> (Float_ *const Y, const std::size_t num_points, const unsigned long long seed=42)</td></tr>
-<tr class="separator:aef04d8843d9a4a611868107efc6990a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a320f37a0f1ba77edd186158a967f8a9b" id="r_a320f37a0f1ba77edd186158a967f8a9b"><td class="memTemplParams" colspan="2">template&lt;std::size_t num_dim_, typename Float_  = double&gt; </td></tr>
-<tr class="memitem:a320f37a0f1ba77edd186158a967f8a9b"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; Float_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a320f37a0f1ba77edd186158a967f8a9b">initialize_random</a> (const std::size_t num_points, const unsigned long long seed=42)</td></tr>
-<tr class="separator:a320f37a0f1ba77edd186158a967f8a9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf5f6db40579ef62c5b1f5f273e42243" id="r_aaf5f6db40579ef62c5b1f5f273e42243"><td class="memTemplParams" colspan="2">template&lt;std::size_t num_dim_, typename Float_  = double&gt; </td></tr>
+<tr class="memitem:aaf5f6db40579ef62c5b1f5f273e42243"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aaf5f6db40579ef62c5b1f5f273e42243">initialize_random</a> (Float_ *const Y, const std::size_t num_points, const typename RngEngine::result_type seed=42)</td></tr>
+<tr class="separator:aaf5f6db40579ef62c5b1f5f273e42243"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a595627321ef8f7dc7d8b8a4c7ab00b1d" id="r_a595627321ef8f7dc7d8b8a4c7ab00b1d"><td class="memTemplParams" colspan="2">template&lt;std::size_t num_dim_, typename Float_  = double&gt; </td></tr>
+<tr class="memitem:a595627321ef8f7dc7d8b8a4c7ab00b1d"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; Float_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a595627321ef8f7dc7d8b8a4c7ab00b1d">initialize_random</a> (const std::size_t num_points, const typename RngEngine::result_type seed=42)</td></tr>
+<tr class="separator:a595627321ef8f7dc7d8b8a4c7ab00b1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1d3f2500838138042a25dc8081a30e10" id="r_a1d3f2500838138042a25dc8081a30e10"><td class="memTemplParams" colspan="2">template&lt;typename Task_ , class Run_ &gt; </td></tr>
 <tr class="memitem:a1d3f2500838138042a25dc8081a30e10"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a1d3f2500838138042a25dc8081a30e10">parallelize</a> (const int num_workers, const Task_ num_tasks, Run_ run_task_range)</td></tr>
 <tr class="separator:a1d3f2500838138042a25dc8081a30e10"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -170,6 +172,21 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a5dfacfe9c1710fce71aeb4a574c79b8a" name="a5dfacfe9c1710fce71aeb4a574c79b8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5dfacfe9c1710fce71aeb4a574c79b8a">&#9670;&#160;</a></span>RngEngine</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef std::mt19937_64 <a class="el" href="#a5dfacfe9c1710fce71aeb4a574c79b8a">qdtsne::RngEngine</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Class of the random number generator used in <b>qdtsne</b>. </p>
 
 </div>
 </div>
@@ -314,8 +331,8 @@ template&lt;std::size_t num_dim_, typename Index_ , typename Float_ &gt; </div>
 
 </div>
 </div>
-<a id="a320f37a0f1ba77edd186158a967f8a9b" name="a320f37a0f1ba77edd186158a967f8a9b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a320f37a0f1ba77edd186158a967f8a9b">&#9670;&#160;</a></span>initialize_random() <span class="overload">[1/2]</span></h2>
+<a id="a595627321ef8f7dc7d8b8a4c7ab00b1d" name="a595627321ef8f7dc7d8b8a4c7ab00b1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a595627321ef8f7dc7d8b8a4c7ab00b1d">&#9670;&#160;</a></span>initialize_random() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -330,7 +347,7 @@ template&lt;std::size_t num_dim_, typename Float_  = double&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned long long</td>          <td class="paramname"><span class="paramname"><em>seed</em></span><span class="paramdefsep"> = </span><span class="paramdefval">42</span>&#160;)</td>
+          <td class="paramtype">const typename RngEngine::result_type</td>          <td class="paramname"><span class="paramname"><em>seed</em></span><span class="paramdefsep"> = </span><span class="paramdefval">42</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -353,8 +370,8 @@ template&lt;std::size_t num_dim_, typename Float_  = double&gt; </div>
 
 </div>
 </div>
-<a id="aef04d8843d9a4a611868107efc6990a7" name="aef04d8843d9a4a611868107efc6990a7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aef04d8843d9a4a611868107efc6990a7">&#9670;&#160;</a></span>initialize_random() <span class="overload">[2/2]</span></h2>
+<a id="aaf5f6db40579ef62c5b1f5f273e42243" name="aaf5f6db40579ef62c5b1f5f273e42243"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf5f6db40579ef62c5b1f5f273e42243">&#9670;&#160;</a></span>initialize_random() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -374,7 +391,7 @@ template&lt;std::size_t num_dim_, typename Float_  = double&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const unsigned long long</td>          <td class="paramname"><span class="paramname"><em>seed</em></span><span class="paramdefsep"> = </span><span class="paramdefval">42</span>&#160;)</td>
+          <td class="paramtype">const typename RngEngine::result_type</td>          <td class="paramname"><span class="paramname"><em>seed</em></span><span class="paramdefsep"> = </span><span class="paramdefval">42</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">

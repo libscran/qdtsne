@@ -50,6 +50,11 @@ Index_ perplexity_to_k(const double perplexity) {
 }
 
 /**
+ * Class of the random number generator used in **qdtsne**.
+ */
+typedef std::mt19937_64 RngEngine;
+
+/**
  * Initializes the starting locations of each observation in the embedding.
  * We do so using our own implementation of the Box-Muller transform,
  * to avoid problems with differences in the distribution functions across C++ standard library implementations.
@@ -63,9 +68,8 @@ Index_ perplexity_to_k(const double perplexity) {
  * @param seed Seed for the random number generator.
  */
 template<std::size_t num_dim_, typename Float_ = double>
-void initialize_random(Float_* const Y, const std::size_t num_points, const unsigned long long seed = 42) {
-    // The constructor accepts an unsigned type, so any overflow should just wrap around harmlessly. 
-    std::mt19937_64 rng(seed);
+void initialize_random(Float_* const Y, const std::size_t num_points, const typename RngEngine::result_type seed = 42) {
+    RngEngine rng(seed);
 
     // Presumably a size_t can store the product in order to allocate Y in the first place.
     std::size_t num_total = sanisizer::product_unsafe<std::size_t>(num_points, num_dim_);
@@ -76,14 +80,14 @@ void initialize_random(Float_* const Y, const std::size_t num_points, const unsi
 
     // Box-Muller gives us two random values at a time.
     for (std::size_t i = 0; i < num_total; i += 2) {
-        auto paired = aarand::standard_normal<Float_>(rng);
+        const auto paired = aarand::standard_normal<Float_>(rng);
         Y[i] = paired.first;
         Y[i + 1] = paired.second;
     }
 
     if (odd) {
         // Adding the poor extra for odd total lengths.
-        auto paired = aarand::standard_normal<Float_>(rng);
+        const auto paired = aarand::standard_normal<Float_>(rng);
         Y[num_total] = paired.first;
     }
 
@@ -102,7 +106,7 @@ void initialize_random(Float_* const Y, const std::size_t num_points, const unsi
  * @return A vector of length `num_points * num_dim_` containing random draws from a standard normal distribution. 
  */
 template<std::size_t num_dim_, typename Float_ = double>
-std::vector<Float_> initialize_random(const std::size_t num_points, const unsigned long long seed = 42) {
+std::vector<Float_> initialize_random(const std::size_t num_points, const typename RngEngine::result_type seed = 42) {
     std::vector<Float_> Y(sanisizer::product<typename std::vector<Float_>::size_type>(num_points, num_dim_));
     initialize_random<num_dim_>(Y.data(), num_points, seed);
     return Y;

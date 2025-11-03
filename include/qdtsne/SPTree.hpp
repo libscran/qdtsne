@@ -55,7 +55,7 @@ public:
     SPTree(const SPTreeIndex npts, const int maxdepth) :
         my_npts(npts),
         my_maxdepth(maxdepth),
-        my_locations(sanisizer::cast<decltype(I(my_locations.size()))>(my_npts))
+        my_locations(sanisizer::cast<I<decltype(my_locations.size())> >(my_npts))
     {
         my_store.reserve(get_max_nnodes(my_npts, my_maxdepth));
         sanisizer::resize(my_first_assignment, my_npts);
@@ -66,7 +66,7 @@ public:
     static SPTreeIndex get_max_nnodes(const SPTreeIndex npts, const int maxdepth) {
         // Basically return 'min(nchildren^maxdepth, npts)', to avoid reserving more space than is required for the leaf nodes.
         SPTreeIndex nleafs = 1;
-        for (decltype(I(maxdepth)) d = 0; d < maxdepth; ++d) {
+        for (I<decltype(maxdepth)> d = 0; d < maxdepth; ++d) {
             if (nleafs > npts / Node::nchildren) {
                 nleafs = npts;
                 break;
@@ -253,7 +253,7 @@ public:
 
         // Populating the on-tree locations for each node.
         const SPTreeIndex nnodes = my_store.size();
-        for (decltype(I(nnodes)) n = 0; n < nnodes; ++n) {
+        for (I<decltype(nnodes)> n = 0; n < nnodes; ++n) {
             const auto& node = my_store[n];
             if (node.is_leaf) {
                 my_locations[node.index] = n;
@@ -419,7 +419,7 @@ public:
         };
 
         if (num_threads == 1) {
-            for (decltype(I(nnodes)) n = 0; n < nnodes; ++n) {
+            for (I<decltype(nnodes)> n = 0; n < nnodes; ++n) {
                 if (my_store[n].is_leaf) {
                     process_leaf_node(n);
                 }
@@ -431,7 +431,7 @@ public:
             // going to have to process all the leaf nodes.
             workspace.leaf_indices.clear();
             workspace.leaf_indices.reserve(nnodes);
-            for (decltype(I(nnodes)) n = 0; n < nnodes; ++n) {
+            for (I<decltype(nnodes)> n = 0; n < nnodes; ++n) {
                 if (my_store[n].is_leaf) {
                     workspace.leaf_indices.push_back(n);
                 }

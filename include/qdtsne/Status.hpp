@@ -100,7 +100,7 @@ private:
     Options my_options;
     int my_iter = 0;
 
-    typename decltype(I(my_tree))::LeafApproxWorkspace my_leaf_workspace;
+    typename I<decltype(my_tree)>::LeafApproxWorkspace my_leaf_workspace;
 
 public:
     /**
@@ -188,7 +188,7 @@ private:
 
         // Update gains
         const auto buffer_size = my_gains.size(); 
-        for (decltype(I(buffer_size)) i = 0; i < buffer_size; ++i) {
+        for (I<decltype(buffer_size)> i = 0; i < buffer_size; ++i) {
             Float_& g = my_gains[i];
             constexpr Float_ lower_bound = 0.01;
             constexpr Float_ to_add = 0.2;
@@ -197,7 +197,7 @@ private:
         }
 
         // Perform gradient update (with momentum and gains)
-        for (decltype(I(buffer_size)) i = 0; i < buffer_size; ++i) {
+        for (I<decltype(buffer_size)> i = 0; i < buffer_size; ++i) {
             my_uY[i] = momentum * my_uY[i] - my_options.eta * my_gains[i] * my_dY[i];
             Y[i] += my_uY[i];
         }
@@ -231,7 +231,7 @@ private:
         compute_non_edge_forces();
 
         const auto buffer_size = my_dY.size();
-        for (decltype(I(buffer_size)) i = 0; i < buffer_size; ++i) {
+        for (I<decltype(buffer_size)> i = 0; i < buffer_size; ++i) {
             my_dY[i] = my_pos_f[i] - (my_neg_f[i] / my_non_edge_sum);
         }
     }

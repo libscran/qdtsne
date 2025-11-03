@@ -139,9 +139,7 @@ void parallelize(const int num_workers, const Task_ num_tasks, Run_ run_task_ran
  * @cond
  */
 template<typename Input_>
-std::remove_cv_t<std::remove_reference_t<Input_> > I(const Input_ x) {
-    return x;
-}
+using I = typename std::remove_cv<typename std::remove_reference<Input_>::type>::type;
 /**
  * @endcond
  */

@@ -72,7 +72,7 @@ void compute_gaussian_perplexity(NeighborList<Index_, Float_>& neighbors, const 
             const Float_ first = current[0].second;
             const Float_ first2 = first * first;
 
-            for (decltype(I(K)) m = 1; m < K; ++m) {
+            for (I<decltype(K)> m = 1; m < K; ++m) {
                 const Float_ dist = current[m].second;
                 const Float_ squared_delta_dist_raw = dist * dist - first2; 
                 squared_delta_dist[m] = squared_delta_dist_raw;
@@ -109,7 +109,7 @@ void compute_gaussian_perplexity(NeighborList<Index_, Float_>& neighbors, const 
                 // We skip the first value because we know that squared_delta_dist[0] = 0
                 // (as we subtracted 'first') and thus prob_numerator[0] = 1. We repeat this for
                 // all iterations from [1, K), e.g., squared_delta_dist, quad_delta_dist.
-                for (decltype(I(K)) m = 1; m < K; ++m) {
+                for (I<decltype(K)> m = 1; m < K; ++m) {
                     prob_numerator[m] = std::exp(-beta * squared_delta_dist[m]); 
                 }
 
@@ -167,7 +167,7 @@ void compute_gaussian_perplexity(NeighborList<Index_, Float_>& neighbors, const 
 
                 if (std::isinf(beta)) {
                     // Avoid propagation of NaNs via Inf * 0. 
-                    for (decltype(I(K)) m = 1; m < K; ++m) {
+                    for (I<decltype(K)> m = 1; m < K; ++m) {
                         prob_numerator[m] = (squared_delta_dist[m] == 0);
                     }
                     sum_P = std::accumulate(prob_numerator.begin(), prob_numerator.end(), static_cast<Float_>(0));
@@ -175,7 +175,7 @@ void compute_gaussian_perplexity(NeighborList<Index_, Float_>& neighbors, const 
                 }
             }
 
-            for (decltype(I(K)) m = 0; m < K; ++m) {
+            for (I<decltype(K)> m = 0; m < K; ++m) {
                 current[m].second = prob_numerator[m] / sum_P;
             }
         }

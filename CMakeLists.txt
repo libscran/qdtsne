@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 project(qdtsne
-    VERSION 3.0.1
+    VERSION 3.0.2
     DESCRIPTION "Quick and dirty t-SNE implementation in C++"
     LANGUAGES CXX)
 
@@ -22,10 +22,10 @@ option(QDTSNE_FETCH_EXTERN "Automatically fetch qdtsne's external dependencies."
 if(QDTSNE_FETCH_EXTERN)
     add_subdirectory(extern)
 else()
-    find_package(knncolle_knncolle 3.0.0 CONFIG REQUIRED)
+    find_package(knncolle_knncolle 3.1.0 CONFIG REQUIRED)
     find_package(ltla_aarand 1.0.0 CONFIG REQUIRED)
-    find_package(ltla_subpar 0.4.0 CONFIG REQUIRED)
-    find_package(ltla_sanisizer 0.1.3 CONFIG REQUIRED)
+    find_package(ltla_subpar 0.5.0 CONFIG REQUIRED)
+    find_package(ltla_sanisizer 0.2.0 CONFIG REQUIRED)
 endif()
 
 target_link_libraries(qdtsne INTERFACE knncolle::knncolle ltla::aarand ltla::subpar ltla::sanisizer)

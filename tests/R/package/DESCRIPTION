@@ -13,5 +13,5 @@ Suggests:
     BiocNeighbors
 SystemRequirements: C++17
 StagedInstall: no
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Encoding: UTF-8

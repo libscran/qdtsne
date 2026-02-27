@@ -1,5 +1,11 @@
 var searchData=
 [
-  ['knncolle_0',['knncolle',['https://knncolle.github.io/knncolle/namespaceknncolle.html',1,'']]],
-  ['knncolle_2ehpp_1',['knncolle.hpp',['https://knncolle.github.io/knncolle/knncolle_8hpp.html',1,'']]]
+  ['in_20c_0',['Quick and dirty t-SNE in C++',['../index.html',1,'']]],
+  ['infer_5fperplexity_1',['infer_perplexity',['../structqdtsne_1_1Options.html#a824d9599d7ea23dcfdffc871afca0d49',1,'qdtsne::Options']]],
+  ['initialize_2',['initialize',['https://knncolle.github.io/knncolle/classknncolle_1_1Prebuilt.html#aacc8819b7962ce27294cf0d42f6c6e68',1,'knncolle::Prebuilt::initialize()'],['../namespaceqdtsne.html#ac7386895ff09abfb4c792a0ffdd9e170',1,'qdtsne::initialize(NeighborList&lt; Index_, Float_ &gt; neighbors, const Options &amp;options)'],['../namespaceqdtsne.html#ae63cd82791c5b13f110050b28d3fffbd',1,'qdtsne::initialize(const knncolle::Prebuilt&lt; Index_, Input_, Float_ &gt; &amp;prebuilt, const Options &amp;options)'],['../namespaceqdtsne.html#ac2bbf464d20eaeefd7df7ddc881affaa',1,'qdtsne::initialize(const std::size_t data_dim, const Index_ num_obs, const Float_ *const data, const knncolle::Builder&lt; Index_, Float_, Float_, Matrix_ &gt; &amp;builder, const Options &amp;options)']]],
+  ['initialize_2ehpp_3',['initialize.hpp',['../initialize_8hpp.html',1,'']]],
+  ['initialize_5fknown_4',['initialize_known',['https://knncolle.github.io/knncolle/classknncolle_1_1Prebuilt.html#a49d2dbfc4a463c396842875f26746ac4',1,'knncolle::Prebuilt']]],
+  ['initialize_5frandom_5',['initialize_random',['../namespaceqdtsne.html#aaf5f6db40579ef62c5b1f5f273e42243',1,'qdtsne::initialize_random(Float_ *const Y, const std::size_t num_points, const typename RngEngine::result_type seed=42)'],['../namespaceqdtsne.html#a595627321ef8f7dc7d8b8a4c7ab00b1d',1,'qdtsne::initialize_random(const std::size_t num_points, const typename RngEngine::result_type seed=42)']]],
+  ['is_5ffull_6',['is_full',['https://knncolle.github.io/knncolle/classknncolle_1_1NeighborQueue.html#ae459f76b2e81b65b7f437e01eea1689b',1,'knncolle::NeighborQueue']]],
+  ['iteration_7',['iteration',['../classqdtsne_1_1Status.html#a2e5fbb69b89a43b2deea5c46374b642b',1,'qdtsne::Status']]]
 ];

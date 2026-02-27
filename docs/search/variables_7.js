@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['theta_0',['theta',['../structqdtsne_1_1Options.html#ac69fb8679d8fe13ee31e5e06d7425cc6',1,'qdtsne::Options']]]
+  ['seed_0',['seed',['https://knncolle.github.io/knncolle/structknncolle_1_1VptreeOptions.html#aa55f3dff5e333fe1d34dcfd98fe78aed',1,'knncolle::VptreeOptions']]]
 ];

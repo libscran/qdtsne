@@ -1,7 +1,8 @@
 var searchData=
 [
-  ['l2normalizedbuilder_0',['L2NormalizedBuilder',['https://knncolle.github.io/knncolle/classknncolle_1_1L2NormalizedBuilder.html#a387250ea0ae7654b186545814cd51da3',1,'knncolle::L2NormalizedBuilder']]],
-  ['l2normalizedprebuilt_1',['L2NormalizedPrebuilt',['https://knncolle.github.io/knncolle/classknncolle_1_1L2NormalizedPrebuilt.html#a8e358a3bffddb15ea58428af9e475db0',1,'knncolle::L2NormalizedPrebuilt']]],
-  ['l2normalizedsearcher_2',['L2NormalizedSearcher',['https://knncolle.github.io/knncolle/classknncolle_1_1L2NormalizedSearcher.html#a5904180535cf1b42a6e986080d633355',1,'knncolle::L2NormalizedSearcher']]],
-  ['limit_3',['limit',['https://knncolle.github.io/knncolle/classknncolle_1_1NeighborQueue.html#ade4febddacc0e5725caa3c683486dcb0',1,'knncolle::NeighborQueue']]]
+  ['initialize_0',['initialize',['https://knncolle.github.io/knncolle/classknncolle_1_1Prebuilt.html#aacc8819b7962ce27294cf0d42f6c6e68',1,'knncolle::Prebuilt::initialize()'],['../namespaceqdtsne.html#ac7386895ff09abfb4c792a0ffdd9e170',1,'qdtsne::initialize(NeighborList&lt; Index_, Float_ &gt; neighbors, const Options &amp;options)'],['../namespaceqdtsne.html#ae63cd82791c5b13f110050b28d3fffbd',1,'qdtsne::initialize(const knncolle::Prebuilt&lt; Index_, Input_, Float_ &gt; &amp;prebuilt, const Options &amp;options)'],['../namespaceqdtsne.html#ac2bbf464d20eaeefd7df7ddc881affaa',1,'qdtsne::initialize(const std::size_t data_dim, const Index_ num_obs, const Float_ *const data, const knncolle::Builder&lt; Index_, Float_, Float_, Matrix_ &gt; &amp;builder, const Options &amp;options)']]],
+  ['initialize_5fknown_1',['initialize_known',['https://knncolle.github.io/knncolle/classknncolle_1_1Prebuilt.html#a49d2dbfc4a463c396842875f26746ac4',1,'knncolle::Prebuilt']]],
+  ['initialize_5frandom_2',['initialize_random',['../namespaceqdtsne.html#aaf5f6db40579ef62c5b1f5f273e42243',1,'qdtsne::initialize_random(Float_ *const Y, const std::size_t num_points, const typename RngEngine::result_type seed=42)'],['../namespaceqdtsne.html#a595627321ef8f7dc7d8b8a4c7ab00b1d',1,'qdtsne::initialize_random(const std::size_t num_points, const typename RngEngine::result_type seed=42)']]],
+  ['is_5ffull_3',['is_full',['https://knncolle.github.io/knncolle/classknncolle_1_1NeighborQueue.html#ae459f76b2e81b65b7f437e01eea1689b',1,'knncolle::NeighborQueue']]],
+  ['iteration_4',['iteration',['../classqdtsne_1_1Status.html#a2e5fbb69b89a43b2deea5c46374b642b',1,'qdtsne::Status']]]
 ];

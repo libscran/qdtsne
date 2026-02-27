@@ -142,9 +142,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a595627321ef8f7dc7d8b8a4c7ab00b1d" id="r_a595627321ef8f7dc7d8b8a4c7ab00b1d"><td class="memTemplParams" colspan="2">template&lt;std::size_t num_dim_, typename Float_  = double&gt; </td></tr>
 <tr class="memitem:a595627321ef8f7dc7d8b8a4c7ab00b1d"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; Float_ &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a595627321ef8f7dc7d8b8a4c7ab00b1d">initialize_random</a> (const std::size_t num_points, const typename RngEngine::result_type seed=42)</td></tr>
 <tr class="separator:a595627321ef8f7dc7d8b8a4c7ab00b1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d3f2500838138042a25dc8081a30e10" id="r_a1d3f2500838138042a25dc8081a30e10"><td class="memTemplParams" colspan="2">template&lt;typename Task_ , class Run_ &gt; </td></tr>
-<tr class="memitem:a1d3f2500838138042a25dc8081a30e10"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a1d3f2500838138042a25dc8081a30e10">parallelize</a> (const int num_workers, const Task_ num_tasks, Run_ run_task_range)</td></tr>
-<tr class="separator:a1d3f2500838138042a25dc8081a30e10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab45a7fbdac7a5bb6cf076acf0e4830e5" id="r_ab45a7fbdac7a5bb6cf076acf0e4830e5"><td class="memTemplParams" colspan="2">template&lt;typename Task_ , class Run_ &gt; </td></tr>
+<tr class="memitem:ab45a7fbdac7a5bb6cf076acf0e4830e5"><td class="memTemplItemLeft" align="right" valign="top">int&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ab45a7fbdac7a5bb6cf076acf0e4830e5">parallelize</a> (const int num_workers, const Task_ num_tasks, Run_ run_task_range)</td></tr>
+<tr class="separator:ab45a7fbdac7a5bb6cf076acf0e4830e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Quick and dirty t-SNE. </p>
@@ -414,8 +414,8 @@ template&lt;std::size_t num_dim_, typename Float_  = double&gt; </div>
 
 </div>
 </div>
-<a id="a1d3f2500838138042a25dc8081a30e10" name="a1d3f2500838138042a25dc8081a30e10"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1d3f2500838138042a25dc8081a30e10">&#9670;&#160;</a></span>parallelize()</h2>
+<a id="ab45a7fbdac7a5bb6cf076acf0e4830e5" name="ab45a7fbdac7a5bb6cf076acf0e4830e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab45a7fbdac7a5bb6cf076acf0e4830e5">&#9670;&#160;</a></span>parallelize()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -423,7 +423,7 @@ template&lt;std::size_t num_dim_, typename Float_  = double&gt; </div>
 template&lt;typename Task_ , class Run_ &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void qdtsne::parallelize </td>
+          <td class="memname">int qdtsne::parallelize </td>
           <td>(</td>
           <td class="paramtype">const int</td>          <td class="paramname"><span class="paramname"><em>num_workers</em></span>, </td>
         </tr>
@@ -448,13 +448,14 @@ template&lt;typename Task_ , class Run_ &gt; </div>
 </dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">num_workers</td><td>Number of workers. </td></tr>
-    <tr><td class="paramname">num_tasks</td><td>Number of tasks. </td></tr>
-    <tr><td class="paramname">run_task_range</td><td>Function to iterate over a range of tasks within a worker.</td></tr>
+    <tr><td class="paramname">num_workers</td><td>Number of workers. This should be positive. </td></tr>
+    <tr><td class="paramname">num_tasks</td><td>Number of tasks. This should be non-negative. </td></tr>
+    <tr><td class="paramname">run_task_range</td><td>Function to iterate over a range of tasks within a worker, see the argument of the same name in <code><a class="elRef" href="https://ltla.github.io/subpar/namespacesubpar.html#aa2ea2594f895ea5837bd3df8ad31af14">subpar::parallelize_range()</a></code>.</td></tr>
   </table>
   </dd>
 </dl>
-<p>By default, this is an alias to <code><a class="elRef" href="https://ltla.github.io/subpar/namespacesubpar.html#a9c64cc17f4f8d1fadbba6d25053a8dbe">subpar::parallelize_range()</a></code>. However, if the <code>QDTSNE_CUSTOM_PARALLEL</code> function-like macro is defined, it is called instead. Any user-defined macro should accept the same arguments as <code><a class="elRef" href="https://ltla.github.io/subpar/namespacesubpar.html#a9c64cc17f4f8d1fadbba6d25053a8dbe">subpar::parallelize_range()</a></code>. </p>
+<p>return Number of used workers. This will be no greater than <code>num_workers</code>.</p>
+<p>By default, this is an alias to <code><a class="elRef" href="https://ltla.github.io/subpar/namespacesubpar.html#aa2ea2594f895ea5837bd3df8ad31af14">subpar::parallelize_range()</a></code>. Its purpose is to enable <b>qdtsne</b>-specific customization to the parallelization scheme without affecting other libraries that use <b>subpar</b>. If the <code>QDTSNE_CUSTOM_PARALLEL</code> macro is defined, it will be used instead of <code><a class="elRef" href="https://ltla.github.io/subpar/namespacesubpar.html#aa2ea2594f895ea5837bd3df8ad31af14">subpar::parallelize_range()</a></code> whenever <code><a class="el" href="#ab45a7fbdac7a5bb6cf076acf0e4830e5">parallelize()</a></code> is called. Any user-defined macro should follow the same requirements as the <code>SUBPAR_CUSTOM_PARALLELIZE_RANGE</code> override for <code><a class="elRef" href="https://ltla.github.io/subpar/namespacesubpar.html#aa2ea2594f895ea5837bd3df8ad31af14">subpar::parallelize_range()</a></code>. </p>
 
 </div>
 </div>

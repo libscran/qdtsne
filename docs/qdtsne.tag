@@ -239,10 +239,10 @@
       <arglist>(const std::size_t num_points, const typename RngEngine::result_type seed=42)</arglist>
     </member>
     <member kind="function">
-      <type>void</type>
+      <type>int</type>
       <name>parallelize</name>
       <anchorfile>namespaceqdtsne.html</anchorfile>
-      <anchor>a1d3f2500838138042a25dc8081a30e10</anchor>
+      <anchor>ab45a7fbdac7a5bb6cf076acf0e4830e5</anchor>
       <arglist>(const int num_workers, const Task_ num_tasks, Run_ run_task_range)</arglist>
     </member>
   </compound>

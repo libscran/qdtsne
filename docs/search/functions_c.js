@@ -1,4 +1,10 @@
 var searchData=
 [
-  ['vptreebuilder_0',['VptreeBuilder',['https://knncolle.github.io/knncolle/classknncolle_1_1VptreeBuilder.html#a13f00af67d227d117fa4b9910861a438',1,'knncolle::VptreeBuilder']]]
+  ['raw_0',['raw',['https://knncolle.github.io/knncolle/classknncolle_1_1DistanceMetric.html#a8ce1cf96534fffbc989ae0141cf74ef4',1,'knncolle::DistanceMetric']]],
+  ['register_5fload_5feuclidean_5fdistance_1',['register_load_euclidean_distance',['https://knncolle.github.io/knncolle/namespaceknncolle.html#a72ca6694c66f6c7107baffb3b8614d2e',1,'knncolle']]],
+  ['register_5fload_5fmanhattan_5fdistance_2',['register_load_manhattan_distance',['https://knncolle.github.io/knncolle/namespaceknncolle.html#a9e446385ed1746050c0bd2450a8e7298',1,'knncolle']]],
+  ['report_3',['report',['https://knncolle.github.io/knncolle/classknncolle_1_1NeighborQueue.html#a611b8233976b0b5f930deac74c2b68c3',1,'knncolle::NeighborQueue::report(std::vector&lt; Index_ &gt; *output_indices, std::vector&lt; Distance_ &gt; *output_distances, Index_ self)'],['https://knncolle.github.io/knncolle/classknncolle_1_1NeighborQueue.html#a8eae6afd23a9b4a3106b64f16e78c852',1,'knncolle::NeighborQueue::report(std::vector&lt; Index_ &gt; *output_indices, std::vector&lt; Distance_ &gt; *output_distances)']]],
+  ['report_5fall_5fneighbors_4',['report_all_neighbors',['https://knncolle.github.io/knncolle/namespaceknncolle.html#af24a311775039654985b447c85d03782',1,'knncolle::report_all_neighbors(std::vector&lt; std::pair&lt; Distance_, Index_ &gt; &gt; &amp;all_neighbors, std::vector&lt; Index_ &gt; *output_indices, std::vector&lt; Distance_ &gt; *output_distances, Index_ self)'],['https://knncolle.github.io/knncolle/namespaceknncolle.html#ab42206db56aa02366c741249e609465c',1,'knncolle::report_all_neighbors(std::vector&lt; std::pair&lt; Distance_, Index_ &gt; &gt; &amp;all_neighbors, std::vector&lt; Index_ &gt; *output_indices, std::vector&lt; Distance_ &gt; *output_distances)']]],
+  ['reset_5',['reset',['https://knncolle.github.io/knncolle/classknncolle_1_1NeighborQueue.html#ae75692355310f09d163bf20b19b3ef36',1,'knncolle::NeighborQueue']]],
+  ['run_6',['run',['../classqdtsne_1_1Status.html#a04b541369258a61abd5bef8d89dc5d7f',1,'qdtsne::Status::run(Float_ *const Y, const int limit)'],['../classqdtsne_1_1Status.html#aee7b3da21eb4af05d26e5acff71cbd7b',1,'qdtsne::Status::run(Float_ *const Y)']]]
 ];

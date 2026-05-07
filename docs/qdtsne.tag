@@ -51,10 +51,10 @@
       <arglist></arglist>
     </member>
     <member kind="variable">
-      <type>bool</type>
-      <name>infer_perplexity</name>
+      <type>PrecomputedPerplexityPolicy</type>
+      <name>precomputed_perplexity_policy</name>
       <anchorfile>structqdtsne_1_1Options.html</anchorfile>
-      <anchor>a824d9599d7ea23dcfdffc871afca0d49</anchor>
+      <anchor>a1a5f6b66bf8c3260f0667938d855c36f</anchor>
       <arglist></arglist>
     </member>
     <member kind="variable">
@@ -195,6 +195,16 @@
       <anchorfile>namespaceqdtsne.html</anchorfile>
       <anchor>a5dfacfe9c1710fce71aeb4a574c79b8a</anchor>
       <arglist></arglist>
+    </member>
+    <member kind="enumeration">
+      <type></type>
+      <name>PrecomputedPerplexityPolicy</name>
+      <anchorfile>namespaceqdtsne.html</anchorfile>
+      <anchor>aa99bf3bd9d1f134bfe02efb734c8370d</anchor>
+      <arglist></arglist>
+      <enumvalue file="namespaceqdtsne.html" anchor="aa99bf3bd9d1f134bfe02efb734c8370da81c13f561c873f6f6ad16645210fa932">INFER</enumvalue>
+      <enumvalue file="namespaceqdtsne.html" anchor="aa99bf3bd9d1f134bfe02efb734c8370da8c46d8d9d3402788403e2f6911153089">CHECK</enumvalue>
+      <enumvalue file="namespaceqdtsne.html" anchor="aa99bf3bd9d1f134bfe02efb734c8370daf0bbe167a0195d9e9e25a922a8588ed9">ASIS</enumvalue>
     </member>
     <member kind="function">
       <type>Status&lt; num_dim_, Index_, Float_ &gt;</type>

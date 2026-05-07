@@ -113,8 +113,8 @@ $(function(){ initResizable(false); });
 Public Attributes</h2></td></tr>
 <tr class="memitem:ae485ba64f2ff5379f09a75fb89447628" id="r_ae485ba64f2ff5379f09a75fb89447628"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae485ba64f2ff5379f09a75fb89447628">perplexity</a> = 30</td></tr>
 <tr class="separator:ae485ba64f2ff5379f09a75fb89447628"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a824d9599d7ea23dcfdffc871afca0d49" id="r_a824d9599d7ea23dcfdffc871afca0d49"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a824d9599d7ea23dcfdffc871afca0d49">infer_perplexity</a> = true</td></tr>
-<tr class="separator:a824d9599d7ea23dcfdffc871afca0d49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a5f6b66bf8c3260f0667938d855c36f" id="r_a1a5f6b66bf8c3260f0667938d855c36f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceqdtsne.html#aa99bf3bd9d1f134bfe02efb734c8370d">PrecomputedPerplexityPolicy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1a5f6b66bf8c3260f0667938d855c36f">precomputed_perplexity_policy</a> = PrecomputedPerplexityPolicy::INFER</td></tr>
+<tr class="separator:a1a5f6b66bf8c3260f0667938d855c36f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac69fb8679d8fe13ee31e5e06d7425cc6" id="r_ac69fb8679d8fe13ee31e5e06d7425cc6"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac69fb8679d8fe13ee31e5e06d7425cc6">theta</a> = 1</td></tr>
 <tr class="separator:ac69fb8679d8fe13ee31e5e06d7425cc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5caa0c9124703fd6220dfb51e0aa10e1" id="r_a5caa0c9124703fd6220dfb51e0aa10e1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5caa0c9124703fd6220dfb51e0aa10e1">max_iterations</a> = 1000</td></tr>
@@ -202,21 +202,6 @@ double start_momentum = 0.5;
 
 /**
    Final momentum in \)[0, 1)$f, to be used in the iterations after the momentum switch at <code><a class="el" href="#a355518eea7a6b2a92ba4b9afd6629a07">Options::momentum_switch_iterations</a></code>. This is usually higher than <code>Options::start_momentum</code> to accelerate convergence to the local minima once the observations are moderately well-organized. </p>
-
-</div>
-</div>
-<a id="a824d9599d7ea23dcfdffc871afca0d49" name="a824d9599d7ea23dcfdffc871afca0d49"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a824d9599d7ea23dcfdffc871afca0d49">&#9670;&#160;</a></span>infer_perplexity</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool qdtsne::Options::infer_perplexity = true</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Whether to infer the perplexity in the <code><a class="el" href="namespaceqdtsne.html#ac7386895ff09abfb4c792a0ffdd9e170">initialize()</a></code> overload that accepts a <code>NeighborList</code> object. If true, the value in <code><a class="el" href="#ae485ba64f2ff5379f09a75fb89447628">Options::perplexity</a></code> is ignored. The perplexity is instead defined from the <code>NeighborList</code> as the number of nearest neighbors for the first observation divided by 3. (It is assumed that all observations have the same number of neighbors.) This effectively performs the inverse calculation of <code><a class="el" href="namespaceqdtsne.html#a74ac9034c403a269170cf638d46b95e5">perplexity_to_k()</a></code>. </p>
 
 </div>
 </div>
@@ -311,7 +296,22 @@ double start_momentum = 0.5;
       </table>
 </div><div class="memdoc">
 <p>Perplexity value that determines how distances between neighbors are converted into conditional probabilities. Increasing the perplexity will reduce the changes in probability with respect to distance (i.e., greater entropy). In practice, this controls the balance between local and global structure in the final embedding. Higher perplexities will focus on global structure at the cost of increased runtime and decreased local resolution.</p>
-<p>This option affects all <code><a class="el" href="namespaceqdtsne.html#ac7386895ff09abfb4c792a0ffdd9e170">initialize()</a></code> functions except for the overload where precomputed neighbor search results are supplied <em>and</em> <code><a class="el" href="#a824d9599d7ea23dcfdffc871afca0d49">Options::infer_perplexity</a> = true</code>. In that scenarios, the perplexity is inferred from the number of neighbors in the precomputed search results and this setting is ignored. </p>
+<p>This option affects all <code><a class="el" href="namespaceqdtsne.html#ac7386895ff09abfb4c792a0ffdd9e170">initialize()</a></code> functions except for the overload where precomputed neighbor search results are supplied <em>and</em> <code>Options::infer_perplexity = true</code>. In that scenarios, the perplexity is inferred from the number of neighbors in the precomputed search results and this setting is ignored. </p>
+
+</div>
+</div>
+<a id="a1a5f6b66bf8c3260f0667938d855c36f" name="a1a5f6b66bf8c3260f0667938d855c36f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a5f6b66bf8c3260f0667938d855c36f">&#9670;&#160;</a></span>precomputed_perplexity_policy</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceqdtsne.html#aa99bf3bd9d1f134bfe02efb734c8370d">PrecomputedPerplexityPolicy</a> qdtsne::Options::precomputed_perplexity_policy = PrecomputedPerplexityPolicy::INFER</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>How to choose the perplexity in the <code><a class="el" href="namespaceqdtsne.html#ac7386895ff09abfb4c792a0ffdd9e170">initialize()</a></code> overload that accepts a precomputed <code>NeighborList</code> object. This may or may not cause the value in <code><a class="el" href="#ae485ba64f2ff5379f09a75fb89447628">Options::perplexity</a></code> to be ignored. </p>
 
 </div>
 </div>

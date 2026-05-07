@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['max_5fdepth_0',['max_depth',['../structqdtsne_1_1Options.html#a3202c4085c933353f0fbfb9cc1825f64',1,'qdtsne::Options']]],
-  ['max_5fiterations_1',['max_iterations',['../structqdtsne_1_1Options.html#a5caa0c9124703fd6220dfb51e0aa10e1',1,'qdtsne::Options']]],
-  ['momentum_5fswitch_5fiterations_2',['momentum_switch_iterations',['../structqdtsne_1_1Options.html#a355518eea7a6b2a92ba4b9afd6629a07',1,'qdtsne::Options']]]
+  ['normalized_0',['normalized',['https://knncolle.github.io/knncolle/structknncolle_1_1L2NormalizedPrebuiltTypes.html#a59f1b5b8747665021453b9d1c548b86b',1,'knncolle::L2NormalizedPrebuiltTypes']]],
+  ['num_5fthreads_1',['num_threads',['../structqdtsne_1_1Options.html#abf708aa5e462b8b3038fcaef2711cbb0',1,'qdtsne::Options']]]
 ];

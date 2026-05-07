@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['perplexity_0',['perplexity',['../structqdtsne_1_1Options.html#ae485ba64f2ff5379f09a75fb89447628',1,'qdtsne::Options']]]
+  ['seed_0',['seed',['https://knncolle.github.io/knncolle/structknncolle_1_1VptreeOptions.html#aa55f3dff5e333fe1d34dcfd98fe78aed',1,'knncolle::VptreeOptions']]]
 ];

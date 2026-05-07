@@ -96,6 +96,7 @@ $(function(){ initResizable(false); });
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
+<a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">qdtsne Namespace Reference</div></div>
 </div><!--header-->
@@ -121,6 +122,14 @@ Typedefs</h2></td></tr>
 <tr class="separator:a06453be45faea3c21c0a66a0564bd084"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5dfacfe9c1710fce71aeb4a574c79b8a" id="r_a5dfacfe9c1710fce71aeb4a574c79b8a"><td class="memItemLeft" align="right" valign="top">typedef std::mt19937_64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5dfacfe9c1710fce71aeb4a574c79b8a">RngEngine</a></td></tr>
 <tr class="separator:a5dfacfe9c1710fce71aeb4a574c79b8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:aa99bf3bd9d1f134bfe02efb734c8370d" id="r_aa99bf3bd9d1f134bfe02efb734c8370d"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa99bf3bd9d1f134bfe02efb734c8370d">PrecomputedPerplexityPolicy</a> : char { <b>INFER</b>
+, <b>CHECK</b>
+, <b>ASIS</b>
+ }</td></tr>
+<tr class="separator:aa99bf3bd9d1f134bfe02efb734c8370d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
@@ -190,6 +199,36 @@ template&lt;typename Index_ , typename Float_ &gt; </div>
 
 </div>
 </div>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="aa99bf3bd9d1f134bfe02efb734c8370d" name="aa99bf3bd9d1f134bfe02efb734c8370d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa99bf3bd9d1f134bfe02efb734c8370d">&#9670;&#160;</a></span>PrecomputedPerplexityPolicy</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="#aa99bf3bd9d1f134bfe02efb734c8370d">qdtsne::PrecomputedPerplexityPolicy</a> : char</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Policy for choosing the perplexity in the <code><a class="el" href="#ac7386895ff09abfb4c792a0ffdd9e170">initialize()</a></code> overload that accepts a <code>NeighborList</code> object.</p>
+<ul>
+<li><code>INFER</code>: the perplexity is defined from the number of neighbors, inverting the logic in <code><a class="el" href="#a74ac9034c403a269170cf638d46b95e5">perplexity_to_k()</a></code> (i.e., the number of nearest neighbors divided by 3). The value in <code><a class="el" href="structqdtsne_1_1Options.html#ae485ba64f2ff5379f09a75fb89447628">Options::perplexity</a></code> is ignored.</li>
+<li><code>CHECK</code>: the expected number of neighbors is defined from <code><a class="el" href="structqdtsne_1_1Options.html#ae485ba64f2ff5379f09a75fb89447628">Options::perplexity</a></code> using <code><a class="el" href="#a74ac9034c403a269170cf638d46b95e5">perplexity_to_k()</a></code>. If this is not equal to the observed number of neighbors in the <code>NeighborList</code>, an error is thrown.</li>
+<li><code>ASIS</code>: the perplexity is defined as <code><a class="el" href="structqdtsne_1_1Options.html#ae485ba64f2ff5379f09a75fb89447628">Options::perplexity</a></code> without any checks or modification.</li>
+</ul>
+<p>For <code>INFER</code> and <code>CHECK</code>, it is assumed that all observations have the same number of neighbors. </p>
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="ae63cd82791c5b13f110050b28d3fffbd" name="ae63cd82791c5b13f110050b28d3fffbd"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae63cd82791c5b13f110050b28d3fffbd">&#9670;&#160;</a></span>initialize() <span class="overload">[1/3]</span></h2>
@@ -224,7 +263,7 @@ template&lt;std::size_t num_dim_, typename Index_ , typename Input_ , typename F
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">prebuilt</td><td>A pre-built neighbor search index for the dataset of interest. </td></tr>
-    <tr><td class="paramname">options</td><td>Further options.</td></tr>
+    <tr><td class="paramname">options</td><td>Further options. Note that <code><a class="el" href="structqdtsne_1_1Options.html#a1a5f6b66bf8c3260f0667938d855c36f">Options::precomputed_perplexity_policy</a></code> is not used here.</td></tr>
   </table>
   </dd>
 </dl>
@@ -283,7 +322,7 @@ template&lt;std::size_t num_dim_, typename Index_ , typename Float_ , class Matr
     <tr><td class="paramdir"></td><td class="paramname">num_obs</td><td>Number of columns of the matrix at <code>data</code>, corresponding to the observations of the input dataset. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">data</td><td>Pointer to an array containing a column-major matrix with <code>data_dim</code> rows and <code>num_obs</code> columns. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">builder</td><td>A <code><a class="elRef" href="https://knncolle.github.io/knncolle/classknncolle_1_1Builder.html">knncolle::Builder</a></code> instance specifying the nearest-neighbor algorithm to use. </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">options</td><td>Further options.</td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">options</td><td>Further options. Note that <code><a class="el" href="structqdtsne_1_1Options.html#a1a5f6b66bf8c3260f0667938d855c36f">Options::precomputed_perplexity_policy</a></code> is not used here.</td></tr>
   </table>
   </dd>
 </dl>
@@ -323,7 +362,7 @@ template&lt;std::size_t num_dim_, typename Index_ , typename Float_ &gt; </div>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">neighbors</td><td>List of indices and distances to nearest neighbors for each observation. Each observation should have the same number of neighbors, sorted by increasing distance. Each observation should not be included in its own list of neighbors. It is assumed that <code>neighbors.size()</code> will fit in an <code>Index_</code>. </td></tr>
-    <tr><td class="paramname">options</td><td>Further options. If <code><a class="el" href="structqdtsne_1_1Options.html#a824d9599d7ea23dcfdffc871afca0d49">Options::infer_perplexity</a> = true</code>, the perplexity is determined from <code>neighbors</code> and the value in <code><a class="el" href="structqdtsne_1_1Options.html#ae485ba64f2ff5379f09a75fb89447628">Options::perplexity</a></code> is ignored.</td></tr>
+    <tr><td class="paramname">options</td><td>Further options. If <code><a class="el" href="structqdtsne_1_1Options.html#a1a5f6b66bf8c3260f0667938d855c36f">Options::precomputed_perplexity_policy</a> = PrecomputedPerplexityPolicy::INFER</code>, the perplexity is determined from <code>neighbors</code> and the value in <code><a class="el" href="structqdtsne_1_1Options.html#ae485ba64f2ff5379f09a75fb89447628">Options::perplexity</a></code> is ignored.</td></tr>
   </table>
   </dd>
 </dl>

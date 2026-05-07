@@ -6,5 +6,7 @@ var searchData=
   ['perplexity_3',['perplexity',['../structqdtsne_1_1Options.html#ae485ba64f2ff5379f09a75fb89447628',1,'qdtsne::Options']]],
   ['perplexity_5fto_5fk_4',['perplexity_to_k',['../namespaceqdtsne.html#a74ac9034c403a269170cf638d46b95e5',1,'qdtsne']]],
   ['prebuilt_5',['Prebuilt',['https://knncolle.github.io/knncolle/classknncolle_1_1Prebuilt.html',1,'knncolle']]],
-  ['prebuilt_2ehpp_6',['Prebuilt.hpp',['https://knncolle.github.io/knncolle/Prebuilt_8hpp.html',1,'']]]
+  ['prebuilt_2ehpp_6',['Prebuilt.hpp',['https://knncolle.github.io/knncolle/Prebuilt_8hpp.html',1,'']]],
+  ['precomputed_5fperplexity_5fpolicy_7',['precomputed_perplexity_policy',['../structqdtsne_1_1Options.html#a1a5f6b66bf8c3260f0667938d855c36f',1,'qdtsne::Options']]],
+  ['precomputedperplexitypolicy_8',['PrecomputedPerplexityPolicy',['../namespaceqdtsne.html#aa99bf3bd9d1f134bfe02efb734c8370d',1,'qdtsne']]]
 ];

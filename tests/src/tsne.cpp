@@ -185,18 +185,64 @@ TEST_P(TsneTester, AltStart) {
     }
 
     auto original = qdtsne::initialize_random<2>(nobs);
-    qdtsne::Options options;
 
     auto Y = original;
-    auto status = qdtsne::initialize<2>(std::move(neighbors), options);
-    status.run(Y.data());
+    {
+        qdtsne::Options options;
+        auto status = qdtsne::initialize<2>(neighbors, options);
+        status.run(Y.data());
+    }
 
-    options.perplexity = K / 3.0;
-    auto ref_status = qdtsne::initialize<2>(ndim, nobs, X.data(), *builder, options);
-    auto copy = original;
-    ref_status.run(copy.data());
+    // Same result from directly finding the neighbors.
+    {
+        qdtsne::Options options;
+        options.perplexity = K / 3.0;
+        auto ref_status = qdtsne::initialize<2>(ndim, nobs, X.data(), *builder, options);
+        auto Y2 = original;
+        ref_status.run(Y2.data());
+        EXPECT_EQ(Y2, Y);
+    }
 
-    EXPECT_EQ(copy, Y);
+    // Works with checking the perplexity.
+    {
+        qdtsne::Options options;
+        options.precomputed_perplexity_policy = qdtsne::PrecomputedPerplexityPolicy::CHECK;
+
+        if (K != qdtsne::perplexity_to_k(options.perplexity)) {
+            std::string msg;
+            try {
+                qdtsne::initialize<2>(neighbors, options);
+            } catch (std::exception& e) {
+                msg = e.what();
+            }
+            EXPECT_TRUE(msg.find("unexpected number of neighbors") != std::string::npos);
+        }
+
+        auto Y2 = original;
+        options.perplexity = K / 3.0;
+        auto status = qdtsne::initialize<2>(neighbors, options);
+        status.run(Y2.data());
+        EXPECT_EQ(Y, Y2);
+    }
+
+    // Different result if we just force the perplexity as-is.
+    {
+        qdtsne::Options options;
+        options.precomputed_perplexity_policy = qdtsne::PrecomputedPerplexityPolicy::ASIS;
+
+        if (K != qdtsne::perplexity_to_k(options.perplexity)) {
+            auto Y2 = original;
+            auto status = qdtsne::initialize<2>(neighbors, options);
+            status.run(Y2.data());
+            EXPECT_NE(Y, Y2);
+        }
+
+        auto Y2 = original;
+        options.perplexity = K / 3.0;
+        auto status = qdtsne::initialize<2>(neighbors, options);
+        status.run(Y2.data());
+        EXPECT_EQ(Y, Y2);
+    }
 }
 
 TEST_P(TsneTester, LeafApproximation) {

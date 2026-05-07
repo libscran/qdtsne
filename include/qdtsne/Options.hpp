@@ -9,6 +9,19 @@
 namespace qdtsne {
 
 /**
+ * Policy for choosing the perplexity in the `initialize()` overload that accepts a `NeighborList` object.
+ *
+ * - `INFER`: the perplexity is defined from the number of neighbors, inverting the logic in `perplexity_to_k()` (i.e., the number of nearest neighbors divided by 3).
+ *   The value in `Options::perplexity` is ignored.
+ * - `CHECK`: the expected number of neighbors is defined from `Options::perplexity` using `perplexity_to_k()`.
+ *   If this is not equal to the observed number of neighbors in the `NeighborList`, an error is thrown.
+ * - `ASIS`: the perplexity is defined as `Options::perplexity` without any checks or modification.
+ *
+ * For `INFER` and `CHECK`, it is assumed that all observations have the same number of neighbors.
+ */
+enum class PrecomputedPerplexityPolicy : char { INFER, CHECK, ASIS };
+
+/**
  * @brief Options for `initialize()`.
  */
 struct Options {
@@ -24,13 +37,10 @@ struct Options {
     double perplexity = 30;
 
     /**
-     * Whether to infer the perplexity in the `initialize()` overload that accepts a `NeighborList` object.
-     * If true, the value in `Options::perplexity` is ignored.
-     * The perplexity is instead defined from the `NeighborList` as the number of nearest neighbors for the first observation divided by 3.
-     * (It is assumed that all observations have the same number of neighbors.)
-     * This effectively performs the inverse calculation of `perplexity_to_k()`.
+     * How to choose the perplexity in the `initialize()` overload that accepts a precomputed `NeighborList` object.
+     * This may or may not cause the value in `Options::perplexity` to be ignored.
      */
-    bool infer_perplexity = true;
+    PrecomputedPerplexityPolicy precomputed_perplexity_policy = PrecomputedPerplexityPolicy::INFER;
 
     /**
      * Approximation level for the Barnes-Hut calculation of repulsive forces.

@@ -46,17 +46,26 @@ Status<num_dim_, Index_, Float_> initialize(NeighborList<Index_, Float_> nn, con
  * Each observation should not be included in its own list of neighbors.
  * It is assumed that `neighbors.size()` will fit in an `Index_`.
  * @param options Further options.
- * If `Options::infer_perplexity = true`, the perplexity is determined from `neighbors` and the value in `Options::perplexity` is ignored.
+ * If `Options::precomputed_perplexity_policy = PrecomputedPerplexityPolicy::INFER`,
+ * the perplexity is determined from `neighbors` and the value in `Options::perplexity` is ignored.
  *
  * @return A `Status` object representing an initial state of the t-SNE algorithm.
  */
 template<std::size_t num_dim_, typename Index_, typename Float_>
 Status<num_dim_, Index_, Float_> initialize(NeighborList<Index_, Float_> neighbors, const Options& options) {
-    Float_ perp;
-    if (options.infer_perplexity && neighbors.size()) {
-        perp = static_cast<Float_>(neighbors.front().size())/3;
-    } else {
-        perp = options.perplexity;
+    Float_ perp = options.perplexity;
+    if (neighbors.size()) {
+        if (options.precomputed_perplexity_policy == PrecomputedPerplexityPolicy::ASIS) {
+            ;
+        } else {
+            if (options.precomputed_perplexity_policy == PrecomputedPerplexityPolicy::INFER) {
+                perp = static_cast<Float_>(neighbors.front().size())/3;
+            } else {
+                if (!sanisizer::is_equal(neighbors.front().size(), perplexity_to_k(options.perplexity))) {
+                    throw std::runtime_error("unexpected number of neighbors for the specified perplexity");
+                }
+            }
+        }
     }
     return internal::initialize<num_dim_>(std::move(neighbors), perp, options);
 }
@@ -73,6 +82,7 @@ Status<num_dim_, Index_, Float_> initialize(NeighborList<Index_, Float_> neighbo
  *
  * @param prebuilt A pre-built neighbor search index for the dataset of interest.
  * @param options Further options.
+ * Note that `Options::precomputed_perplexity_policy` is not used here.
  *
  * @return A `Status` object representing an initial state of the t-SNE algorithm.
  */
@@ -98,6 +108,7 @@ Status<num_dim_, Index_, Float_> initialize(const knncolle::Prebuilt<Index_, Inp
  * @param[in] data Pointer to an array containing a column-major matrix with `data_dim` rows and `num_obs` columns.
  * @param builder A `knncolle::Builder` instance specifying the nearest-neighbor algorithm to use.
  * @param options Further options.
+ * Note that `Options::precomputed_perplexity_policy` is not used here.
  *
  * @return A `Status` object representing an initial state of the t-SNE algorithm.
  */
